@@ -1,0 +1,388 @@
+% =============================================================================
+% midcenturymodern_demo.tex
+% Demo file for the Mid-Century Modern Beamer theme.
+% Compile with: lualatex midcenturymodern_demo.tex
+% =============================================================================
+\documentclass[aspectratio=169]{beamer}
+\usepackage{beamerthememidcenturymodern}
+\usepackage[backend=biber, style=authoryear, sorting=nyt]{biblatex}
+\addbibresource{demo.bib}
+
+% --- Theme selection (comment/uncomment to switch) ---
+\mcmTheme{Kraft}
+% \mcmTheme{DeepBlue}
+ 
+% --- Metadata ---
+\title{MidCentury Modern}
+\subtitle{A beamer theme for strong and original presentations}
+\author{Your Name}
+\institute{Your Institution}
+\date{\today}
+
+\titlegraphic{
+  \begin{minipage}{0.21\linewidth}
+    \begin{center}
+    \includegraphics[width=3cm]{logos/logo_kraft.png}
+    \end{center}
+  \end{minipage}
+}
+
+% --- Automatic section/subsection pages ---
+\AtBeginSection[]{%
+  \begin{frame}[plain]
+    \sectionpage
+  \end{frame}
+}
+\AtBeginSubsection[]{%
+  \begin{frame}[plain]
+    \subsectionpage
+  \end{frame}
+}
+
+\AtEveryCite{\color{mcmPrimary}}
+
+\begin{document}
+
+% =====================================================================
+% TITLE PAGE
+% =====================================================================
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% =====================================================================
+% TABLE OF CONTENTS
+% =====================================================================
+\begin{frame}{Table of Contents}
+  \tableofcontents
+\end{frame}
+
+% =====================================================================
+\section{Theme Overview}
+% =====================================================================
+
+\subsection{Design Principles}
+
+\begin{frame}{Design Principles}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Design Goals}
+        \begin{itemize}
+          \item Geometric bullet shapes at every nesting level
+          \item Clean sans-serif typography
+          \item Distinctive colour palette with two built-in themes
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{alertblock}{Requires LuaLaTeX}
+        Font loading relies on \texttt{fontspec}, which requires
+        LuaLaTeX or XeLaTeX. LuaLaTeX is recommended as the
+        TikZ-based graphics perform best with its extended memory
+        model.
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\subsection{Colour Themes}
+
+% --- Kraft version (active) ---
+\begin{frame}{Two Built-in Themes — Kraft}
+  Select a theme with a single command in your preamble:
+  \begin{enumerate}
+    \item \textbf{Kraft} — terracotta, kraft paper tones, warm accents\\
+      \texttt{\textbackslash mcmTheme\{Kraft\}}
+    \item {\color{mcmBlack!30}%
+      \textbf{DeepBlue} — dark navy, crisp white, cool accents\\
+      \texttt{\textbackslash mcmTheme\{DeepBlue\}}}
+  \end{enumerate}
+\end{frame}
+
+% --- Temporary switch to DeepBlue ---
+{
+\mcmTheme{DeepBlue}
+\begin{frame}{Two Built-in Themes — DeepBlue}
+  Select a theme with a single command in your preamble:
+  \begin{enumerate}
+    \item {\color{mcmBlack!30}%
+      \textbf{Kraft} — terracotta, kraft paper tones, warm accents\\
+      \texttt{\textbackslash mcmTheme\{Kraft\}}}
+    \item \textbf{DeepBlue} — dark navy, crisp white, cool accents\\
+      \texttt{\textbackslash mcmTheme\{DeepBlue\}}
+  \end{enumerate}
+\end{frame}
+}
+% Global theme (Kraft) resumes here automatically.
+
+% =====================================================================
+\section{Blocks}
+% =====================================================================
+
+\subsection{Standard Blocks}
+
+\begin{frame}{Standard Block}
+  \begin{block}{Observation}
+    Standard blocks use the primary theme colour for the pip
+    and title. The background matches the slide.
+  \end{block}
+
+  \begin{block}{With a List Inside}
+    \begin{itemize}
+      \item Bullets inherit the theme colour
+      \item Indentation and spacing are consistent
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\subsection{Alert and Example Blocks}
+
+\begin{frame}{Alert and Example Blocks — Kraft theme}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Note}
+        Standard blocks use the primary theme colour for the pip
+        and title. Lorem ipsum dolor sit amet, consectetur
+        adipiscing elit. Sed do eiusmod tempor incididunt ut
+        labore et dolore magna aliqua. Ut enim ad minim veniam,
+        quis nostrud exercitation ullamco.
+      \end{block}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{alertblock}{Warning}
+        Alert blocks use amber.
+        \begin{itemize}
+          \item Bullets match the alert colour
+          \item Background is a warm tint
+        \end{itemize}
+      \end{alertblock}
+      \begin{exampleblock}{Illustration}
+        Example blocks use sage.
+        \begin{itemize}
+          \item Bullets match the example colour
+        \end{itemize}
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+{
+\mcmTheme{DeepBlue}
+\begin{frame}{Alert and Example Blocks — DeepBlue theme}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Note}
+        Standard blocks use the primary theme colour for the pip
+        and title. Lorem ipsum dolor sit amet, consectetur
+        adipiscing elit. Sed do eiusmod tempor incididunt ut
+        labore et dolore magna aliqua. Ut enim ad minim veniam,
+        quis nostrud exercitation ullamco.
+      \end{block}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{alertblock}{Warning}
+        Alert blocks use pink.
+        \begin{itemize}
+          \item Bullets match the alert colour
+          \item Background is a warm tint
+        \end{itemize}
+      \end{alertblock}
+      \begin{exampleblock}{Illustration}
+        Example blocks use mint.
+        \begin{itemize}
+          \item Bullets match the example colour
+        \end{itemize}
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+}
+
+% =====================================================================
+\section{Typography}
+% =====================================================================
+
+\subsection{Text Formatting}
+
+\begin{frame}{Text Formatting}
+  Regular text uses the body font (Lato by default).
+
+  \vspace{0.5em}
+  \textbf{Bold text} for emphasis. \textit{Italic text} for titles
+  and foreign terms. \alert{Alerted text} for warnings.
+
+  \vspace{0.5em}
+  Frame titles use the title font (TeX Gyre Heros by default),
+  rendered in uppercase.
+
+  \vspace{0.5em}
+  Override fonts in your preamble:
+  \begin{itemize}
+    \item \texttt{\textbackslash setsansfont\{Font Name\}} — body
+    \item \texttt{\textbackslash renewfontfamily\textbackslash mcmTitleFont\{Font Name\}} — titles
+  \end{itemize}
+\end{frame}
+
+\subsection{Lists}
+
+\begin{frame}{Itemize and Enumerate}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}
+        \item First item
+        \item Second item
+        \begin{itemize}
+          \item Nested item
+          \begin{itemize}
+            \item Deeper item
+          \end{itemize}
+        \end{itemize}
+        \item Third item
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{enumerate}
+        \item First item
+        \item Second item
+        \begin{enumerate}
+          \item Nested item
+        \end{enumerate}
+        \item Third item
+      \end{enumerate}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% =====================================================================
+\section{Customisation}
+% =====================================================================
+
+\begin{frame}{Adjustable Parameters}
+  \begin{block}{Lengths}
+    \begin{itemize}
+      \item \texttt{\textbackslash mcmFrameTitleLeft} — frame title left padding
+      \item \texttt{\textbackslash mcmBlockTitleIndent} — block title indent
+      \item \texttt{\textbackslash mcmTitleWordSpacing} — title page word spacing
+      \item \texttt{\textbackslash mcmFooterHeight} — title page footer height
+      \item \texttt{\textbackslash mcmLogoVOffset} — logo vertical offset
+    \end{itemize}
+  \end{block}
+
+  \begin{block}{Toggles}
+    \begin{itemize}
+      \item \texttt{\textbackslash mcmTitleUppercasefalse} — disable uppercase titles
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Customisation Examples}
+  \begin{block}{Wider frame title left padding (default: 0.35cm)}
+    \texttt{\textbackslash setlength\{\textbackslash mcmFrameTitleLeft\}\{1.2cm\}}\\
+    {\small Pushes the frame title text further from the left edge.}
+  \end{block}
+
+  \begin{block}{Larger title page footer (default: 5em)}
+    \texttt{\textbackslash setlength\{\textbackslash mcmFooterHeight\}\{7em\}}\\
+    {\small Gives more room to the scan-line / logo area at the bottom.}
+  \end{block}
+
+  \begin{block}{Raise the logo (default: 0cm)}
+    \texttt{\textbackslash setlength\{\textbackslash mcmLogoVOffset\}\{0.4cm\}}\\
+    {\small Shifts the logo upward within the footer strip.}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Customisation Examples (cont.)}
+  \begin{block}{Extra word spacing on the title (default: 0.5em)}
+    \texttt{\textbackslash setlength\{\textbackslash mcmTitleWordSpacing\}\{1.2em\}}\\
+    {\small Spreads words on the title page for a more open feel.}
+  \end{block}
+
+  \begin{block}{Disable uppercase frame titles}
+    \texttt{\textbackslash mcmTitleUppercasefalse}\\
+    {\small Titles are rendered as typed, without \texttt{\textbackslash MakeUppercase}.}
+  \end{block}
+
+  \begin{block}{Override body and title fonts}
+    \texttt{\textbackslash setsansfont\{Source Sans 3\}}\\
+    \texttt{\textbackslash renewfontfamily\textbackslash mcmTitleFont\{Futura\}}\\
+    {\small Place these after \texttt{\textbackslash usepackage\{beamerthememidcenturymodern\}}.}
+  \end{block}
+\end{frame}
+
+% =====================================================================
+\section{Bibliography management}
+% =====================================================================
+
+\begin{frame}{The history of mid-century modern}
+  Mid-century modern (MCM) is a design movement that flourished
+  roughly from 1945 to 1970, rooted in the Bauhaus principles of
+  clean lines, geometric forms, and functionality over ornament
+  \parencite{wikipedia2024}. The term itself was coined by
+  Cara Greenberg in her 1984 book on 1950s furniture
+  \parencite{greenberg1984}. In graphic design, these ideals were
+  systematised through grid-based composition
+  \parencite{müller-brockmann1981} and refined typographic practice
+  \parencite{bringhurst2004}.
+\end{frame}
+
+\begin{frame}[allowframebreaks]{References}
+  \printbibliography[heading=none]
+\end{frame}
+
+% =====================================================================
+% CLOSING SLIDE
+% =====================================================================
+
+{\setbeamercolor{normal text}{fg=mcmPrimaryFg,bg=mcmAlert!70}
+\begin{frame}[plain,noframenumbering]
+  \begin{center}
+    \Large
+    Closing slide\\
+    Any question?
+  \end{center}
+\end{frame}
+}
+
+% =====================================================================
+% BACKUP SLIDES
+% =====================================================================
+
+\appendix
+
+\begin{frame}[plain,noframenumbering]{}
+  \centering
+  Your backup slides here
+  \vspace{2em}
+
+  \begin{block}{Design Movement Timeline}
+    \vspace{1em}
+
+    \begin{tikzpicture}[x=2.2cm, y=1cm]
+    % Scale: 5 units = 51 years (1919-1970), so 1 year = 5/51 units
+    % 1919=0, 1925=0.588, 1933=1.373, 1945=2.549, 1955=3.529, 1965=4.510, 1970=5
+    % Axis
+    \draw[mcmPrimary, line width=1pt] (0,0) -- (5.2,0);
+    % Ticks and labels
+    \foreach \x/\lbl in {0/1919, 0.588/1925, 1.373/1933, 2.549/1945, 3.529/1955, 4.510/1965, 5/1970}{
+      \draw[mcmPrimary, line width=0.8pt] (\x, 0.12) -- (\x, -0.12);
+      \node[below, font=\small, text=mcmPrimary] at (\x, -0.15) {\lbl};
+    }
+    % Bauhaus bar (1919-1933) — bottom row
+    \fill[mcmPrimaryAccent] (0, 0.35) rectangle (1.373, 0.75);
+    \node[right, font=\footnotesize\bfseries, text=mcmPrimary] at (0.05, 0.55)
+      {Bauhaus};
+    % MCM bar (1945-1970) — bottom row, same as Bauhaus
+    \fill[mcmPrimary!70] (2.549, 0.35) rectangle (5, 0.75);
+    \node[right, font=\footnotesize\bfseries, text=mcmBg] at (2.60, 0.55)
+      {Mid-Century Modern};
+    % International Style bar (1925-1965) — top row
+    \fill[mcmPrimaryMuted] (0.588, 1.0) rectangle (4.510, 1.4);
+    \node[right, font=\footnotesize\bfseries, text=mcmPrimary] at (0.64, 1.2)
+      {International Style};
+    \end{tikzpicture}
+  \end{block}
+
+\end{frame}
+
+\end{document}

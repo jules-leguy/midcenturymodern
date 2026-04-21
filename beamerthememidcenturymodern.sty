@@ -1,0 +1,533 @@
+% =============================================================================
+% beamerthememidcenturymodern.sty
+% A mid-century modern Beamer theme. Requires LuaLaTeX.
+%
+% COLOUR THEMES
+%
+%   Two built-in themes: DeepBlue (default) and Kraft.
+%   Select in your preamble before \begin{document}:
+%
+%     \usepackage{beamerthememidcenturymodern}
+%     \mcmTheme{Kraft}
+%
+% FONTS
+%
+%   Body: Lato (fallback: Helvetica).
+%   Titles: TeX Gyre Heros (fallback: default sans).
+%
+%   Override in your preamble after loading the theme:
+%     \setsansfont{Font Name}
+%     \renewfontfamily\mcmTitleFont{Font Name}
+%
+% =============================================================================
+\ProvidesPackage{beamerthememidcenturymodern}[2025/01/01 Mid-Century Modern Beamer Theme]
+
+\setbeamersize{text margin left=2em, text margin right=2em}
+
+\RequirePackage{calc}
+\RequirePackage{tikz}
+\RequirePackage{etoolbox}
+\RequirePackage{fontspec}
+\RequirePackage{hyperref}
+
+\defaultfontfeatures{Ligatures=TeX}
+
+\setbeamertemplate{frametitle continuation}{}
+
+% ---------------------------------------------------------------------------
+% FONTS
+% ---------------------------------------------------------------------------
+\IfFontExistsTF{Lato}{%
+  \setsansfont{Lato}%
+}{%
+  \IfFontExistsTF{Helvetica}{\setsansfont{Helvetica}}{}%
+}
+\renewcommand{\familydefault}{\sfdefault}
+
+\IfFontExistsTF{TeX Gyre Heros}{%
+  \newfontfamily\mcmTitleFont{TeX Gyre Heros}%
+}{%
+  \let\mcmTitleFont\sffamily
+}
+
+% Uppercase titles (default on). Disable: \mcmTitleUppercasefalse
+\newif\ifmcmTitleUppercase
+\mcmTitleUppercasetrue
+
+% Extra word spacing on the title page (default 0.5em)
+\newlength{\mcmTitleWordSpacing}
+\setlength{\mcmTitleWordSpacing}{0.5em}
+
+% Helper: apply title font + optional uppercase
+\newcommand{\mcmTitleFormat}[1]{%
+  {\mcmTitleFont
+   \ifmcmTitleUppercase\MakeUppercase{#1}\else#1\fi}%
+}
+
+\mode<presentation>{
+  \usetheme{default}
+  \usefonttheme{professionalfonts}
+  \setbeamertemplate{navigation symbols}{}
+}
+
+% ---------------------------------------------------------------------------
+% COLOUR PALETTE
+% ---------------------------------------------------------------------------
+\definecolor{mcmDeepGreen}{HTML}{09342A}
+\definecolor{mcmGreen}{HTML}{177F6B}
+\definecolor{mcmLightGreen}{HTML}{EEFAF4}
+\definecolor{mcmBg}{HTML}{F8F6F2}
+\definecolor{mcmMintBlock}{HTML}{EAF8F2}
+\definecolor{mcmMintTitle}{HTML}{4DB896}
+\definecolor{mcmLightGray}{HTML}{F5F5F5}
+\definecolor{mcmBlack}{HTML}{1A1A1A}
+\definecolor{mcmDeepBlue}{HTML}{002d4d}
+\definecolor{mcmDarkBlue}{HTML}{1a2a3b}
+\definecolor{mcmLightBlue}{HTML}{BFE5EE}
+\definecolor{mcmTerracotta}{HTML}{9C4732}
+\definecolor{mcmKraft}{HTML}{DEC5A6}
+\definecolor{mcmKraftLight}{HTML}{E8D5B5}
+\definecolor{mcmPink}{HTML}{E8637D}
+\definecolor{mcmLightPink}{HTML}{FCEEF1}
+\definecolor{mcmAmber}{HTML}{DB6720}
+\definecolor{mcmLightAmber}{HTML}{FAEBD7}
+\definecolor{mcmSage}{HTML}{6B7F3A}
+\definecolor{mcmLightSage}{HTML}{EFF2E6}
+
+% ---------------------------------------------------------------------------
+% SEMANTIC COLOUR ALIASES — set by \mcmTheme
+% ---------------------------------------------------------------------------
+\colorlet{mcmPrimary}{mcmDeepBlue}
+\colorlet{mcmPrimaryDark}{mcmDarkBlue}
+\colorlet{mcmPrimaryFg}{mcmLightGray}
+\colorlet{mcmPrimaryAccent}{mcmLightBlue}
+\colorlet{mcmPrimaryMuted}{mcmDeepBlue!10}
+\colorlet{mcmPip}{mcmDeepBlue}
+\colorlet{mcmBlockTitleFg}{mcmDeepBlue}
+\colorlet{mcmScanLine}{mcmDeepBlue!55}
+\colorlet{mcmAlert}{mcmPink}
+\colorlet{mcmAlertBg}{mcmLightPink}
+\colorlet{mcmExample}{mcmMintTitle}
+\colorlet{mcmExampleBg}{mcmMintBlock}
+
+% ---------------------------------------------------------------------------
+% THEME COMMAND
+% ---------------------------------------------------------------------------
+\newcommand{\mcmTheme}[1]{%
+  \def\mcm@theme{#1}%
+  \ifstrequal{#1}{Kraft}{%
+    \colorlet{mcmPrimary}{mcmTerracotta}%
+    \colorlet{mcmPrimaryDark}{mcmTerracotta!80!black}%
+    \colorlet{mcmPrimaryFg}{mcmKraft}%
+    \colorlet{mcmPrimaryAccent}{mcmKraftLight}%
+    \colorlet{mcmPrimaryMuted}{mcmTerracotta!10}%
+    \colorlet{mcmPip}{mcmTerracotta}%
+    \colorlet{mcmBlockTitleFg}{mcmTerracotta}%
+    \colorlet{mcmScanLine}{mcmTerracotta!55}%
+    \colorlet{mcmAlert}{mcmAmber}%
+    \colorlet{mcmAlertBg}{mcmLightAmber}%
+    \colorlet{mcmExample}{mcmSage}%
+    \colorlet{mcmExampleBg}{mcmLightSage}%
+    \mcm@applytheme
+  }{%
+    \colorlet{mcmPrimary}{mcmDeepBlue}%
+    \colorlet{mcmPrimaryDark}{mcmDarkBlue}%
+    \colorlet{mcmPrimaryFg}{mcmLightGray}%
+    \colorlet{mcmPrimaryAccent}{mcmLightBlue}%
+    \colorlet{mcmPrimaryMuted}{mcmDeepBlue!10}%
+    \colorlet{mcmPip}{mcmDeepBlue}%
+    \colorlet{mcmBlockTitleFg}{mcmDeepBlue}%
+    \colorlet{mcmScanLine}{mcmDeepBlue!55}%
+    \colorlet{mcmAlert}{mcmPink}%
+    \colorlet{mcmAlertBg}{mcmLightPink}%
+    \colorlet{mcmExample}{mcmMintTitle}%
+    \colorlet{mcmExampleBg}{mcmMintBlock}%
+    \mcm@applytheme
+  }%
+}
+
+\newcommand{\mcm@applytheme}{%
+  \setbeamercolor{frametitle}{fg=mcmPrimaryFg, bg=mcmPrimary}%
+  \setbeamercolor{block title}{fg=mcmBlockTitleFg, bg=mcmBg}%
+  \setbeamercolor{block title alerted}{fg=mcmAlert, bg=mcmAlertBg}%
+  \setbeamercolor{block body alerted}{fg=mcmBlack, bg=mcmAlertBg}%
+  \setbeamercolor{block title example}{fg=mcmExample, bg=mcmExampleBg}%
+  \setbeamercolor{block body example}{fg=mcmBlack, bg=mcmExampleBg}%
+  \setbeamercolor{alerted text}{fg=mcmAlert}%
+  \setbeamercolor{example text}{fg=mcmExample}%
+  \setbeamercolor{section in toc}{fg=mcmPip}%
+  \setbeamercolor{subsection in toc}{fg=mcmPip}%
+  \setbeamercolor{bibliography entry author}{fg=mcmPip}%
+  \setbeamercolor{bibliography entry cite}{fg=mcmPip}%
+  \renewcommand{\mcmBulletColor}{mcmPip}%
+  \hypersetup{urlcolor=mcmPrimary, linkcolor=mcmPrimary, citecolor=mcmPrimary}%
+}
+
+% ---------------------------------------------------------------------------
+% GLOBAL COLOURS (theme-independent)
+% ---------------------------------------------------------------------------
+\setbeamercolor{normal text}{fg=mcmBlack, bg=mcmBg}
+\setbeamercolor{structure}{fg=mcmDeepGreen}
+\setbeamercolor{block body}{fg=mcmBlack, bg=mcmBg}
+\setbeamercolor{bibliography entry title}{fg=mcmBlack}
+\setbeamercolor{bibliography entry location}{fg=mcmBlack}
+\setbeamercolor{bibliography entry note}{fg=mcmBlack}
+
+% Bullet colour macro (must be defined before first \mcmTheme call)
+\newcommand{\mcmBulletColor}{mcmPip}
+
+% Apply default theme
+\mcmTheme{DeepBlue}
+
+% ---------------------------------------------------------------------------
+% FONT ASSIGNMENTS
+% ---------------------------------------------------------------------------
+\setbeamerfont{title}{size=\Huge, series=\bfseries}
+\setbeamerfont{subtitle}{size=\large, series=\mdseries}
+\setbeamerfont{author}{size=\Large}
+\setbeamerfont{institute}{size=\small}
+\setbeamerfont{date}{size=\scriptsize}
+\setbeamerfont{frametitle}{size=\large, series=\bfseries}
+\setbeamerfont{block title}{size=\normalsize, series=\bfseries}
+\setbeamerfont{section in toc}{size=\normalsize, series=\bfseries}
+\setbeamerfont{subsection in toc}{size=\small}
+
+% ---------------------------------------------------------------------------
+% FRAME TITLE — coloured band with accent line below
+%
+% Left padding: \mcmFrameTitleLeft (default 0.35cm)
+% ---------------------------------------------------------------------------
+\newlength{\mcmFrameTitleLeft}
+\setlength{\mcmFrameTitleLeft}{0.35cm}
+
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip
+  \begin{beamercolorbox}[%
+      wd=\paperwidth,
+      ht=1.10cm, dp=0.0cm,
+      leftskip=\mcmFrameTitleLeft, rightskip=0.4cm]{frametitle}%
+    \vbox to 1.10cm{%
+      \vfil
+      \usebeamerfont{frametitle}\mcmTitleFormat{\insertframetitle}%
+      \ifx\insertframesubtitle\@empty\else
+        \hspace{0.4em}{\small\color{mcmPrimaryAccent!70}\insertframesubtitle}%
+      \fi
+      \vfil
+    }%
+  \end{beamercolorbox}%
+  \nointerlineskip
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[mcmPrimaryFg]
+      ([yshift=-1.10cm]current page.north west)
+      rectangle ([yshift=-1.10cm - 0.8pt]current page.north east);
+  \end{tikzpicture}%
+}
+
+% ---------------------------------------------------------------------------
+% BLOCKS — pip + title, single colorbox per block
+%
+% Internal padding: \mcmBlockPad (default 0.45em)
+% Title indent: \mcmBlockTitleIndent (default 0.3em)
+% ---------------------------------------------------------------------------
+\newlength{\mcmBlockPad}
+\setlength{\mcmBlockPad}{0.45em}
+
+\newlength{\mcmBlockTitleIndent}
+\setlength{\mcmBlockTitleIndent}{0.3em}
+
+\setbeamertemplate{block begin}{%
+  \par\vskip0.6ex%
+  \begin{beamercolorbox}[%
+      wd=\textwidth, colsep*=\mcmBlockPad,
+      sep=0.5ex]{block body}%
+    {\hspace{\mcmBlockTitleIndent}%
+     \llap{\textcolor{mcmPip}{\rule{3pt}{1.75ex}}\hspace{0.45em}}%
+     \usebeamerfont{block title}\usebeamercolor[fg]{block title}%
+     \insertblocktitle\par}%
+    \vskip0.4ex
+    \usebeamerfont{block body}\usebeamercolor[fg]{block body}%
+}
+\setbeamertemplate{block end}{%
+  \end{beamercolorbox}\vskip0.7ex%
+}
+
+\setbeamertemplate{block alerted begin}{%
+  \par\vskip0.6ex%
+  \begin{beamercolorbox}[%
+      wd=\textwidth, colsep*=\mcmBlockPad,
+      sep=0.5ex]{block body alerted}%
+    {\hspace{\mcmBlockTitleIndent}%
+     \llap{\textcolor{mcmAlert}{\rule{3pt}{1.75ex}}\hspace{0.45em}}%
+     \usebeamerfont{block title}\usebeamercolor[fg]{block title alerted}%
+     \insertblocktitle\par}%
+    \vskip0.4ex
+    \usebeamerfont{block body}\usebeamercolor[fg]{block body alerted}%
+}
+\setbeamertemplate{block alerted end}{%
+  \end{beamercolorbox}\vskip0.7ex%
+}
+
+\setbeamertemplate{block example begin}{%
+  \par\vskip0.6ex%
+  \begin{beamercolorbox}[%
+      wd=\textwidth, colsep*=\mcmBlockPad,
+      sep=0.5ex]{block body example}%
+    {\hspace{\mcmBlockTitleIndent}%
+     \llap{\textcolor{mcmExample}{\rule{3pt}{1.75ex}}\hspace{0.45em}}%
+     \usebeamerfont{block title}\usebeamercolor[fg]{block title example}%
+     \insertblocktitle\par}%
+    \vskip0.4ex
+    \usebeamerfont{block body}\usebeamercolor[fg]{block body example}%
+}
+\setbeamertemplate{block example end}{%
+  \end{beamercolorbox}\vskip0.7ex%
+}
+
+% ---------------------------------------------------------------------------
+% ITEMIZE / ENUMERATE — geometric bullets, colour follows theme
+% ---------------------------------------------------------------------------
+\addtobeamertemplate{block alerted begin}{\renewcommand{\mcmBulletColor}{mcmAlert}}{}
+\addtobeamertemplate{block alerted end}{\renewcommand{\mcmBulletColor}{mcmPip}}{}
+\addtobeamertemplate{block example begin}{\renewcommand{\mcmBulletColor}{mcmExample}}{}
+\addtobeamertemplate{block example end}{\renewcommand{\mcmBulletColor}{mcmPip}}{}
+
+\setbeamertemplate{itemize item}{%
+  \tikz[baseline=-0.8ex]{%
+    \draw[\mcmBulletColor, line width=0.5pt] (0,0) circle(0.08);
+    \fill[\mcmBulletColor] (0,0) circle(0.03);
+  }%
+}
+\setbeamertemplate{itemize subitem}{%
+  \tikz[baseline=-0.7ex]{%
+    \draw[\mcmBulletColor, line width=0.5pt] (0,0.09) -- (0.09,0) -- (0,-0.09) -- (-0.09,0) -- cycle;
+    \fill[\mcmBulletColor] (0,0) circle(0.025);
+  }%
+}
+\setbeamertemplate{itemize subsubitem}{%
+  \tikz[baseline=-0.7ex]{%
+    \draw[\mcmBulletColor, line width=0.5pt] (-0.06,-0.06) rectangle (0.06,0.06);
+    \fill[\mcmBulletColor] (0,0) circle(0.02);
+  }%
+}
+\setbeamertemplate{enumerate item}{%
+  \tikz[baseline=-0.725ex]{%
+    \fill[\mcmBulletColor] (0,0) circle(0.12);
+    \node[white, font=\tiny\bfseries] at (0,0) {\insertenumlabel};
+  }%
+}
+\setbeamertemplate{enumerate subitem}{%
+  \tikz[baseline=-0.65ex]{%
+    \fill[\mcmBulletColor] (0,0) circle(0.105);
+    \node[white, font=\tiny] at (0,0) {\insertsubenumlabel};
+  }%
+}
+% ---------------------------------------------------------------------------
+% TABLE OF CONTENTS
+% ---------------------------------------------------------------------------
+\setbeamertemplate{section in toc}{%
+  \hspace{0.1cm}%
+  \raisebox{0.2ex}{\tikz{\fill[mcmPip](0,0) rectangle (0.14,0.14);}}%
+  \hspace{0.25cm}%
+  {\usebeamerfont{section in toc}\inserttocsection}\par%
+}
+\setbeamertemplate{subsection in toc}{%
+  \hspace{0.65cm}%
+  \raisebox{0.0ex}{\tikz{\fill[mcmPip] (0,0) circle(0.055);}}%
+  \hspace{0.2cm}%
+  {\usebeamerfont{subsection in toc}\inserttocsubsection}\par%
+}
+
+% ---------------------------------------------------------------------------
+% FOOTLINE — progress bar, suppressed on the title page
+% ---------------------------------------------------------------------------
+\newif\if@mcmtitlepage
+\@mcmtitlepagefalse
+
+\addtobeamertemplate{frametitle}{\global\@mcmtitlepagefalse}{}
+\BeforeBeginEnvironment{frame}{\global\@mcmtitlepagefalse}
+
+\newcommand{\mcmFootlineContent}{%
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[mcmPrimaryMuted]
+      (current page.south west)
+      rectangle ([yshift=0.06cm]current page.south east);
+    \pgfmathsetmacro{\mcmprog}{\insertframenumber / \inserttotalframenumber}%
+    \fill[mcmPrimary]
+      (current page.south west)
+      rectangle ([xshift=\mcmprog\paperwidth, yshift=0.06cm]current page.south west);
+    \node[anchor=south west, inner sep=0pt]
+      at ([xshift=0.4cm, yshift=0.10cm]current page.south west)
+      {{\tiny\color{mcmBlack!45}\insertshortauthor}};
+    \node[anchor=south, inner sep=0pt]
+      at ([yshift=0.10cm]current page.south)
+      {{\tiny\color{mcmBlack!45}\insertshorttitle}};
+    \node[anchor=south east, inner sep=0pt]
+      at ([xshift=-0.4cm, yshift=0.10cm]current page.south east)
+      {{\tiny\color{mcmBlack!45}\textbf{\insertframenumber}\,/\,\inserttotalframenumber}};
+  \end{tikzpicture}%
+  \leavevmode\hbox to \paperwidth{\vbox to 0.45cm{}\hss}%
+}
+
+\setbeamertemplate{footline}{%
+  \if@mcmtitlepage\else\mcmFootlineContent\fi%
+}
+
+% ---------------------------------------------------------------------------
+% SECTION PAGE
+% ---------------------------------------------------------------------------
+\setbeamertemplate{section page}{%
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[mcmBg]
+      (current page.south west) rectangle (current page.north east);
+    \fill[mcmPrimary]
+      (current page.south west)
+      rectangle ([xshift=0.45cm]current page.north west);
+    \fill[mcmPrimary!45]
+      ([xshift=0.45cm]current page.south west)
+      rectangle ([xshift=0.60cm]current page.north west);
+    \node[anchor=south west, inner sep=0pt,
+          font=\small\bfseries, text=mcmPrimary!55]
+      at ([xshift=1.1cm, yshift=0.18cm]current page.west)
+      {\MakeUppercase{Section}\ \insertsectionnumber};
+    \node[anchor=west, text width=0.80\paperwidth,
+          align=left, inner sep=0pt]
+      at ([xshift=1.1cm, yshift=-0.55cm]current page.west)
+      {{\usebeamerfont{title}\color{mcmPrimary}\insertsection}};
+  \end{tikzpicture}%
+}
+
+% ---------------------------------------------------------------------------
+% SUBSECTION PAGE
+% ---------------------------------------------------------------------------
+\setbeamertemplate{subsection page}{%
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[mcmBg]
+      (current page.south west) rectangle (current page.north east);
+    \fill[mcmPrimary]
+      (current page.north west)
+      rectangle ([yshift=-0.18cm]current page.north east);
+    \node[anchor=north west, inner sep=0pt,
+          font=\small, text=mcmPrimary!50]
+      at ([xshift=1.1cm, yshift=-0.38cm]current page.north west)
+      {\insertsection\ \textbf{/}};
+    \node[anchor=west, text width=0.80\paperwidth,
+          align=left, inner sep=0pt]
+      at ([xshift=1.1cm, yshift=0.4cm]current page.west)
+      {%
+        {\small\color{mcmPrimary!60}\MakeUppercase{Section}\ %
+         \insertsectionnumber.\insertsubsectionnumber}\\[0.3cm]
+        {\usebeamerfont{frametitle}\color{mcmPrimary}\insertsubsection}%
+      };
+  \end{tikzpicture}%
+}
+
+% ---------------------------------------------------------------------------
+% TITLE PAGE
+%
+% Footer height: \mcmFooterHeight (default 5em)
+% Logo vertical offset: \mcmLogoVOffset (default 0cm, positive = up)
+% Scan line spacing: \mcmLineSpacing (default 0.18cm)
+%
+% The logo is automatically positioned so that there is always 0.75cm of
+% scan lines to its right. The gap width adapts to the logo size.
+% Both gap edges use cosine-modulated rounding for an organic shape.
+% ---------------------------------------------------------------------------
+\newsavebox{\mcmTitleGraphicBox}
+\newlength{\mcmLogoW}
+\newlength{\mcmLogoH}
+\newlength{\mcmFooterHeight}
+\setlength{\mcmFooterHeight}{5em}
+\newlength{\mcmLogoVOffset}
+\setlength{\mcmLogoVOffset}{0cm}
+\newif\if@mcmhaslogo
+
+\newlength{\mcmLineSpacing}
+\setlength{\mcmLineSpacing}{0.18cm}
+
+\setbeamertemplate{title page}{%
+  \global\@mcmtitlepagetrue
+  \sbox{\mcmTitleGraphicBox}{\inserttitlegraphic}%
+  \setlength{\mcmLogoW}{\wd\mcmTitleGraphicBox}%
+  \setlength{\mcmLogoH}{\ht\mcmTitleGraphicBox}%
+  \addtolength{\mcmLogoH}{\dp\mcmTitleGraphicBox}%
+  \ifdim\mcmLogoW>0pt \@mcmhaslogotrue\else\@mcmhaslogofalse\fi
+  %
+  % Background and footer strip
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[mcmPrimary]
+      (current page.south west) rectangle (current page.north east);
+    \fill[mcmBg]
+      (current page.south west)
+      rectangle ([yshift=\mcmFooterHeight]current page.south east);
+    \draw[line width=0.3pt, color=mcmPrimaryDark]
+      ([yshift=\mcmFooterHeight]current page.south west) --
+      ([yshift=\mcmFooterHeight]current page.south east);
+  \end{tikzpicture}%
+  %
+  % Scan lines and logo, centred in the footer strip.
+  % Right segments are always 0.75cm long (ending 0.3cm from the right edge).
+  % The gap width adapts to the logo; the logo is centred within the gap.
+  % Both gap edges use cosine-modulated rounding for an organic shape.
+  \if@mcmhaslogo
+    \begin{tikzpicture}[remember picture, overlay]
+      \pgfmathsetlengthmacro{\rightfixed}{\paperwidth - 1.05cm}
+      \pgfmathsetlengthmacro{\logocx}{\rightfixed - 0.5\mcmLogoW}
+      % Place logo
+      \node[anchor=center] (mcmlogo)
+        at ([xshift=\logocx,
+             yshift=0.5\mcmFooterHeight + \mcmLogoVOffset]current page.south west)
+        {\usebox{\mcmTitleGraphicBox}};
+      % Draw scan lines
+      \foreach \i in {0,...,6}{%
+        \pgfmathsetmacro{\imid}{3}%
+        \pgfmathsetlengthmacro{\ysh}{%
+          0.5\mcmFooterHeight + (\i - \imid) * \mcmLineSpacing}
+        \pgfmathsetmacro{\thet}{(\i - \imid) * 3.14159 / 6}
+        \pgfmathsetmacro{\cf}{abs(cos(\thet r))}
+        \pgfmathsetlengthmacro{\xm}{0.25cm * (0.4 + 0.8 * \cf)}
+        % Left segment
+        \pgfmathsetlengthmacro{\leftend}{\logocx - 0.5\mcmLogoW - \xm}
+        \draw[line width=0.5pt, color=mcmScanLine]
+          ([xshift=0.3cm, yshift=\ysh]current page.south west)
+            -- ([xshift=\leftend, yshift=\ysh]current page.south west);
+        % Right segment
+        \pgfmathsetlengthmacro{\rightstart}{\logocx + 0.5\mcmLogoW + \xm}
+        \draw[line width=0.5pt, color=mcmScanLine]
+          ([xshift=\rightstart, yshift=\ysh]current page.south west)
+            -- ([xshift=-0.3cm, yshift=\ysh]current page.south east);
+      }
+    \end{tikzpicture}%
+  \else
+    \begin{tikzpicture}[remember picture, overlay]
+      \foreach \i in {0,...,6}{%
+        \pgfmathsetmacro{\imid}{3}%
+        \pgfmathsetlengthmacro{\ysh}{%
+          0.5\mcmFooterHeight + (\i - \imid) * \mcmLineSpacing}
+        \draw[line width=0.5pt, color=mcmScanLine]
+          ([xshift=0.3cm, yshift=\ysh]current page.south west)
+            -- ([xshift=-0.3cm, yshift=\ysh]current page.south east);
+      }
+    \end{tikzpicture}%
+  \fi
+  %
+  % Title text
+  \begin{tikzpicture}[remember picture, overlay]
+    \node[anchor=center, text width=0.88\paperwidth, align=flush right, inner sep=0pt]
+      at ([yshift=0.5\mcmFooterHeight]current page.center)
+      {%
+        {\spaceskip=\fontdimen2\font plus \fontdimen3\font minus \fontdimen4\font
+         \advance\spaceskip by \mcmTitleWordSpacing
+         \usebeamerfont{title}\color{mcmPrimaryFg}\mcmTitleFormat{\inserttitle}\par}%
+        \ifx\insertsubtitle\@empty\else\vskip0.25cm%
+          {\usebeamerfont{subtitle}\color{mcmPrimaryAccent}\insertsubtitle\par}%
+        \fi\vskip0.35cm
+        {\usebeamerfont{author}\color{mcmPrimaryFg}\insertauthor\par}\vskip0.05cm
+           {\usebeamerfont{institute}\color{mcmPrimaryFg!70}\insertinstitute}%
+      \vskip0.25cm
+      {\usebeamerfont{date}\color{mcmPrimaryFg!60}\insertdate}%
+      };
+
+  \end{tikzpicture}%
+}
+
+\endinput
