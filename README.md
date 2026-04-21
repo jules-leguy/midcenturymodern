@@ -14,27 +14,27 @@ Select a theme in your preamble:
 % \mcmTheme{DeepBlue} % dark navy palette
 ```
 
-![Title slide](img/midcenturymodern/titlepage.png)
+![Title slide](img/titlepage.png)
 *Title slide — Kraft on the left, DeepBlue on the right.*
 
 ## A look at the slides
 
 Section and subsection pages give the audience a clear visual indication of where they are in the talk.
 
-![Section page](img/midcenturymodern/sectionpages.png)
+![Section page](img/sectionpages.png)
 *Section page — Kraft on the left, DeepBlue on the right.*
 
 The theme supports standard, alert, and example blocks, each with a coloured accent that adapts to the active theme.
 
-![Alert and example blocks](img/midcenturymodern/blockspage.png)
+![Alert and example blocks](img/blockspage.png)
 *Alert and example blocks — Kraft on the left, DeepBlue on the right.*
 
 Lists use custom geometric markers at every nesting level.
 
-![Itemize and enumerate](img/midcenturymodern/itemspage.png)
+![Itemize and enumerate](img/itemspage.png)
 *Itemize and enumerate — Kraft on the left, DeepBlue on the right.*
 
-The full demo slides [can be found here](demo/demo.pdf).
+The full demo slides [can be found here](demo.pdf).
 
 ## Getting started
 
