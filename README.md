@@ -2,6 +2,8 @@
 
 **midcenturymodern** is a modern Beamer theme with a retro feel. It requires LuaLaTeX.
 
+![Sample](img/sample.png)
+
 ## Two built-in themes
 
 The theme ships with two colour palettes. **Kraft** leans warm, with terracotta and kraft paper tones. **DeepBlue** goes in the opposite direction, with a dark navy background and icy blue accents.
@@ -19,11 +21,6 @@ Select a theme in your preamble:
 
 ## A look at the slides
 
-Section and subsection pages give the audience a clear visual indication of where they are in the talk.
-
-![Section page](img/sectionpages.png)
-*Section page — Kraft on the left, DeepBlue on the right.*
-
 The theme supports standard, alert, and example blocks, each with a coloured accent that adapts to the active theme.
 
 ![Alert and example blocks](img/blockspage.png)
@@ -33,6 +30,11 @@ Lists use custom geometric markers at every nesting level.
 
 ![Itemize and enumerate](img/itemspage.png)
 *Itemize and enumerate — Kraft on the left, DeepBlue on the right.*
+
+Section and subsection pages give the audience a clear visual indication of where they are in the talk.
+
+![Section page](img/sectionpages.png)
+*Section page — Kraft on the left, DeepBlue on the right.*
 
 The full demo slides [can be found here](demo.pdf).
 
