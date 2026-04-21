@@ -2,7 +2,7 @@
 
 **midcenturymodern** is a modern Beamer theme with a retro feel. It requires LuaLaTeX.
 
-![Sample](img/sample.png)
+<img src="/img/sample.png" alt="Sample" width="60%">
 
 ## Two built-in themes
 
