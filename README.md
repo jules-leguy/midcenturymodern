@@ -67,7 +67,7 @@ Compile with LuaLaTeX.
 
 ## Availability
 
-The theme is also available in the [Overleaf gallery](#).
+The theme is also available in the [Overleaf gallery](https://www.overleaf.com/latex/templates/midcenturymodern-beamer-theme/zdvwhytpqvgf).
 
 ## Feedback
 
