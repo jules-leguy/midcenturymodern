@@ -1,16 +1,16 @@
-# midcenturymodern — a retro-inspired Beamer theme
+# Midcenturymodern — a retro-inspired Beamer template
 
 
 <div align="center">
 <img src="/img/sample.png" alt="Sample" width="70%" >
 </div>
 
-**midcenturymodern** is a modern Beamer theme with a retro feel. It requires LuaLaTeX.
+**Midcenturymodern** is a modern Beamer template with a retro feel. It requires LuaLaTeX.
 
 
 ## Two built-in themes
 
-The theme ships with two colour palettes. **Kraft** leans warm, with terracotta and kraft paper tones. **DeepBlue** goes in the opposite direction, with a dark navy background and icy blue accents.
+The template ships with two colour themes. **Kraft** leans warm, with terracotta and kraft paper tones. **DeepBlue** goes in the opposite direction, with a dark navy background and icy blue accents.
 
 Select a theme in your preamble:
 
