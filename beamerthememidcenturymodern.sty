@@ -29,7 +29,7 @@
 \RequirePackage{etoolbox}
 \RequirePackage{fontspec}
 \RequirePackage{hyperref}
-
+\RequirePackage{ragged2e}
 \defaultfontfeatures{Ligatures=TeX}
 
 \setbeamertemplate{frametitle continuation}{}
@@ -182,7 +182,7 @@
 % ---------------------------------------------------------------------------
 % FONT ASSIGNMENTS
 % ---------------------------------------------------------------------------
-\setbeamerfont{title}{size={\fontsize{24}{26}}, series=\bfseries}
+\setbeamerfont{title}{size={\fontsize{21}{23}}, series=\bfseries}
 \setbeamerfont{subtitle}{size=\large, series=\mdseries}
 \setbeamerfont{author}{size=\Large}
 \setbeamerfont{institute}{size=\small}
@@ -509,24 +509,25 @@
       }
     \end{tikzpicture}%
   \fi
-  %
+  
   % Title text
   \begin{tikzpicture}[remember picture, overlay]
-    \node[anchor=center, text width=0.88\paperwidth, align=flush right, inner sep=0pt]
-      at ([yshift=0.5\mcmFooterHeight]current page.center)
+    \node[anchor=east, text width=0.9\paperwidth, align=flush right, inner sep=0pt]
+      at ([xshift=-0.06\paperwidth, yshift=0.5\mcmFooterHeight]current page.east)
       {%
-        {\spaceskip=\fontdimen2\font plus \fontdimen3\font minus \fontdimen4\font
+        \parbox[t]{0.9\paperwidth}{\raggedleft
+         \spaceskip=\fontdimen2\font plus \fontdimen3\font minus \fontdimen4\font
          \advance\spaceskip by \mcmTitleWordSpacing
          \usebeamerfont{title}\color{mcmPrimaryFg}\mcmTitleFormat{\inserttitle}\par}%
-        \ifx\insertsubtitle\@empty\else\vskip0.25cm%
-          {\usebeamerfont{subtitle}\color{mcmPrimaryAccent}\insertsubtitle\par}%
-        \fi\vskip0.35cm
-        {\usebeamerfont{author}\color{mcmPrimaryFg}\insertauthor\par}\vskip0.05cm
-           {\usebeamerfont{institute}\color{mcmPrimaryFg!70}\insertinstitute}%
-      \vskip0.25cm
-      {\usebeamerfont{date}\color{mcmPrimaryFg!60}\insertdate}%
+        \ifx\insertsubtitle\@empty\else\par\vskip0.25cm%
+          {\usebeamerfont{subtitle}\color{mcmPrimaryAccent!60!white}\insertsubtitle\par}%
+        \fi\vskip0.50cm
+        {\usebeamerfont{author}\color{mcmPrimaryFg}\insertauthor\par}\vskip0.08cm
+        {\usebeamerfont{institute}\color{mcmPrimaryFg}\insertinstitute\par}%
       };
-
+    \node[anchor=south east, inner sep=0pt]
+      at ([xshift=-0.06\paperwidth, yshift=\mcmFooterHeight + 0.5cm]current page.south east)
+      {{\usebeamerfont{date}\color{mcmPrimaryFg}\insertdate}};
   \end{tikzpicture}%
 }
 
