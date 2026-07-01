@@ -1,16 +1,16 @@
 % =============================================================================
 % testing.tex
 % Internal QA deck for the Mid-Century Modern Beamer template: exercises a
-% wide variety of slide structures/layouts (columns, TikZ diagrams, tables,
-% overlays, custom local macros, quotes, footnotes, appendix patterns) with
-% generic placeholder content, to catch theme regressions across usages that
+% wide variety of slide structures/layouts — mainly many combinations of
+% blocks (standard/alert/example) of different sizes across different column
+% splits, plus tables, overlays, quotes and footnotes — with generic
+% placeholder content, to catch theme regressions across usages that
 % demo.tex does not cover.
 % Compile with: lualatex testing.tex ; biber testing ; lualatex ; lualatex
 % =============================================================================
 \documentclass[aspectratio=169]{beamer}
 \usepackage{beamerthememidcenturymodern}
 \usepackage{booktabs}
-\usetikzlibrary{positioning, arrows.meta}
 \usepackage[backend=biber, style=authoryear, sorting=nyt]{biblatex}
 \addbibresource{demo.bib}
 
@@ -44,45 +44,15 @@
 \AtEveryCite{\color{mcmPrimary}}
 
 % ---------------------------------------------------------------------------
-% Local helper macros (scoped to this file — not part of the theme itself)
+% Local helper macro (scoped to this file — not part of the theme itself)
 % ---------------------------------------------------------------------------
 
-% Generic image placeholder box: \imgplaceholder{width}{height}{label}
-\newcommand{\imgplaceholder}[3]{%
-  \begin{tikzpicture}
-    \draw[mcmPrimary, line width=0.8pt, fill=mcmPrimaryMuted]
-      (0,0) rectangle (#1,#2);
-    \draw[mcmPrimary!50, line width=0.6pt] (0,0) -- (#1,#2);
-    \draw[mcmPrimary!50, line width=0.6pt] (0,#2) -- (#1,0);
-    \node[fill=mcmBg, text=mcmPrimary, font=\small\bfseries, inner sep=4pt]
-      at (0.5*#1,0.5*#2) {#3};
-  \end{tikzpicture}%
-}
-
-% Stat badge: \statbadge{number}{label}
-\newcommand{\statbadge}[2]{%
-  \begin{tikzpicture}
-    \node[fill=mcmPrimary, text=mcmPrimaryFg, circle, minimum size=1.7cm,
-          font=\large\bfseries] (n) at (0,0) {#1};
-    \node[below=0.15cm of n, text width=2.4cm, align=center,
-          font=\small, text=mcmBlack] {#2};
-  \end{tikzpicture}%
-}
-
-% Numbered showcase card: \showcard{number}{title}{text}
-\newcommand{\showcard}[3]{%
-  \begin{tikzpicture}
-    \node[draw=mcmPrimary, line width=0.8pt, rounded corners=3pt,
-          fill=mcmBg, text width=3.4cm, inner sep=8pt, align=left]
-      (card) {%
-        \tikz[baseline=-0.6ex]{%
-          \node[fill=mcmPip, text=mcmPrimaryFg, circle,
-                minimum size=0.55cm, font=\scriptsize\bfseries] {#1};%
-        }%
-        \hspace{0.3em}\textbf{#2}\\[0.3em]
-        {\small #3}%
-      };
-  \end{tikzpicture}%
+% Generic placeholder box (e.g. for a photo/figure to be inserted later):
+% \placeholderbox{width}{height}{label} — plain colour box, no TikZ.
+\newcommand{\placeholderbox}[3]{%
+  \fcolorbox{mcmPrimary}{mcmPrimaryMuted}{%
+    \parbox[c][#2][c]{#1}{\centering\textbf{\color{mcmPrimary}#3}}%
+  }%
 }
 
 \begin{document}
@@ -116,8 +86,12 @@
       \end{block}
     \end{column}
     \begin{column}{0.48\textwidth}
-      \centering
-      \imgplaceholder{4.2}{2.8}{Image placeholder}
+      \begin{block}{Right Column}
+        \begin{itemize}
+          \item Point four
+          \item Point five
+        \end{itemize}
+      \end{block}
     \end{column}
   \end{columns}
 \end{frame}
@@ -140,184 +114,118 @@
   \end{columns}
 \end{frame}
 
-\subsection{Flow Diagrams}
-
-\begin{frame}{Three-Step Flow Diagram}
-  \centering
-  \begin{tikzpicture}[
-      box/.style={draw=mcmPrimary, line width=0.8pt, rounded corners=3pt,
-                   fill=mcmPrimaryMuted, minimum width=3.1cm,
-                   minimum height=1.6cm, align=center, font=\small},
-      arr/.style={-{Stealth[length=2.2mm]}, mcmPrimary, line width=1pt}
-    ]
-    \node[box] (a) at (0,0) {Step 1\\{\scriptsize Input}};
-    \node[box] (b) at (4.2,0) {Step 2\\{\scriptsize Process}};
-    \node[box] (c) at (8.4,0) {Step 3\\{\scriptsize Output}};
-    \draw[arr] (a.east) -- (b.west);
-    \draw[arr] (b.east) -- (c.west);
-  \end{tikzpicture}
-\end{frame}
-
-% #1 = index (1,2,3) of the box to highlight
-\newcommand{\flowdiagram}[1]{%
-  \begin{tikzpicture}[
-      box/.style={draw=mcmPrimary!50, line width=0.8pt, rounded corners=3pt,
-                   fill=mcmPrimary!8, minimum width=3.1cm,
-                   minimum height=1.6cm, align=center, font=\small,
-                   text=mcmPrimary!50},
-      boxon/.style={draw=mcmPrimary, line width=2pt, rounded corners=3pt,
-                     fill=mcmPrimaryMuted, minimum width=3.1cm,
-                     minimum height=1.6cm, align=center, font=\small\bfseries,
-                     text=mcmBlack},
-      arr/.style={-{Stealth[length=2.2mm]}, mcmPrimary, line width=1pt}
-    ]
-    \ifnum#1=1 \tikzset{sa/.style=boxon}\else\tikzset{sa/.style=box}\fi
-    \ifnum#1=2 \tikzset{sb/.style=boxon}\else\tikzset{sb/.style=box}\fi
-    \ifnum#1=3 \tikzset{sc/.style=boxon}\else\tikzset{sc/.style=box}\fi
-    \node[sa] (a) at (0,0) {Step 1\\{\scriptsize Input}};
-    \node[sb] (b) at (4.2,0) {Step 2\\{\scriptsize Process}};
-    \node[sc] (c) at (8.4,0) {Step 3\\{\scriptsize Output}};
-    \draw[arr] (a.east) -- (b.west);
-    \draw[arr] (b.east) -- (c.west);
-  \end{tikzpicture}%
-}
-
-\begin{frame}{Three-Step Flow — Progressive Highlight}
-  \centering
-  \only<1>{\flowdiagram{1}}%
-  \only<2>{\flowdiagram{2}}%
-  \only<3>{\flowdiagram{3}}%
-\end{frame}
-
-% =====================================================================
-\section{Diagrams}
-% =====================================================================
-
-\subsection{Matrices and Nesting}
-
-\begin{frame}{2$\times$2 Condition Matrix}
-  \centering
-  \begin{tikzpicture}[
-      cell/.style={draw=mcmPrimary, line width=0.8pt, minimum width=3.2cm,
-                   minimum height=1.9cm, align=center, font=\small}
-    ]
-    \node[cell, fill=mcmPrimary!12] (c1) at (0,0)    {Condition 1};
-    \node[cell, fill=mcmPrimary!22] (c2) at (3.2,0)  {Condition 2};
-    \node[cell, fill=mcmPrimary!32] (c3) at (0,-1.9) {Condition 3};
-    \node[cell, fill=mcmPrimary!42] (c4) at (3.2,-1.9){Condition 4};
-    \node[above=0.2cm of c1, xshift=1.6cm, font=\small\bfseries]
-      {Factor B};
-    \node[left=0.2cm of c1, rotate=90, anchor=south, font=\small\bfseries]
-      {Factor A};
-  \end{tikzpicture}
-\end{frame}
-
-\begin{frame}{Nested Scope Diagram}
-  \centering
-  \begin{tikzpicture}
-    \draw[mcmPrimary!30, line width=0.8pt, fill=mcmPrimary!8]
-      (0,0) rectangle (9,4.6);
-    \node[anchor=north west, font=\small\bfseries, text=mcmPrimary]
-      at (0.2,4.4) {Context};
-    \draw[mcmPrimary!55, line width=0.8pt, fill=mcmPrimary!16]
-      (0.7,0.5) rectangle (8.3,3.6);
-    \node[anchor=north west, font=\small\bfseries, text=mcmPrimary]
-      at (0.9,3.4) {Scope};
-    \draw[mcmPrimary, line width=1pt, fill=mcmPrimaryMuted]
-      (1.6,1) rectangle (7.4,2.6);
-    \node[font=\small\bfseries] at (4.5,1.8) {Focus};
-  \end{tikzpicture}
-\end{frame}
-
-\subsection{Timelines and Scales}
-
-\begin{frame}{Horizontal Timeline}
-  \centering
-  \begin{tikzpicture}[x=2.3cm, y=1cm]
-    \draw[mcmPrimary, line width=1pt] (0,0) -- (4.4,0);
-    \foreach \x/\lbl/\txt in {0/Step A/First milestone,
-                               1.5/Step B/Second milestone,
-                               3/Step C/Third milestone,
-                               4.4/Step D/Fourth milestone}{
-      \fill[mcmPrimary] (\x,0) circle (0.07);
-      \node[anchor=south, yshift=0.2cm, font=\small\bfseries, text=mcmPrimary]
-        at (\x,0) {\lbl};
-      \node[anchor=north, yshift=-0.2cm, font=\scriptsize, text width=2.2cm,
-            align=center] at (\x,0) {\txt};
-    }
-  \end{tikzpicture}
-\end{frame}
-
-\begin{frame}{Vertical Rating Scale}
-  \centering
-  \begin{tikzpicture}[x=1cm,y=1cm]
-    \foreach \i/\lbl in {0/Level 1, 1/Level 2, 2/Level 3, 3/Level 4, 4/Level 5}{
-      \pgfmathtruncatemacro{\shade}{20 + 15*\i}
-      \fill[mcmPrimary!\shade] (0,\i*0.8) rectangle (5,\i*0.8+0.7);
-      \node[anchor=west, font=\small] at (5.3,\i*0.8+0.35) {\lbl};
-    }
-    \node[anchor=north, font=\scriptsize, text=mcmPrimary!60] at (2.5,-0.3) {Low};
-    \node[anchor=south, font=\scriptsize, text=mcmPrimary!60] at (2.5,4.3) {High};
-  \end{tikzpicture}
-\end{frame}
-
-% =====================================================================
-\section{Data and Numbers}
-% =====================================================================
-
-\begin{frame}{Table}
-  \centering
-  \begin{tabular}{lcc}
-    \toprule
-    \textbf{Category} & \textbf{Metric A} & \textbf{Metric B} \\
-    \midrule
-    Group 1 & 12.4 & 0.83 \\
-    Group 2 & 9.7  & 0.61 \\
-    Group 3 & 15.2 & 0.94 \\
-    \bottomrule
-  \end{tabular}
-\end{frame}
-
-\begin{frame}{Key Figures}
-  \centering
+\begin{frame}{Three Equal Columns}
   \begin{columns}[T]
     \begin{column}{0.31\textwidth}
-      \centering \statbadge{42\%}{Placeholder metric one}
+      \begin{block}{First}
+        {\small Short block, narrow column.}
+      \end{block}
     \end{column}
     \begin{column}{0.31\textwidth}
-      \centering \statbadge{128}{Placeholder metric two}
+      \begin{block}{Second}
+        {\small A slightly longer piece of text, to show that blocks
+        naturally grow taller with more content.}
+      \end{block}
     \end{column}
     \begin{column}{0.31\textwidth}
-      \centering \statbadge{3.2x}{Placeholder metric three}
+      \begin{block}{Third}
+        {\small Short block again.}
+      \end{block}
     \end{column}
   \end{columns}
 \end{frame}
 
-% =====================================================================
-\section{Images}
-% =====================================================================
+\subsection{Block Grids}
 
-\begin{frame}{Single Image with Caption}
-  \centering
-  \imgplaceholder{8}{4}{Image placeholder}
-
-  \vspace{0.4em}
-  {\small\itshape Figure 1 --- a caption describing the placeholder image.}
-\end{frame}
-
-\begin{frame}{Side-by-Side Image Comparison}
+\begin{frame}{2$\times$2 Block Grid}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
-      \centering
-      \imgplaceholder{5.2}{3.4}{Image A}
-
-      {\small\itshape Before}
+      \begin{block}{Condition 1}
+        {\small Top-left cell}
+      \end{block}
     \end{column}
     \begin{column}{0.48\textwidth}
-      \centering
-      \imgplaceholder{5.2}{3.4}{Image B}
+      \begin{block}{Condition 2}
+        {\small Top-right cell}
+      \end{block}
+    \end{column}
+  \end{columns}
+  \vspace{0.3cm}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Condition 3}
+        {\small Bottom-left cell}
+      \end{block}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Condition 4}
+        {\small Bottom-right cell}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
 
-      {\small\itshape After}
+\begin{frame}{Full-Width Block + Asymmetric Row}
+  \begin{block}{Overview}
+    {\small A full-width block can introduce the content below, before
+    splitting into columns of different widths.}
+  \end{block}
+  \vspace{-1em}
+  \begin{columns}[T]
+    \begin{column}{0.62\textwidth}
+      \begin{block}{Main Point}
+        \begin{itemize}
+          \item Detail one
+          \item Detail two
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \begin{column}{0.34\textwidth}
+      \begin{alertblock}{Note}
+        {\small A smaller side note beside the main block.}
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Large Block + Stacked Small Blocks}
+  \begin{columns}[T]
+    \begin{column}{0.58\textwidth}
+      \begin{block}{Large Block}
+        \begin{itemize}
+          \item A block that spans more vertical space
+          \item because it holds more content
+          \item across several bullet points
+          \item in a single wide column
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \begin{column}{0.38\textwidth}
+      \begin{block}{Small Block A}
+        {\small Short content.}
+      \end{block}
+      \begin{block}{Small Block B}
+        {\small Short content.}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Mixed Block Types, Mixed Sizes}
+  \begin{exampleblock}{Full-Width Example}
+    {\small An \texttt{exampleblock} spanning the full width.}
+  \end{exampleblock}
+  \vspace{-1em}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Standard}
+        {\small A regular \texttt{block} in the left column.}
+      \end{block}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{alertblock}{Alert}
+        {\small An \texttt{alertblock} in the right column.}
+      \end{alertblock}
     \end{column}
   \end{columns}
 \end{frame}
@@ -351,24 +259,89 @@
   \end{columns}
 \end{frame}
 
+\begin{frame}{Progressive Emphasis Across Blocks}
+  \begin{columns}[T]
+    \begin{column}{0.31\textwidth}
+      \only<1>{\begin{alertblock}{Step 1}{\small Currently active}\end{alertblock}}%
+      \only<2->{\begin{block}{Step 1}{\small Completed}\end{block}}%
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \only<1>{\begin{block}{Step 2}{\small Not yet started}\end{block}}%
+      \only<2>{\begin{alertblock}{Step 2}{\small Currently active}\end{alertblock}}%
+      \only<3->{\begin{block}{Step 2}{\small Completed}\end{block}}%
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \only<1-2>{\begin{block}{Step 3}{\small Not yet started}\end{block}}%
+      \only<3>{\begin{alertblock}{Step 3}{\small Currently active}\end{alertblock}}%
+    \end{column}
+  \end{columns}
+\end{frame}
+
 % =====================================================================
-\section{Custom Local Macros}
+\section{Data and Numbers}
 % =====================================================================
 
-\begin{frame}{Numbered Showcase Cards}
+\begin{frame}{Table}
   \centering
+  \begin{tabular}{lcc}
+    \toprule
+    \textbf{Category} & \textbf{Metric A} & \textbf{Metric B} \\
+    \midrule
+    Group 1 & 12.4 & 0.83 \\
+    Group 2 & 9.7  & 0.61 \\
+    Group 3 & 15.2 & 0.94 \\
+    \bottomrule
+  \end{tabular}
+\end{frame}
+
+\begin{frame}{Key Figures as Blocks}
   \begin{columns}[T]
-    \begin{column}{0.33\textwidth}
-      \centering
-      \showcard{1}{First}{Short description of the first item.}
+    \begin{column}{0.31\textwidth}
+      \begin{block}{Metric One}
+        \centering {\Huge\textbf{\color{mcmPrimary}42\%}}\\[0.3em]
+        {\small Placeholder label}
+      \end{block}
     \end{column}
-    \begin{column}{0.33\textwidth}
-      \centering
-      \showcard{2}{Second}{Short description of the second item.}
+    \begin{column}{0.31\textwidth}
+      \begin{block}{Metric Two}
+        \centering {\Huge\textbf{\color{mcmPrimary}128}}\\[0.3em]
+        {\small Placeholder label}
+      \end{block}
     \end{column}
-    \begin{column}{0.33\textwidth}
+    \begin{column}{0.31\textwidth}
+      \begin{block}{Metric Three}
+        \centering {\Huge\textbf{\color{mcmPrimary}3.2x}}\\[0.3em]
+        {\small Placeholder label}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% =====================================================================
+\section{Placeholders}
+% =====================================================================
+
+\begin{frame}{Single Placeholder with Caption}
+  \centering
+  \placeholderbox{8cm}{4cm}{Image placeholder}
+
+  \vspace{0.4em}
+  {\small\itshape Figure 1 --- a caption describing the placeholder image.}
+\end{frame}
+
+\begin{frame}{Side-by-Side Placeholder Comparison}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
       \centering
-      \showcard{3}{Third}{Short description of the third item.}
+      \placeholderbox{5.2cm}{3.4cm}{Image A}
+
+      {\small\itshape Before}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \centering
+      \placeholderbox{5.2cm}{3.4cm}{Image B}
+
+      {\small\itshape After}
     \end{column}
   \end{columns}
 \end{frame}
@@ -423,9 +396,13 @@
 
 \appendix
 
-\begin{frame}[plain,noframenumbering]{Appendix: Image-Only Backup}
-  \centering
-  \imgplaceholder{9}{4.6}{Backup image placeholder}
+\begin{frame}[plain,noframenumbering]{Appendix: Backup Block}
+  \begin{block}{Backup Content}
+    \begin{itemize}
+      \item Your backup material goes here
+      \item Blocks work the same way in the appendix
+    \end{itemize}
+  \end{block}
 \end{frame}
 
 \end{document}
