@@ -140,19 +140,22 @@
 \begin{frame}{Two Equal Columns}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
-      \begin{block}{Left Column}
+      \begin{block}{Current Approach}
         \begin{itemize}
-          \item Point one
-          \item Point two
-          \item Point three
+          \item Manual review of every submission, one at a time
+          \item Feedback collected in a shared spreadsheet
+          \item Turnaround time varies widely between reviewers
+          \item No automated check before the manual pass
         \end{itemize}
       \end{block}
     \end{column}
     \begin{column}{0.48\textwidth}
-      \begin{block}{Right Column}
+      \begin{block}{Proposed Approach}
         \begin{itemize}
-          \item Point four
-          \item Point five
+          \item Automated pre-checks catch obvious issues first
+          \item Reviewers focus only on borderline cases
+          \item Feedback logged directly against each submission
+          \item Turnaround time bounded by a fixed review window
         \end{itemize}
       \end{block}
     \end{column}
@@ -164,14 +167,17 @@
     \begin{column}{0.30\textwidth}
       \begin{block}{Summary}
         {\small A narrow column can introduce or label the wider column
-        beside it.}
+        beside it, without competing for attention with the longer
+        list of details next to it.}
       \end{block}
     \end{column}
     \begin{column}{0.66\textwidth}
       \begin{itemize}
-        \item First supporting detail
-        \item Second supporting detail
-        \item Third supporting detail
+        \item Rollout starts with a small pilot group before the
+          wider release
+        \item Existing accounts are migrated automatically overnight
+        \item Support documentation is updated ahead of the change
+        \item A rollback plan is kept ready for the first two weeks
       \end{itemize}
     \end{column}
   \end{columns}
@@ -180,19 +186,21 @@
 \begin{frame}{Three Equal Columns}
   \begin{columns}[T]
     \begin{column}{0.31\textwidth}
-      \begin{block}{First}
-        {\small Short block, narrow column.}
+      \begin{block}{Before}
+        {\small Onboarding took three separate emails and a phone
+        call.}
       \end{block}
     \end{column}
     \begin{column}{0.31\textwidth}
-      \begin{block}{Second}
-        {\small A slightly longer piece of text, to show that blocks
-        naturally grow taller with more content.}
+      \begin{block}{Change}
+        {\small A single guided setup screen replaces the emails and
+        the call, walking the user through account creation, plan
+        selection, and first login in one sitting.}
       \end{block}
     \end{column}
     \begin{column}{0.31\textwidth}
-      \begin{block}{Third}
-        {\small Short block again.}
+      \begin{block}{After}
+        {\small Onboarding now takes under five minutes end to end.}
       \end{block}
     \end{column}
   \end{columns}
@@ -256,12 +264,15 @@
 \begin{frame}{Single Full-Width Block}
   \begin{block}{One Block, Full Width}
     {\small A single block can also span the entire text width on its
-    own, with a medium amount of content: a short introductory
-    sentence, followed by a couple of supporting bullet points below
-    it.}
+    own, holding a realistic amount of content rather than a single
+    short line: an introductory paragraph explaining the context,
+    followed by the supporting points a reader would expect to see
+    spelled out underneath it.}
     \begin{itemize}
-      \item Supporting point one
-      \item Supporting point two
+      \item The current process depends on a handful of manual steps
+      \item Each step introduces a small chance of human error
+      \item Automating the three riskiest steps removes most of it
+      \item The remaining steps stay manual by design, for now
     \end{itemize}
   \end{block}
 \end{frame}
@@ -275,11 +286,14 @@
   \begin{block}{Long Block}
     {\small A much longer block, stacked directly below the short one,
     to show that vertically stacked blocks are not forced to share
-    the same height. It contains several sentences of placeholder
-    text, plus a short list.}
+    the same height. In a real deck this is typically where a short
+    heading block is followed by the fuller explanation underneath
+    it: the reasoning behind a decision, the constraints that shaped
+    it, and what changes as a result.}
     \begin{itemize}
-      \item Extra detail one
-      \item Extra detail two
+      \item Applies to every account created after the cut-off date
+      \item Existing accounts can opt in manually until the deadline
+      \item No action is required for accounts already opted in
     \end{itemize}
   \end{block}
 \end{frame}
@@ -288,6 +302,7 @@
   \begin{block}{Size 1}
     {\scriptsize A single short line.}
   \end{block}
+  \vspace{-1.1em}
   \begin{block}{Size 2}
     {\scriptsize
       \begin{itemize}
@@ -296,21 +311,18 @@
       \end{itemize}
     }
   \end{block}
+  \vspace{-1.1em}
   \begin{block}{Size 3}
-    {\scriptsize A short paragraph of placeholder text, a little
-    longer than the previous blocks, to keep the size progressing
-    upward as the slide continues.}
+    {\scriptsize A short paragraph, a little longer than the previous
+    two blocks.}
   \end{block}
+  \vspace{-1.1em}
   \begin{block}{Size 4}
     {\scriptsize
       \begin{itemize}
-        \item First point
-        \item Second point
-        \begin{itemize}
-          \item Nested sub-point
-        \end{itemize}
-        \item Third point
-        \item Fourth point
+        \item Draft circulated for feedback
+        \item Proposal presented at the sync
+        \item Sign-off recorded
       \end{itemize}
     }
   \end{block}
@@ -323,26 +335,31 @@
 \begin{frame}{2$\times$2 Block Grid}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
-      \begin{block}{Condition 1}
-        {\small Top-left cell}
+      \begin{block}{Low Cost, Low Risk}
+        {\small The default choice for most teams: cheap to run,
+        rarely fails, but also rarely stands out from what everyone
+        else is already doing.}
       \end{block}
     \end{column}
     \begin{column}{0.48\textwidth}
-      \begin{block}{Condition 2}
-        {\small Top-right cell}
+      \begin{block}{Low Cost, High Risk}
+        {\small Worth a small, time-boxed experiment: if it fails,
+        little is lost; if it works, it changes the roadmap.}
       \end{block}
     \end{column}
   \end{columns}
   \vspace{0.3cm}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
-      \begin{block}{Condition 3}
-        {\small Bottom-left cell}
+      \begin{block}{High Cost, Low Risk}
+        {\small Usually only justified when it also buys long-term
+        maintenance savings elsewhere in the system.}
       \end{block}
     \end{column}
     \begin{column}{0.48\textwidth}
-      \begin{block}{Condition 4}
-        {\small Bottom-right cell}
+      \begin{block}{High Cost, High Risk}
+        {\small Reserved for the rare case where the upside clearly
+        outweighs both the spend and the chance of failure.}
       \end{block}
     \end{column}
   \end{columns}
@@ -350,22 +367,24 @@
 
 \begin{frame}{Full-Width Block + Asymmetric Row}
   \begin{block}{Overview}
-    {\small A full-width block can introduce the content below, before
-    splitting into columns of different widths.}
+    {\small Sets the context for the migration plan detailed in the
+    wider column below, with a short caution called out alongside.}
   \end{block}
   \vspace{-1em}
   \begin{columns}[T]
     \begin{column}{0.62\textwidth}
       \begin{block}{Main Point}
         \begin{itemize}
-          \item Detail one
-          \item Detail two
+          \item Old and new systems run in parallel for one cycle
+          \item Traffic is shifted gradually, in fixed steps
+          \item Each step is monitored before the next one starts
         \end{itemize}
       \end{block}
     \end{column}
     \begin{column}{0.34\textwidth}
       \begin{alertblock}{Note}
-        {\small A smaller side note beside the main block.}
+        {\small The rollback procedure must be tested before the
+        first traffic shift, not after.}
       \end{alertblock}
     \end{column}
   \end{columns}
@@ -385,29 +404,36 @@
     \end{column}
     \begin{column}{0.38\textwidth}
       \begin{block}{Small Block A}
-        {\small Short content.}
+        {\small Owner: platform team.}
       \end{block}
       \begin{block}{Small Block B}
-        {\small Short content.}
+        {\small Due: end of quarter.}
       \end{block}
     \end{column}
   \end{columns}
 \end{frame}
 
 \begin{frame}{Mixed Block Types, Mixed Sizes}
-  \begin{exampleblock}{Full-Width Example}
-    {\small An \texttt{exampleblock} spanning the full width.}
+  \begin{exampleblock}{Worked Example}
+    {\small A user submits a request at 9:00, the automated check
+    completes at 9:01, and a reviewer confirms it by 9:15 — the whole
+    path from submission to approval taking under twenty minutes end
+    to end, spanning the full width to walk through the sequence.}
   \end{exampleblock}
   \vspace{-1em}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
-      \begin{block}{Standard}
-        {\small A regular \texttt{block} in the left column.}
+      \begin{block}{Typical Case}
+        \begin{itemize}
+          \item Most requests match this pattern
+          \item No manual intervention required
+        \end{itemize}
       \end{block}
     \end{column}
     \begin{column}{0.48\textwidth}
-      \begin{alertblock}{Alert}
-        {\small An \texttt{alertblock} in the right column.}
+      \begin{alertblock}{Edge Case}
+        {\small Requests missing required fields are rejected
+        immediately, before reaching a human reviewer at all.}
       \end{alertblock}
     \end{column}
   \end{columns}
@@ -475,30 +501,30 @@
 \begin{frame}{Growing Blocks in a Row}
   \begin{columns}[T]
     \begin{column}{0.31\textwidth}
-      \begin{block}{One Item}
+      \begin{block}{Week 1}
         \begin{itemize}
-          \item Only item
+          \item Kickoff meeting
         \end{itemize}
       \end{block}
     \end{column}
     \begin{column}{0.31\textwidth}
-      \begin{block}{Three Items}
+      \begin{block}{Week 2}
         \begin{itemize}
-          \item First item
-          \item Second item
-          \item Third item
+          \item Requirements drafted
+          \item Stakeholders review draft
+          \item Scope finalised
         \end{itemize}
       \end{block}
     \end{column}
     \begin{column}{0.31\textwidth}
-      \begin{block}{Six Items}
+      \begin{block}{Week 3}
         \begin{itemize}
-          \item First item
-          \item Second item
-          \item Third item
-          \item Fourth item
-          \item Fifth item
-          \item Sixth item
+          \item Design reviewed
+          \item Implementation starts
+          \item First tests written
+          \item Staging deploy
+          \item Bug fixes triaged
+          \item Sign-off scheduled
         \end{itemize}
       \end{block}
     \end{column}
@@ -506,20 +532,21 @@
 \end{frame}
 
 \begin{frame}{Block Containing a Nested List}
-  \begin{block}{Rich Nested Content}
+  \begin{block}{Release Checklist}
     \begin{itemize}
-      \item First-level point
+      \item Code review completed
       \begin{itemize}
-        \item Second-level point
+        \item At least one approval from another team
         \begin{itemize}
-          \item Third-level point
+          \item Security-sensitive changes need two approvals
         \end{itemize}
       \end{itemize}
-      \item Another first-level point
+      \item Test suite passing on the release branch
+      \item Changelog entry written
     \end{itemize}
     \begin{enumerate}
-      \item An ordered point
-      \item Another ordered point
+      \item Tag the release
+      \item Deploy to staging, then production
     \end{enumerate}
   \end{block}
 \end{frame}
@@ -533,6 +560,7 @@
       \midrule
       Group 1 & 12.4 \\
       Group 2 & 9.7  \\
+      Group 3 & 15.2 \\
       \bottomrule
     \end{tabular}
   \end{block}
@@ -636,9 +664,13 @@
     \node[nd] (c1) at (-3.2,0) {Child A};
     \node[nd] (c2) at (0,0)    {Child B};
     \node[nd] (c3) at (3.2,0)  {Child C};
+    \node[nd] (g1) at (-0.8,-2) {Grandchild B1};
+    \node[nd] (g2) at (1.6,-2)  {Grandchild B2};
     \draw[lvl] (root.south) -- (c1.north);
     \draw[lvl] (root.south) -- (c2.north);
     \draw[lvl] (root.south) -- (c3.north);
+    \draw[lvl] (c2.south) -- (g1.north);
+    \draw[lvl] (c2.south) -- (g2.north);
   \end{tikzpicture}
 \end{frame}
 
@@ -722,21 +754,21 @@
 \begin{frame}{Key Figures as Blocks}
   \begin{columns}[T]
     \begin{column}{0.31\textwidth}
-      \begin{block}{Metric One}
+      \begin{block}{Adoption}
         \centering {\Huge\textbf{\color{mcmPrimary}42\%}}\\[0.3em]
-        {\small Placeholder label}
+        {\small of active users opted in during the pilot}
       \end{block}
     \end{column}
     \begin{column}{0.31\textwidth}
-      \begin{block}{Metric Two}
+      \begin{block}{Throughput}
         \centering {\Huge\textbf{\color{mcmPrimary}128}}\\[0.3em]
-        {\small Placeholder label}
+        {\small requests processed per minute, on average}
       \end{block}
     \end{column}
     \begin{column}{0.31\textwidth}
-      \begin{block}{Metric Three}
+      \begin{block}{Speed-up}
         \centering {\Huge\textbf{\color{mcmPrimary}3.2x}}\\[0.3em]
-        {\small Placeholder label}
+        {\small faster than the previous implementation}
       \end{block}
     \end{column}
   \end{columns}
@@ -746,13 +778,13 @@
   \centering
   \begin{columns}[T]
     \begin{column}{0.31\textwidth}
-      \centering \statbadge{42\%}{Placeholder metric one}
+      \centering \statbadge{42\%}{Adoption during the pilot}
     \end{column}
     \begin{column}{0.31\textwidth}
-      \centering \statbadge{128}{Placeholder metric two}
+      \centering \statbadge{128}{Requests per minute}
     \end{column}
     \begin{column}{0.31\textwidth}
-      \centering \statbadge{3.2x}{Placeholder metric three}
+      \centering \statbadge{3.2x}{Faster than before}
     \end{column}
   \end{columns}
 \end{frame}
@@ -800,15 +832,18 @@
   \begin{columns}[T]
     \begin{column}{0.33\textwidth}
       \centering
-      \showcard{1}{First}{Short description of the first item.}
+      \showcard{1}{Plan}{Agree on scope with stakeholders before
+        writing any code.}
     \end{column}
     \begin{column}{0.33\textwidth}
       \centering
-      \showcard{2}{Second}{Short description of the second item.}
+      \showcard{2}{Build}{Ship small, reviewable changes, each
+        covered by tests.}
     \end{column}
     \begin{column}{0.33\textwidth}
       \centering
-      \showcard{3}{Third}{Short description of the third item.}
+      \showcard{3}{Ship}{Deploy behind a flag, watch closely, then
+        roll out fully.}
     \end{column}
   \end{columns}
 \end{frame}
@@ -878,21 +913,27 @@
 
 \begin{frame}{Definition List}
   \begin{description}
-    \item[Term One] A short definition of the first term.
-    \item[Term Two] A short definition of the second term.
-    \item[Term Three] A short definition of the third term.
+    \item[Throughput] The number of requests the system processes per
+      unit of time, regardless of how long any single one takes.
+    \item[Latency] The time a single request takes from submission to
+      response, independent of how many others run alongside it.
+    \item[Availability] The fraction of time the system is able to
+      serve requests at all, usually tracked over a rolling window.
+    \item[Error rate] The fraction of requests that fail, expressed as
+      a percentage of total traffic.
   \end{description}
 \end{frame}
 
 \begin{frame}{Full-Width Footnotes Under Columns}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
-      A claim supported by a source\footnotemark[1] sits in the left
-      column.
+      The design movement referenced here spans roughly a quarter
+      century\footnotemark[1] and still shapes how products are
+      styled today.
     \end{column}
     \begin{column}{0.48\textwidth}
-      A second claim with its own source\footnotemark[2] sits in the
-      right column.
+      Its name was coined decades after the movement itself
+      began\footnotemark[2], once it was already being revived.
     \end{column}
   \end{columns}
   \footnotetext[1]{\fullcite{wikipedia2024}}
