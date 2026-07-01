@@ -1,0 +1,13 @@
+.claude/
+overleaf/
+CLAUDE.md
+*.aux
+*.bcf
+*.bbl
+*.blg
+*.log
+*.out
+*.run.xml
+*.nav
+*.snm
+*.toc
