@@ -1,16 +1,18 @@
 % =============================================================================
 % testing.tex
 % Internal QA deck for the Mid-Century Modern Beamer template: exercises a
-% wide variety of slide structures/layouts — mainly many combinations of
-% blocks (standard/alert/example) of different sizes across different column
-% splits, plus tables, overlays, quotes and footnotes — with generic
-% placeholder content, to catch theme regressions across usages that
-% demo.tex does not cover.
+% wide variety of slide structures/layouts — many combinations of blocks
+% (standard/alert/example) of very different content sizes across different
+% column splits, TikZ diagrams (flow, matrix, nested scope, hierarchy,
+% timeline, scale, bar chart), tables, overlays, custom local macros, quotes
+% and footnotes — with generic placeholder content, to catch theme
+% regressions across usages that demo.tex does not cover.
 % Compile with: lualatex testing.tex ; biber testing ; lualatex ; lualatex
 % =============================================================================
 \documentclass[aspectratio=169]{beamer}
 \usepackage{beamerthememidcenturymodern}
 \usepackage{booktabs}
+\usetikzlibrary{positioning, arrows.meta}
 \usepackage[backend=biber, style=authoryear, sorting=nyt]{biblatex}
 \addbibresource{demo.bib}
 
@@ -44,15 +46,76 @@
 \AtEveryCite{\color{mcmPrimary}}
 
 % ---------------------------------------------------------------------------
-% Local helper macro (scoped to this file — not part of the theme itself)
+% Local helper macros (scoped to this file — not part of the theme itself)
 % ---------------------------------------------------------------------------
 
-% Generic placeholder box (e.g. for a photo/figure to be inserted later):
-% \placeholderbox{width}{height}{label} — plain colour box, no TikZ.
+% Generic colour-box placeholder (no TikZ): \placeholderbox{width}{height}{label}
 \newcommand{\placeholderbox}[3]{%
   \fcolorbox{mcmPrimary}{mcmPrimaryMuted}{%
     \parbox[c][#2][c]{#1}{\centering\textbf{\color{mcmPrimary}#3}}%
   }%
+}
+
+% Generic TikZ image placeholder: \imgplaceholder{width}{height}{label}
+\newcommand{\imgplaceholder}[3]{%
+  \begin{tikzpicture}
+    \draw[mcmPrimary, line width=0.8pt, fill=mcmPrimaryMuted]
+      (0,0) rectangle (#1,#2);
+    \draw[mcmPrimary!50, line width=0.6pt] (0,0) -- (#1,#2);
+    \draw[mcmPrimary!50, line width=0.6pt] (0,#2) -- (#1,0);
+    \node[fill=mcmBg, text=mcmPrimary, font=\small\bfseries, inner sep=4pt]
+      at (0.5*#1,0.5*#2) {#3};
+  \end{tikzpicture}%
+}
+
+% Stat badge: \statbadge{number}{label}
+\newcommand{\statbadge}[2]{%
+  \begin{tikzpicture}
+    \node[fill=mcmPrimary, text=mcmPrimaryFg, circle, minimum size=1.7cm,
+          font=\large\bfseries] (n) at (0,0) {#1};
+    \node[below=0.15cm of n, text width=2.4cm, align=center,
+          font=\small, text=mcmBlack] {#2};
+  \end{tikzpicture}%
+}
+
+% Numbered showcase card: \showcard{number}{title}{text}
+\newcommand{\showcard}[3]{%
+  \begin{tikzpicture}
+    \node[draw=mcmPrimary, line width=0.8pt, rounded corners=3pt,
+          fill=mcmBg, text width=3.4cm, inner sep=8pt, align=left]
+      (card) {%
+        \tikz[baseline=-0.6ex]{%
+          \node[fill=mcmPip, text=mcmPrimaryFg, circle,
+                minimum size=0.55cm, font=\scriptsize\bfseries] {#1};%
+        }%
+        \hspace{0.3em}\textbf{#2}\\[0.3em]
+        {\small #3}%
+      };
+  \end{tikzpicture}%
+}
+
+% Progressive three-step flow diagram: \flowdiagram{index of highlighted box}
+\newcommand{\flowdiagram}[1]{%
+  \begin{tikzpicture}[
+      box/.style={draw=mcmPrimary!50, line width=0.8pt, rounded corners=3pt,
+                   fill=mcmPrimary!8, minimum width=3.1cm,
+                   minimum height=1.6cm, align=center, font=\small,
+                   text=mcmPrimary!50},
+      boxon/.style={draw=mcmPrimary, line width=2pt, rounded corners=3pt,
+                     fill=mcmPrimaryMuted, minimum width=3.1cm,
+                     minimum height=1.6cm, align=center, font=\small\bfseries,
+                     text=mcmBlack},
+      arr/.style={-{Stealth[length=2.2mm]}, mcmPrimary, line width=1pt}
+    ]
+    \ifnum#1=1 \tikzset{sa/.style=boxon}\else\tikzset{sa/.style=box}\fi
+    \ifnum#1=2 \tikzset{sb/.style=boxon}\else\tikzset{sb/.style=box}\fi
+    \ifnum#1=3 \tikzset{sc/.style=boxon}\else\tikzset{sc/.style=box}\fi
+    \node[sa] (a) at (0,0) {Step 1\\{\scriptsize Input}};
+    \node[sb] (b) at (4.2,0) {Step 2\\{\scriptsize Process}};
+    \node[sc] (c) at (8.4,0) {Step 3\\{\scriptsize Output}};
+    \draw[arr] (a.east) -- (b.west);
+    \draw[arr] (b.east) -- (c.west);
+  \end{tikzpicture}%
 }
 
 \begin{document}
@@ -135,7 +198,127 @@
   \end{columns}
 \end{frame}
 
-\subsection{Block Grids}
+\begin{frame}{Four Equal Columns}
+  \begin{columns}[T]
+    \begin{column}{0.23\textwidth}
+      \begin{block}{A}
+        {\scriptsize One line.}
+      \end{block}
+    \end{column}
+    \begin{column}{0.23\textwidth}
+      \begin{block}{B}
+        {\scriptsize One line.}
+      \end{block}
+    \end{column}
+    \begin{column}{0.23\textwidth}
+      \begin{block}{C}
+        {\scriptsize One line.}
+      \end{block}
+    \end{column}
+    \begin{column}{0.23\textwidth}
+      \begin{block}{D}
+        {\scriptsize One line.}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Five Narrow Columns}
+  \begin{columns}[T]
+    \begin{column}{0.18\textwidth}
+      \begin{block}{1}
+        {\tiny Tiny}
+      \end{block}
+    \end{column}
+    \begin{column}{0.18\textwidth}
+      \begin{block}{2}
+        {\tiny Tiny}
+      \end{block}
+    \end{column}
+    \begin{column}{0.18\textwidth}
+      \begin{block}{3}
+        {\tiny Tiny}
+      \end{block}
+    \end{column}
+    \begin{column}{0.18\textwidth}
+      \begin{block}{4}
+        {\tiny Tiny}
+      \end{block}
+    \end{column}
+    \begin{column}{0.18\textwidth}
+      \begin{block}{5}
+        {\tiny Tiny}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Single Full-Width Block}
+  \begin{block}{One Block, Full Width}
+    {\small A single block can also span the entire text width on its
+    own, with a medium amount of content: a short introductory
+    sentence, followed by a couple of supporting bullet points below
+    it.}
+    \begin{itemize}
+      \item Supporting point one
+      \item Supporting point two
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\subsection{Vertical Stacks}
+
+\begin{frame}{Two Stacked Full-Width Blocks}
+  \begin{block}{Short Block}
+    {\small A single short line.}
+  \end{block}
+  \begin{block}{Long Block}
+    {\small A much longer block, stacked directly below the short one,
+    to show that vertically stacked blocks are not forced to share
+    the same height. It contains several sentences of placeholder
+    text, plus a short list.}
+    \begin{itemize}
+      \item Extra detail one
+      \item Extra detail two
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Four Stacked Blocks of Increasing Size}
+  \begin{block}{Size 1}
+    {\scriptsize A single short line.}
+  \end{block}
+  \begin{block}{Size 2}
+    {\scriptsize
+      \begin{itemize}
+        \item First point
+        \item Second point
+      \end{itemize}
+    }
+  \end{block}
+  \begin{block}{Size 3}
+    {\scriptsize A short paragraph of placeholder text, a little
+    longer than the previous blocks, to keep the size progressing
+    upward as the slide continues.}
+  \end{block}
+  \begin{block}{Size 4}
+    {\scriptsize
+      \begin{itemize}
+        \item First point
+        \item Second point
+        \begin{itemize}
+          \item Nested sub-point
+        \end{itemize}
+        \item Third point
+        \item Fourth point
+      \end{itemize}
+    }
+  \end{block}
+\end{frame}
+
+% =====================================================================
+\section{Block Grids}
+% =====================================================================
 
 \begin{frame}{2$\times$2 Block Grid}
   \begin{columns}[T]
@@ -230,6 +413,406 @@
   \end{columns}
 \end{frame}
 
+\begin{frame}{Wall of Six Small Blocks}
+  \begin{columns}[T]
+    \begin{column}{0.31\textwidth}
+      \begin{block}{One}
+        {\tiny Short.}
+      \end{block}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \begin{block}{Two}
+        {\tiny Short.}
+      \end{block}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \begin{block}{Three}
+        {\tiny Short.}
+      \end{block}
+    \end{column}
+  \end{columns}
+  \vspace{0.2cm}
+  \begin{columns}[T]
+    \begin{column}{0.31\textwidth}
+      \begin{block}{Four}
+        {\tiny Short.}
+      \end{block}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \begin{block}{Five}
+        {\tiny Short.}
+      \end{block}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \begin{block}{Six}
+        {\tiny Short.}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Extreme Size Contrast}
+  \begin{columns}[T]
+    \begin{column}{0.30\textwidth}
+      \begin{block}{Minimal}
+      \end{block}
+    \end{column}
+    \begin{column}{0.66\textwidth}
+      \begin{block}{Packed}
+        {\small A block with a great deal more content than its
+        neighbour: several sentences of placeholder text, describing
+        the layout at length, immediately followed by a list.}
+        \begin{itemize}
+          \item Extra point one
+          \item Extra point two
+          \item Extra point three
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Growing Blocks in a Row}
+  \begin{columns}[T]
+    \begin{column}{0.31\textwidth}
+      \begin{block}{One Item}
+        \begin{itemize}
+          \item Only item
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \begin{block}{Three Items}
+        \begin{itemize}
+          \item First item
+          \item Second item
+          \item Third item
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \begin{block}{Six Items}
+        \begin{itemize}
+          \item First item
+          \item Second item
+          \item Third item
+          \item Fourth item
+          \item Fifth item
+          \item Sixth item
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Block Containing a Nested List}
+  \begin{block}{Rich Nested Content}
+    \begin{itemize}
+      \item First-level point
+      \begin{itemize}
+        \item Second-level point
+        \begin{itemize}
+          \item Third-level point
+        \end{itemize}
+      \end{itemize}
+      \item Another first-level point
+    \end{itemize}
+    \begin{enumerate}
+      \item An ordered point
+      \item Another ordered point
+    \end{enumerate}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Block Containing a Table}
+  \begin{block}{Small Table Inside a Block}
+    \centering
+    \begin{tabular}{lc}
+      \toprule
+      \textbf{Category} & \textbf{Value} \\
+      \midrule
+      Group 1 & 12.4 \\
+      Group 2 & 9.7  \\
+      \bottomrule
+    \end{tabular}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Tall Single Block With Long Paragraph}
+  \begin{block}{Long-Form Text}
+    {\small A block does not have to be short: it can hold a long,
+    fully justified paragraph of placeholder text spanning many
+    lines, to check that the block background and left accent bar
+    extend correctly for tall content. Lorem ipsum dolor sit amet,
+    consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut
+    labore et dolore magna aliqua. Ut enim ad minim veniam, quis
+    nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+    commodo consequat. Duis aute irure dolor in reprehenderit in
+    voluptate velit esse cillum dolore eu fugiat nulla pariatur.}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Block Wrapping a Placeholder}
+  \begin{block}{Figure}
+    \centering
+    \placeholderbox{6cm}{3cm}{Image placeholder}
+  \end{block}
+\end{frame}
+
+% =====================================================================
+\section{Diagrams}
+% =====================================================================
+
+\subsection{Flow and Matrix}
+
+\begin{frame}{Three-Step Flow Diagram}
+  \centering
+  \begin{tikzpicture}[
+      box/.style={draw=mcmPrimary, line width=0.8pt, rounded corners=3pt,
+                   fill=mcmPrimaryMuted, minimum width=3.1cm,
+                   minimum height=1.6cm, align=center, font=\small},
+      arr/.style={-{Stealth[length=2.2mm]}, mcmPrimary, line width=1pt}
+    ]
+    \node[box] (a) at (0,0) {Step 1\\{\scriptsize Input}};
+    \node[box] (b) at (4.2,0) {Step 2\\{\scriptsize Process}};
+    \node[box] (c) at (8.4,0) {Step 3\\{\scriptsize Output}};
+    \draw[arr] (a.east) -- (b.west);
+    \draw[arr] (b.east) -- (c.west);
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Three-Step Flow — Progressive Highlight}
+  \centering
+  \only<1>{\flowdiagram{1}}%
+  \only<2>{\flowdiagram{2}}%
+  \only<3>{\flowdiagram{3}}%
+\end{frame}
+
+\begin{frame}{2$\times$2 Condition Matrix — TikZ Version}
+  \centering
+  \begin{tikzpicture}[
+      cell/.style={draw=mcmPrimary, line width=0.8pt, minimum width=3.2cm,
+                   minimum height=1.9cm, align=center, font=\small}
+    ]
+    \node[cell, fill=mcmPrimary!12] (c1) at (0,0)    {Condition 1};
+    \node[cell, fill=mcmPrimary!22] (c2) at (3.2,0)  {Condition 2};
+    \node[cell, fill=mcmPrimary!32] (c3) at (0,-1.9) {Condition 3};
+    \node[cell, fill=mcmPrimary!42] (c4) at (3.2,-1.9){Condition 4};
+    \node[above=0.2cm of c1, xshift=1.6cm, font=\small\bfseries]
+      {Factor B};
+    \node[left=0.2cm of c1, rotate=90, anchor=south, font=\small\bfseries]
+      {Factor A};
+  \end{tikzpicture}
+\end{frame}
+
+\subsection{Scope and Hierarchy}
+
+\begin{frame}{Nested Scope Diagram}
+  \centering
+  \begin{tikzpicture}
+    \draw[mcmPrimary!30, line width=0.8pt, fill=mcmPrimary!8]
+      (0,0) rectangle (9,4.6);
+    \node[anchor=north west, font=\small\bfseries, text=mcmPrimary]
+      at (0.2,4.4) {Context};
+    \draw[mcmPrimary!55, line width=0.8pt, fill=mcmPrimary!16]
+      (0.7,0.5) rectangle (8.3,3.6);
+    \node[anchor=north west, font=\small\bfseries, text=mcmPrimary]
+      at (0.9,3.4) {Scope};
+    \draw[mcmPrimary, line width=1pt, fill=mcmPrimaryMuted]
+      (1.6,1) rectangle (7.4,2.6);
+    \node[font=\small\bfseries] at (4.5,1.8) {Focus};
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Hierarchy / Tree Diagram}
+  \centering
+  \begin{tikzpicture}[
+      nd/.style={draw=mcmPrimary, line width=0.8pt, rounded corners=2pt,
+                 fill=mcmPrimaryMuted, minimum width=2.6cm,
+                 minimum height=1cm, align=center, font=\small},
+      lvl/.style={-{Stealth[length=2mm]}, mcmPrimary, line width=0.8pt}
+    ]
+    \node[nd] (root) at (0,2) {Root};
+    \node[nd] (c1) at (-3.2,0) {Child A};
+    \node[nd] (c2) at (0,0)    {Child B};
+    \node[nd] (c3) at (3.2,0)  {Child C};
+    \draw[lvl] (root.south) -- (c1.north);
+    \draw[lvl] (root.south) -- (c2.north);
+    \draw[lvl] (root.south) -- (c3.north);
+  \end{tikzpicture}
+\end{frame}
+
+\subsection{Timelines and Scales}
+
+\begin{frame}{Horizontal Timeline}
+  \centering
+  \begin{tikzpicture}[x=2.3cm, y=1cm]
+    \draw[mcmPrimary, line width=1pt] (0,0) -- (4.4,0);
+    \foreach \x/\lbl/\txt in {0/Step A/First milestone,
+                               1.5/Step B/Second milestone,
+                               3/Step C/Third milestone,
+                               4.4/Step D/Fourth milestone}{
+      \fill[mcmPrimary] (\x,0) circle (0.07);
+      \node[anchor=south, yshift=0.2cm, font=\small\bfseries, text=mcmPrimary]
+        at (\x,0) {\lbl};
+      \node[anchor=north, yshift=-0.2cm, font=\scriptsize, text width=2.2cm,
+            align=center] at (\x,0) {\txt};
+    }
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Vertical Rating Scale}
+  \centering
+  \begin{tikzpicture}[x=1cm,y=1cm]
+    \foreach \i/\lbl in {0/Level 1, 1/Level 2, 2/Level 3, 3/Level 4, 4/Level 5}{
+      \pgfmathtruncatemacro{\shade}{20 + 15*\i}
+      \fill[mcmPrimary!\shade] (0,\i*0.8) rectangle (5,\i*0.8+0.7);
+      \node[anchor=west, font=\small] at (5.3,\i*0.8+0.35) {\lbl};
+    }
+    \node[anchor=north, font=\scriptsize, text=mcmPrimary!60] at (2.5,-0.3) {Low};
+    \node[anchor=south, font=\scriptsize, text=mcmPrimary!60] at (2.5,4.3) {High};
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Simple Bar Chart}
+  \centering
+  \begin{tikzpicture}[x=1.7cm, y=0.5cm]
+    \draw[mcmPrimary, line width=0.8pt] (-0.4,0) -- (3.8,0);
+    \foreach \x/\h/\lbl in {0/3/A, 1/5/B, 2/2/C, 3/4.5/D}{
+      \fill[mcmPrimary!70] (\x,0) rectangle (\x+0.7,\h);
+      \node[anchor=north, yshift=-0.1cm, font=\small] at (\x+0.35,0) {\lbl};
+      \node[anchor=south, yshift=0.1cm, font=\scriptsize] at (\x+0.35,\h) {\h};
+    }
+  \end{tikzpicture}
+\end{frame}
+
+% =====================================================================
+\section{Data and Numbers}
+% =====================================================================
+
+\begin{frame}{Table}
+  \centering
+  \begin{tabular}{lcc}
+    \toprule
+    \textbf{Category} & \textbf{Metric A} & \textbf{Metric B} \\
+    \midrule
+    Group 1 & 12.4 & 0.83 \\
+    Group 2 & 9.7  & 0.61 \\
+    Group 3 & 15.2 & 0.94 \\
+    \bottomrule
+  \end{tabular}
+\end{frame}
+
+\begin{frame}{Wider Table}
+  \centering
+  \begin{tabular}{lcccc}
+    \toprule
+    \textbf{Category} & \textbf{Metric A} & \textbf{Metric B}
+      & \textbf{Metric C} & \textbf{Metric D} \\
+    \midrule
+    Group 1 & 12.4 & 0.83 & 3.1 & 0.42 \\
+    Group 2 & 9.7  & 0.61 & 2.8 & 0.55 \\
+    Group 3 & 15.2 & 0.94 & 3.6 & 0.38 \\
+    Group 4 & 11.0 & 0.72 & 2.9 & 0.47 \\
+    Group 5 & 13.6 & 0.88 & 3.3 & 0.41 \\
+    \bottomrule
+  \end{tabular}
+\end{frame}
+
+\begin{frame}{Key Figures as Blocks}
+  \begin{columns}[T]
+    \begin{column}{0.31\textwidth}
+      \begin{block}{Metric One}
+        \centering {\Huge\textbf{\color{mcmPrimary}42\%}}\\[0.3em]
+        {\small Placeholder label}
+      \end{block}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \begin{block}{Metric Two}
+        \centering {\Huge\textbf{\color{mcmPrimary}128}}\\[0.3em]
+        {\small Placeholder label}
+      \end{block}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \begin{block}{Metric Three}
+        \centering {\Huge\textbf{\color{mcmPrimary}3.2x}}\\[0.3em]
+        {\small Placeholder label}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Key Figures as TikZ Badges}
+  \centering
+  \begin{columns}[T]
+    \begin{column}{0.31\textwidth}
+      \centering \statbadge{42\%}{Placeholder metric one}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \centering \statbadge{128}{Placeholder metric two}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \centering \statbadge{3.2x}{Placeholder metric three}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% =====================================================================
+\section{Placeholders}
+% =====================================================================
+
+\begin{frame}{Single Placeholder with Caption}
+  \centering
+  \placeholderbox{8cm}{4cm}{Image placeholder}
+
+  \vspace{0.4em}
+  {\small\itshape Figure 1 --- a caption describing the placeholder image.}
+\end{frame}
+
+\begin{frame}{Side-by-Side Placeholder Comparison}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \centering
+      \placeholderbox{5.2cm}{3.4cm}{Image A}
+
+      {\small\itshape Before}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \centering
+      \placeholderbox{5.2cm}{3.4cm}{Image B}
+
+      {\small\itshape After}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{TikZ Placeholder Variant}
+  \centering
+  \imgplaceholder{8}{4}{Image placeholder}
+\end{frame}
+
+% =====================================================================
+\section{Custom Local Macros}
+% =====================================================================
+
+\begin{frame}{Numbered Showcase Cards}
+  \centering
+  \begin{columns}[T]
+    \begin{column}{0.33\textwidth}
+      \centering
+      \showcard{1}{First}{Short description of the first item.}
+    \end{column}
+    \begin{column}{0.33\textwidth}
+      \centering
+      \showcard{2}{Second}{Short description of the second item.}
+    \end{column}
+    \begin{column}{0.33\textwidth}
+      \centering
+      \showcard{3}{Third}{Short description of the third item.}
+    \end{column}
+  \end{columns}
+\end{frame}
+
 % =====================================================================
 \section{Progressive Reveals}
 % =====================================================================
@@ -278,75 +861,6 @@
 \end{frame}
 
 % =====================================================================
-\section{Data and Numbers}
-% =====================================================================
-
-\begin{frame}{Table}
-  \centering
-  \begin{tabular}{lcc}
-    \toprule
-    \textbf{Category} & \textbf{Metric A} & \textbf{Metric B} \\
-    \midrule
-    Group 1 & 12.4 & 0.83 \\
-    Group 2 & 9.7  & 0.61 \\
-    Group 3 & 15.2 & 0.94 \\
-    \bottomrule
-  \end{tabular}
-\end{frame}
-
-\begin{frame}{Key Figures as Blocks}
-  \begin{columns}[T]
-    \begin{column}{0.31\textwidth}
-      \begin{block}{Metric One}
-        \centering {\Huge\textbf{\color{mcmPrimary}42\%}}\\[0.3em]
-        {\small Placeholder label}
-      \end{block}
-    \end{column}
-    \begin{column}{0.31\textwidth}
-      \begin{block}{Metric Two}
-        \centering {\Huge\textbf{\color{mcmPrimary}128}}\\[0.3em]
-        {\small Placeholder label}
-      \end{block}
-    \end{column}
-    \begin{column}{0.31\textwidth}
-      \begin{block}{Metric Three}
-        \centering {\Huge\textbf{\color{mcmPrimary}3.2x}}\\[0.3em]
-        {\small Placeholder label}
-      \end{block}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-% =====================================================================
-\section{Placeholders}
-% =====================================================================
-
-\begin{frame}{Single Placeholder with Caption}
-  \centering
-  \placeholderbox{8cm}{4cm}{Image placeholder}
-
-  \vspace{0.4em}
-  {\small\itshape Figure 1 --- a caption describing the placeholder image.}
-\end{frame}
-
-\begin{frame}{Side-by-Side Placeholder Comparison}
-  \begin{columns}[T]
-    \begin{column}{0.48\textwidth}
-      \centering
-      \placeholderbox{5.2cm}{3.4cm}{Image A}
-
-      {\small\itshape Before}
-    \end{column}
-    \begin{column}{0.48\textwidth}
-      \centering
-      \placeholderbox{5.2cm}{3.4cm}{Image B}
-
-      {\small\itshape After}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-% =====================================================================
 \section{Text Elements}
 % =====================================================================
 
@@ -360,6 +874,14 @@
     {\small --- Placeholder Attribution}
   \end{center}
   \vfill
+\end{frame}
+
+\begin{frame}{Definition List}
+  \begin{description}
+    \item[Term One] A short definition of the first term.
+    \item[Term Two] A short definition of the second term.
+    \item[Term Three] A short definition of the third term.
+  \end{description}
 \end{frame}
 
 \begin{frame}{Full-Width Footnotes Under Columns}
@@ -403,6 +925,11 @@
       \item Blocks work the same way in the appendix
     \end{itemize}
   \end{block}
+\end{frame}
+
+\begin{frame}[plain,noframenumbering]{Appendix: Backup Diagram}
+  \centering
+  \imgplaceholder{9}{4.6}{Backup image placeholder}
 \end{frame}
 
 \end{document}
