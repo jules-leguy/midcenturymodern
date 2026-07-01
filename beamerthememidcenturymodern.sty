@@ -351,7 +351,11 @@
     \fill[mcmPrimaryMuted]
       (current page.south west)
       rectangle ([yshift=0.06cm]current page.south east);
-    \pgfmathsetmacro{\mcmprog}{\insertframenumber / \inserttotalframenumber}%
+    % min(...) guards against \inserttotalframenumber defaulting to 1 on a
+    % fresh compile (no .aux yet): without it, \mcmprog would equal the raw
+    % frame number past the first pass of any 40+ frame deck, and
+    % \mcmprog\paperwidth below would overflow TeX's max dimension.
+    \pgfmathsetmacro{\mcmprog}{min(1, \insertframenumber / \inserttotalframenumber)}%
     \fill[mcmPrimary]
       (current page.south west)
       rectangle ([xshift=\mcmprog\paperwidth, yshift=0.06cm]current page.south west);
