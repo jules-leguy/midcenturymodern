@@ -228,6 +228,47 @@
 %
 % Internal padding: \mcmBlockPad (default 0.45em)
 % Title indent: \mcmBlockTitleIndent (default 0.3em)
+% Gap to neighbours: \mcmBlockSep (default 1em)
+%
+% \mcmBlockSep is the *visible* gap a block leaves around itself, and stacking
+% blocks needs no manual \vspace: half of it is placed above and half below.
+%
+% Getting that gap to look the same for every block type takes one correction.
+% Each block is a beamercolorbox whose background is inset by \mcmBlockPad
+% (colsep*) plus 0.5ex (sep) on every side. On alert/example blocks that inset
+% is visible — it is the coloured margin around the text. On a plain block the
+% background is mcmBg, the same colour as the page, so the identical inset is
+% invisible whitespace, and two stacked plain blocks read as though they were
+% pushed 2*(\mcmBlockPad+0.5ex) further apart than two coloured ones.
+%
+% So a plain block subtracts that invisible inset back out of the skips around
+% it, and coloured blocks do not. The visible gap then comes out at
+% \mcmBlockSep for every combination — plain/plain, plain/coloured,
+% coloured/coloured.
+%
+% The correction applies to the *skips*, never to the box: the inset itself is
+% identical for all three types, so blocks of different types side by side in a
+% columns[T] row still line their titles up. That is also why the skip *above*
+% a plain block is conditional. Subtracting it unconditionally would raise a
+% plain block above a coloured one in the neighbouring column, and demo.tex
+% puts block/alertblock/exampleblock in exactly that arrangement. It is only
+% correct to subtract when something sits above for the gap to be measured
+% against — i.e. when this block directly follows another block, which is
+% precisely when \lastskip is still one of the two skips below. A columns[T]
+% column instead opens with beamer's own \vskip-1ex, and body text leaves a
+% box rather than glue (\lastskip = 0pt), so neither is mistaken for a block.
+%
+% The \nointerlineskip below each block is what makes the gap come out at
+% \mcmBlockSep exactly rather than approximately. Left to itself TeX adds
+% interline glue of \baselineskip minus the previous depth minus the height of
+% whatever box comes next, so the gap would quietly depend on what follows: a
+% following block is tall and gets the \lineskip minimum, but a columns[T] row
+% is an \hbox of \vtops whose height is only its first line, which used to add
+% some 15bp on top of the intended gap. Suppressing it makes a block leave the
+% same space above a columns row as above another block.
+%
+% (The subtraction assumes the plain "block body" colour keeps a bg — beamer
+% only applies colsep* when one is set. Blanking it would over-subtract.)
 % ---------------------------------------------------------------------------
 \newlength{\mcmBlockPad}
 \setlength{\mcmBlockPad}{0.45em}
@@ -235,8 +276,33 @@
 \newlength{\mcmBlockTitleIndent}
 \setlength{\mcmBlockTitleIndent}{0.3em}
 
+\newlength{\mcmBlockSep}
+\setlength{\mcmBlockSep}{1em}
+
+% The inset beamer draws inside a block's background box. The 0.5ex must match
+% the sep= given to each beamercolorbox below.
+\newcommand{\mcmBlockInset}{\dimexpr\mcmBlockPad+0.5ex\relax}
+
+% Half of \mcmBlockSep, less the invisible inset of a plain block.
+\newcommand{\mcmBlockHalfSep}{\dimexpr0.5\mcmBlockSep-\mcmBlockInset\relax}
+
+\newcommand{\mcmBlockAbove}{%
+  \ifdim\lastskip=\mcmBlockHalfSep\relax      % follows a plain block
+    \vskip\mcmBlockHalfSep
+  \else\ifdim\lastskip=0.5\mcmBlockSep\relax  % follows a coloured block
+    \vskip\mcmBlockHalfSep
+  \else                                       % starts a column, or follows text
+    \vskip0.5\mcmBlockSep%
+  \fi\fi}
+\newcommand{\mcmBlockBelow}{\vskip\mcmBlockHalfSep\nointerlineskip}
+
+% Coloured blocks need no correction: their inset is visible, so it reads as
+% part of the block rather than as part of the gap.
+\newcommand{\mcmBlockAboveColoured}{\vskip0.5\mcmBlockSep}
+\newcommand{\mcmBlockBelowColoured}{\vskip0.5\mcmBlockSep\nointerlineskip}
+
 \setbeamertemplate{block begin}{%
-  \par\vskip0.6ex%
+  \par\mcmBlockAbove%
   \begin{beamercolorbox}[%
       wd=\textwidth, colsep*=\mcmBlockPad,
       sep=0.5ex]{block body}%
@@ -248,11 +314,11 @@
     \usebeamerfont{block body}\usebeamercolor[fg]{block body}%
 }
 \setbeamertemplate{block end}{%
-  \end{beamercolorbox}\vskip0.7ex%
+  \end{beamercolorbox}\mcmBlockBelow%
 }
 
 \setbeamertemplate{block alerted begin}{%
-  \par\vskip0.6ex%
+  \par\mcmBlockAboveColoured%
   \begin{beamercolorbox}[%
       wd=\textwidth, colsep*=\mcmBlockPad,
       sep=0.5ex]{block body alerted}%
@@ -264,11 +330,11 @@
     \usebeamerfont{block body}\usebeamercolor[fg]{block body alerted}%
 }
 \setbeamertemplate{block alerted end}{%
-  \end{beamercolorbox}\vskip0.7ex%
+  \end{beamercolorbox}\mcmBlockBelowColoured%
 }
 
 \setbeamertemplate{block example begin}{%
-  \par\vskip0.6ex%
+  \par\mcmBlockAboveColoured%
   \begin{beamercolorbox}[%
       wd=\textwidth, colsep*=\mcmBlockPad,
       sep=0.5ex]{block body example}%
@@ -280,7 +346,7 @@
     \usebeamerfont{block body}\usebeamercolor[fg]{block body example}%
 }
 \setbeamertemplate{block example end}{%
-  \end{beamercolorbox}\vskip0.7ex%
+  \end{beamercolorbox}\mcmBlockBelowColoured%
 }
 
 % ---------------------------------------------------------------------------
