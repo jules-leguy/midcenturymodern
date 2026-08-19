@@ -1,0 +1,275 @@
+% =============================================================================
+% titlepage.tex — QA deck for the title page template.
+%
+% One frame per title-page case, exercising very different amounts of text in
+% every metadata field (title, subtitle, author, institute, date, logo) so
+% that regressions in \setbeamertemplate{title page} show up immediately.
+%
+% Every name, institution and event below is an invented placeholder, chosen
+% only for its length and shape. The proper nouns are coinages that were each
+% checked (web search, 2026-08-19) not to match an existing organisation, place
+% or notable person — Thalmire, Quernhaven, Kirnwald, Sorenfeld, Draventhal,
+% Belmoncourt, Calvenne, Quenvard, and the surnames Rennholt, Vaudrenne,
+% Odumbaya, Kellwig, Ferrandin, Fennrick, Delmarnier, Marquenot, Anjaveli,
+% Estvik, Ravikoti, Ivelen, Brissenot, Hendral, Ångfeldt. Keep it that way when
+% adding cases: a plausible-sounding real-world name ("Meridian Analytics",
+% "Lakeside Polytechnic") almost always turns out to belong to someone.
+%
+% Compile from this directory, with the theme on the input path:
+%   TEXINPUTS=..: lualatex titlepage.tex
+% Twice: `remember picture' needs a second pass (on the first one every
+% `current page' node collapses to the origin). No biber needed.
+% =============================================================================
+\documentclass[aspectratio=169]{beamer}
+\usepackage{beamerthememidcenturymodern}
+\graphicspath{{../logos/}}
+
+% --- Case label: a tiny marker in the top-left corner, well away from the
+%     right-aligned title block, so each page is identifiable in review.
+\newcommand{\mcmCase}[1]{%
+  \begin{tikzpicture}[remember picture, overlay]
+    \node[anchor=north west, inner sep=0pt, text=mcmPrimaryFg!60]
+      at ([xshift=0.25cm, yshift=-0.2cm]current page.north west)
+      {\tiny\ttfamily #1};
+  \end{tikzpicture}%
+}
+
+% --- Logos of different shapes, to check the footer gap adapts.
+\newcommand{\logoKraft}{%
+  \begin{minipage}{0.21\linewidth}\centering
+    \includegraphics[width=3cm]{logo_kraft.png}
+  \end{minipage}}
+\newcommand{\logoBlue}{%
+  \begin{minipage}{0.21\linewidth}\centering
+    \includegraphics[width=3cm]{logo_deepblue.png}
+  \end{minipage}}
+\newcommand{\logoSmall}{\includegraphics[width=1.2cm]{logo_kraft.png}}
+\newcommand{\logoWide}{%
+  \includegraphics[width=2cm]{logo_kraft.png}\hspace{0.4em}%
+  \includegraphics[width=2cm]{logo_deepblue.png}\hspace{0.4em}%
+  \includegraphics[width=2cm]{logo_kraft.png}}
+
+% --- One frame per case.
+\newcommand{\casepage}[1]{%
+  \begin{frame}
+    \titlepage
+    \mcmCase{#1}
+  \end{frame}}
+
+\begin{document}
+\mcmTheme{Kraft}
+
+% ---------------------------------------------------------------- 01 baseline
+\title{Mid-Century Modern:\\A Retro-Inspired Template}
+\subtitle{A beamer template for strong and original presentations}
+\author{Your Name}
+\institute{Your Institution}
+\date{\today}
+\titlegraphic{\logoKraft}
+\casepage{01 baseline (demo.tex metadata)}
+
+% ------------------------------------------------------------- 02 tiny title
+\title{Q3}
+\subtitle{}
+\author{D. Ivelen}
+\institute{}
+\date{2026}
+\casepage{02 two-character title, no subtitle, no institute}
+
+% ------------------------------------------------------- 03 title-only, empty
+\title{Annual Review}
+\subtitle{}
+\author{}
+\institute{}
+\date{}
+\casepage{03 title only — every other field empty}
+
+% ------------------------------------------------------------- 04 short title
+\title{Internship Defence}
+\subtitle{Second-year project}
+\author{Nora Fennrick}
+\institute{Draventhal Polytechnic}
+\date{12 June 2026}
+\casepage{04 student defence — short everything}
+
+% ------------------------------------------------------------ 05 medium title
+\title{Predictive Maintenance for Offshore Turbine Gearboxes}
+\subtitle{Field results from the 2025 pilot fleet}
+\author{Ivo Ferrandin}
+\institute{Sorenfeld Energy Systems}
+\date{\today}
+\casepage{05 industrial talk — medium title (7 words)}
+
+% -------------------------------------------------------------- 06 long title
+\title{Statistical Downscaling of Regional Climate Projections for Urban Flood Risk Assessment}
+\subtitle{A comparison of three ensemble strategies}
+\author{Sofia Delmarnier}
+\institute{Quernhaven Institute of Technology}
+\date{\today}
+\casepage{06 long title (12 words, no manual break)}
+
+% --------------------------------------------------------- 07 very long title
+\title{Towards a Unified Evaluation Protocol for Distributed Stream Processing Systems Operating Under Bursty Workloads and Partial Network Failures}
+\subtitle{}
+\author{Tobias Rennholt}
+\institute{Thalmire Analytics}
+\date{\today}
+\casepage{07 very long title (20 words), no subtitle}
+
+% -------------------------------------------- 08 very long title + everything
+\title{Towards a Unified Evaluation Protocol for Distributed Stream Processing Systems Operating Under Bursty Workloads and Partial Network Failures}
+\subtitle{With an extended discussion of the measurement harness, the benchmark suite and the reproducibility of the reported numbers}
+\author{Tobias Rennholt, Léa Vaudrenne, Rahel Odumbaya and Jonas Kellwig}
+\institute{Thalmire Analytics --- Quernhaven Institute of Technology, Systems Group}
+\date{International Workshop on Elastic Data Infrastructures, 14 September 2026}
+\casepage{08 worst case — everything long}
+
+% ------------------------------------------------------ 09 manual line breaks
+\title{Three Explicit Lines:\\One Break Here\\And Another One There}
+\subtitle{Manual \textbackslash\textbackslash{} breaks must be honoured}
+\author{Your Name}
+\institute{Your Institution}
+\date{\today}
+\casepage{09 manual line breaks in the title}
+
+% --------------------------------------------------- 10 long unbreakable word
+\title{Screening for Pneumonoultramicroscopicsilicovolcanoconiosis}
+\subtitle{}
+\author{Hélène Marquenot}
+\institute{Fondation Calvenne pour la Santé au Travail}
+\date{\today}
+\casepage{10 45-char unbreakable word (overfull check)}
+
+% ------------------------------------------------ 11 short title, long subtitle
+\title{Bilan}
+\subtitle{Un sous-titre exagérément long qui décrit par le menu le contenu de la présentation, ses objectifs, sa méthodologie et ses limites}
+\author{Camille Delmarnier}
+\institute{Groupe Quenvard}
+\date{\today}
+\casepage{11 short title + very long subtitle}
+
+% ------------------------------------------------------------ 12 many authors
+\title{A Collaborative Study}
+\subtitle{}
+\author{Alice Vaudrenne, Bruno Brissenot, Carla Hendral, Dario Ivelen, Elin Estvik, Farid Anjaveli, Greta Kellwig, Hugo Ferrandin and Iris Ravikoti}
+\institute{Quernhaven Institute of Technology}
+\date{\today}
+\casepage{12 nine authors (long author line)}
+
+% ---------------------------------------------------- 13 multi-line institute
+\title{Consortium Results}
+\subtitle{Second-year deliverable}
+\author{Rahel Odumbaya}
+\institute{Quernhaven Institute of Technology\\Institut Polytechnique de Belmoncourt\\Fondation Calvenne pour la Santé au Travail}
+\date{\today}
+\casepage{13 three-line institute}
+
+% ---------------------------------------------------- 14 authors + affiliations
+\title{Multi-Site Evaluation of the Screening Pipeline}
+\subtitle{}
+\author{Nils Estvik\textsuperscript{1} \and Priya Anjaveli\textsuperscript{1,2} \and Divya Ravikoti\textsuperscript{2}}
+\institute{\textsuperscript{1}Quernhaven Institute of Technology \quad \textsuperscript{2}Kirnwald Data Institute}
+\date{\today}
+\casepage{14 authors with \textbackslash and + superscript affiliations}
+
+% --------------------------------------------------------------- 15 long date
+\title{Seminar}
+\subtitle{}
+\author{Divya Ravikoti}
+\institute{Kirnwald Data Institute}
+\date{Département d'informatique --- jeudi 14 septembre 2026, 14h00, amphithéâtre Nord}
+\casepage{15 very long date line}
+
+% ---------------------------------------------------------------- 16 no logo
+\title{Statistical Downscaling of Regional Climate Projections for City Planners}
+\subtitle{No title graphic on this one}
+\author{Sofia Delmarnier}
+\institute{Quernhaven Institute of Technology}
+\date{\today}
+\titlegraphic{}
+\casepage{16 long title, NO logo (scan lines full width)}
+
+% ------------------------------------------------------------- 17 small logo
+\title{Compact Logo Test}
+\subtitle{The footer gap should shrink around the logo}
+\author{Ivo Ferrandin}
+\institute{Sorenfeld Energy Systems}
+\date{\today}
+\titlegraphic{\logoSmall}
+\casepage{17 small (1.2cm) logo}
+
+% -------------------------------------------------------------- 18 wide logo
+\title{Three Logos Side by Side}
+\subtitle{The footer gap should widen}
+\author{Jonas Kellwig}
+\institute{Thalmire Analytics --- Partner Programme}
+\date{\today}
+\titlegraphic{\logoWide}
+\casepage{18 wide (6.8cm) logo strip}
+
+% ------------------------------------------------- 19 uppercase off, long title
+\mcmTitleUppercasefalse
+\title{Towards a Unified Evaluation Protocol for Distributed Stream Processing Systems}
+\subtitle{Lowercase title rendering}
+\author{Tobias Rennholt}
+\institute{Thalmire Analytics}
+\date{\today}
+\titlegraphic{\logoKraft}
+\casepage{19 \textbackslash mcmTitleUppercasefalse + long title}
+\mcmTitleUppercasetrue
+
+% -------------------------------------------------------- 20 accents & Unicode
+\title{Évaluation Numérique des Écoulements Diphasiques à Très Haute Résolution}
+\subtitle{Accents, ligatures, œuvre, æsthetic, ÎÔÛ, ÄÖÜ, Å}
+\author{Jean-Éric Ångfeldt}
+\institute{Institut Polytechnique de Belmoncourt}
+\date{\today}
+\casepage{20 accented uppercase (diacritics keep their marks)}
+
+% -------------------------------------------------------- 21 DeepBlue baseline
+\mcmTheme{DeepBlue}
+\title{Mid-Century Modern:\\A Retro-Inspired Template}
+\subtitle{A beamer template for strong and original presentations}
+\author{Your Name}
+\institute{Your Institution}
+\date{\today}
+\titlegraphic{\logoBlue}
+\casepage{21 DeepBlue — baseline}
+
+% ------------------------------------------------------ 22 DeepBlue worst case
+\title{Towards a Unified Evaluation Protocol for Distributed Stream Processing Systems Operating Under Bursty Workloads and Partial Network Failures}
+\subtitle{With an extended discussion of the measurement harness, the benchmark suite and the reproducibility of the reported numbers}
+\author{Tobias Rennholt, Léa Vaudrenne, Rahel Odumbaya and Jonas Kellwig}
+\institute{Thalmire Analytics --- Quernhaven Institute of Technology, Systems Group}
+\date{International Workshop on Elastic Data Infrastructures, 14 September 2026}
+\casepage{22 DeepBlue — everything long}
+
+% ------------------------------------------------ 23 DeepBlue minimal, no logo
+\title{Kickoff}
+\subtitle{}
+\author{Dana Ivelen}
+\institute{}
+\date{\today}
+\titlegraphic{}
+\casepage{23 DeepBlue — minimal, no logo}
+
+% ------------------------------------------------------ 24 absurdly long title
+\title{An Exhaustively Detailed and Deliberately Overlong Presentation Title That No Reasonable Person Would Ever Write But Which The Template Should Nevertheless Survive Without Colliding With The Footer Strip Or Running Off The Slide Entirely}
+\subtitle{}
+\author{Tobias Rennholt}
+\institute{Thalmire Analytics}
+\date{\today}
+\titlegraphic{\logoBlue}
+\casepage{24 absurd title (37 words) — stress limit}
+
+% ----------------------------------------------------- 25 realistic conference
+\mcmTheme{Kraft}
+\title{Adaptive Sampling for Low-Cost Air Quality Sensor Networks}
+\subtitle{Deployment lessons from three mid-sized cities}
+\author{Priya Anjaveli \and Nils Estvik \and Hélène Marquenot \and Ivo Ferrandin}
+\institute{Kirnwald Data Institute \and Sorenfeld Energy Systems}
+\date{\today}
+\titlegraphic{\logoKraft}
+\casepage{25 realistic conference-paper title page}
+
+\end{document}

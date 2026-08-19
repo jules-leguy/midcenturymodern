@@ -7,14 +7,16 @@
 % timeline, scale, bar chart), tables, overlays, custom local macros, quotes
 % and footnotes — with generic placeholder content, to catch theme
 % regressions across usages that demo.tex does not cover.
-% Compile with: lualatex testing.tex ; biber testing ; lualatex ; lualatex
+% Compile from this directory, with the theme on the input path:
+%   TEXINPUTS=..: lualatex testing.tex ; biber testing ; lualatex ; lualatex
 % =============================================================================
 \documentclass[aspectratio=169]{beamer}
 \usepackage{beamerthememidcenturymodern}
+\graphicspath{{../logos/}}
 \usepackage{booktabs}
 \usetikzlibrary{positioning, arrows.meta}
 \usepackage[backend=biber, style=authoryear, sorting=nyt]{biblatex}
-\addbibresource{demo.bib}
+\addbibresource{../demo.bib}
 
 \mcmTheme{Kraft}
 
@@ -27,7 +29,7 @@
 \titlegraphic{
   \begin{minipage}{0.21\linewidth}
     \begin{center}
-    \includegraphics[width=3cm]{logos/logo_kraft.png}
+    \includegraphics[width=3cm]{logo_kraft.png}
     \end{center}
   \end{minipage}
 }

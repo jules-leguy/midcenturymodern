@@ -491,12 +491,37 @@
   \end{tikzpicture}%
 }
 
+
 % ---------------------------------------------------------------------------
 % TITLE PAGE
 %
-% Footer height: \mcmFooterHeight (default 5em)
-% Logo vertical offset: \mcmLogoVOffset (default 0cm, positive = up)
-% Scan line spacing: \mcmLineSpacing (default 0.18cm)
+% Layout knobs
+%   \mcmFooterHeight       footer strip height              (default 5em)
+%   \mcmLogoVOffset        logo vertical offset             (default 0cm)
+%   \mcmLineSpacing        scan line spacing                (default 0.18cm)
+%   \mcmTitleBlockWidth    width of the text block          (default 0.88\paperwidth)
+%   \mcmTitleRightMargin   its distance to the right edge   (default 0.06\paperwidth)
+%   \mcmTitleTopMargin     clearance below the top edge     (default 0.75cm)
+%   \mcmTitleFooterGap     clearance above the footer strip (default 0.5cm)
+%
+% Type sizes and vertical rhythm (all scaled together by the auto-fit below)
+%   \mcmTitleFS \mcmSubtitleFS \mcmAuthorFS \mcmInstituteFS \mcmDateFS
+%   \mcmTitleSubtitleSep \mcmTitleAuthorSep \mcmTitleInstituteSep
+%   \mcmTitleDateSep
+%
+% AUTO-FIT.  Title, subtitle, author and institute are typeset into a single
+% box which is then measured.  Too tall for the space between the top margin
+% and the date line?  Every type size and every gap is scaled down in 4%
+% steps until it fits (floor \mcmTitleMinScale).  Much shorter than that
+% space?  They are scaled *up* the same way (ceiling \mcmTitleMaxScale) so a
+% two-word title does not look lost on an empty slide.  The block is then
+% centred in whatever room is left.  That is what lets one template carry a
+% two-word title and a thirty-word one.
+%
+% Empty fields cost nothing: each element is measured before it is emitted,
+% so an absent subtitle/author/institute/date leaves no gap behind.  (Do not
+% go back to `\ifx\insertsubtitle\@empty' — beamer never makes that test
+% true, so the subtitle gap was always inserted, even with no subtitle.)
 %
 % The logo is automatically positioned so that there is always 0.75cm of
 % scan lines to its right. The gap width adapts to the logo size.
@@ -513,6 +538,123 @@
 
 \newlength{\mcmLineSpacing}
 \setlength{\mcmLineSpacing}{0.18cm}
+
+% --- Text block geometry ---------------------------------------------------
+\newlength{\mcmTitleBlockWidth}
+\newlength{\mcmTitleRightMargin}
+\newlength{\mcmTitleTopMargin}
+\setlength{\mcmTitleTopMargin}{0.75cm}
+\newlength{\mcmTitleFooterGap}
+\setlength{\mcmTitleFooterGap}{0.5cm}
+% (set here, not \AtBeginDocument, so a preamble override wins)
+\setlength{\mcmTitleBlockWidth}{0.88\paperwidth}
+\setlength{\mcmTitleRightMargin}{0.06\paperwidth}
+
+% --- Type sizes and vertical rhythm on the title page ----------------------
+\newlength{\mcmTitleFS}     \setlength{\mcmTitleFS}{21pt}
+\newlength{\mcmSubtitleFS}  \setlength{\mcmSubtitleFS}{12.3pt}
+\newlength{\mcmAuthorFS}    \setlength{\mcmAuthorFS}{14.4pt}
+\newlength{\mcmInstituteFS} \setlength{\mcmInstituteFS}{9pt}
+\newlength{\mcmDateFS}      \setlength{\mcmDateFS}{7pt}
+
+\newlength{\mcmTitleSubtitleSep}  \setlength{\mcmTitleSubtitleSep}{0.25cm}
+\newlength{\mcmTitleAuthorSep}    \setlength{\mcmTitleAuthorSep}{0.50cm}
+\newlength{\mcmTitleInstituteSep} \setlength{\mcmTitleInstituteSep}{0.08cm}
+\newlength{\mcmTitleDateSep}      \setlength{\mcmTitleDateSep}{0.45cm}
+
+% --- Auto-fit bounds, in percent of the nominal size -----------------------
+\newcommand{\mcmTitleMinScale}{55}   % never shrink below 55%
+\newcommand{\mcmTitleMaxScale}{145}  % never grow above 145%
+\newcommand{\mcmTitleFillScale}{62}  % grow while shorter than 62% of the room
+
+% --- Machinery -------------------------------------------------------------
+\newsavebox{\mcmTitleBlockBox}
+\newsavebox{\mcmTitleDateBox}
+\newsavebox{\mcmTitleProbeBox}
+\newlength{\mcmTitleAvail}   % vertical room the block must fit in
+\newlength{\mcmTitleBase}    % y of the bottom of that room, from page south
+\newlength{\mcmTitleTop}     % y of the top of the block, from page south
+\newlength{\mcmTitleFSa}
+\newlength{\mcmTitleFSb}
+\newcount\mcm@tpc            % current scale, in percent
+\newif\if@mcmTitleFit
+
+% Scale a length by the current auto-fit percentage.
+\newcommand{\mcm@tsc}[1]{\dimexpr#1*\mcm@tpc/100\relax}
+
+% Select a font at a scaled size; #1 = nominal size, #2 = leading factor.
+\newcommand{\mcm@tfs}[2]{%
+  \setlength{\mcmTitleFSa}{\mcm@tsc{#1}}%
+  \setlength{\mcmTitleFSb}{#2\mcmTitleFSa}%
+  \fontsize{\the\mcmTitleFSa}{\the\mcmTitleFSb}\selectfont}
+
+% Emit #2 only if #1 typesets to something. Measured in a parbox so that
+% fields containing \\ (multi-line institutes, author lists) are legal.
+\newcommand{\mcm@tifny}[2]{%
+  \sbox{\mcmTitleProbeBox}{\parbox{\mcmTitleBlockWidth}{#1}}%
+  \ifdim\dimexpr\ht\mcmTitleProbeBox+\dp\mcmTitleProbeBox\relax>\z@ #2\fi}
+
+% Height (height + depth) of a box, as a dimen expression.
+\newcommand{\mcm@tboxh}[1]{\dimexpr\ht#1+\dp#1\relax}
+
+% Typeset the title/subtitle/author/institute block at the current scale.
+\newcommand{\mcm@tbuild}{%
+  \sbox{\mcmTitleBlockBox}{%
+    \begin{minipage}{\mcmTitleBlockWidth}%
+      \raggedleft
+      % Discourage hyphenation strongly (a hyphen inside an uppercase title
+      % reads badly) but do not forbid it: a word longer than the block still
+      % has to break somewhere, or it runs off both edges of the slide.
+      \hyphenpenalty=5000\relax \exhyphenpenalty=5000\relax
+      \mcm@tifny{\inserttitle}{%
+        {\spaceskip=\fontdimen2\font plus \fontdimen3\font minus \fontdimen4\font
+         \advance\spaceskip by \mcm@tsc{\mcmTitleWordSpacing}%
+         \usebeamerfont{title}\mcm@tfs{\mcmTitleFS}{1.10}%
+         \color{mcmPrimaryFg}\mcmTitleFormat{\inserttitle}\par}}%
+      \mcm@tifny{\insertsubtitle}{%
+        \vskip\mcm@tsc{\mcmTitleSubtitleSep}%
+        {\usebeamerfont{subtitle}\mcm@tfs{\mcmSubtitleFS}{1.25}%
+         \color{mcmPrimaryAccent!60!white}\insertsubtitle\par}}%
+      \mcm@tifny{\insertauthor}{%
+        \vskip\mcm@tsc{\mcmTitleAuthorSep}%
+        {\usebeamerfont{author}\mcm@tfs{\mcmAuthorFS}{1.20}%
+         \color{mcmPrimaryFg}\insertauthor\par}}%
+      \mcm@tifny{\insertinstitute}{%
+        \vskip\mcm@tsc{\mcmTitleInstituteSep}%
+        {\usebeamerfont{institute}\mcm@tfs{\mcmInstituteFS}{1.30}%
+         \color{mcmPrimaryFg}\insertinstitute\par}}%
+    \end{minipage}}%
+}
+
+% Shrink, then grow, until the block sits well in \mcmTitleAvail.
+\newcommand{\mcm@tfit}{%
+  \mcm@tpc=100\relax
+  \mcm@tbuild
+  \@mcmTitleFittrue
+  \loop\if@mcmTitleFit
+    \ifdim\mcm@tboxh{\mcmTitleBlockBox}>\mcmTitleAvail
+      \ifnum\mcm@tpc>\mcmTitleMinScale\relax
+        \advance\mcm@tpc by -4\relax \mcm@tbuild
+      \else \@mcmTitleFitfalse \fi
+    \else \@mcmTitleFitfalse \fi
+  \repeat
+  \ifnum\mcm@tpc=100\relax
+    \@mcmTitleFittrue
+    \loop\if@mcmTitleFit
+      \ifdim\mcm@tboxh{\mcmTitleBlockBox}<\dimexpr\mcmTitleAvail*\mcmTitleFillScale/100\relax
+        \ifnum\mcm@tpc<\mcmTitleMaxScale\relax
+          \advance\mcm@tpc by 4\relax \mcm@tbuild
+        \else \@mcmTitleFitfalse \fi
+      \else \@mcmTitleFitfalse \fi
+    \repeat
+    % A growth step may overshoot the room; walk back until it fits again.
+    \@mcmTitleFittrue
+    \loop\if@mcmTitleFit
+      \ifdim\mcm@tboxh{\mcmTitleBlockBox}>\mcmTitleAvail
+        \advance\mcm@tpc by -4\relax \mcm@tbuild
+      \else \@mcmTitleFitfalse \fi
+    \repeat
+  \fi}
 
 \setbeamertemplate{title page}{%
   \global\@mcmtitlepagetrue
@@ -579,25 +721,46 @@
       }
     \end{tikzpicture}%
   \fi
-  
-  % Title text
+  %
+  % Date: pinned just above the footer strip, at its nominal size (it is
+  % small enough already), and its height is reserved before the main block
+  % is fitted so the two can never collide.
+  \sbox{\mcmTitleDateBox}{%
+    \begin{minipage}{\mcmTitleBlockWidth}\raggedleft
+      \mcm@tifny{\insertdate}{%
+        {\usebeamerfont{date}\fontsize{\the\mcmDateFS}{1.35\mcmDateFS}\selectfont
+         \color{mcmPrimaryFg}\insertdate\par}}%
+    \end{minipage}}%
+  %
+  % Room available to the title block, and the y of its floor.
+  \setlength{\mcmTitleBase}{\dimexpr\mcmFooterHeight+\mcmTitleFooterGap\relax}%
+  \ifdim\mcm@tboxh{\mcmTitleDateBox}>\z@
+    \addtolength{\mcmTitleBase}{\dimexpr\mcm@tboxh{\mcmTitleDateBox}
+                                       +\mcmTitleDateSep\relax}%
+  \fi
+  \setlength{\mcmTitleAvail}{\dimexpr\paperheight-\mcmTitleTopMargin
+                                    -\mcmTitleBase\relax}%
+  \mcm@tfit
+  %
+  % Top edge of the block: centred in the room that is left, but never above
+  % the top margin (which is where it lands if the block is still too tall at
+  % \mcmTitleMinScale).
+  \setlength{\mcmTitleTop}{\dimexpr\mcmTitleBase+0.5\mcmTitleAvail
+                                  +0.5\ht\mcmTitleBlockBox
+                                  +0.5\dp\mcmTitleBlockBox\relax}%
+  \ifdim\mcmTitleTop>\dimexpr\paperheight-\mcmTitleTopMargin\relax
+    \setlength{\mcmTitleTop}{\dimexpr\paperheight-\mcmTitleTopMargin\relax}%
+  \fi
   \begin{tikzpicture}[remember picture, overlay]
-    \node[anchor=east, text width=0.9\paperwidth, align=flush right, inner sep=0pt]
-      at ([xshift=-0.06\paperwidth, yshift=0.5\mcmFooterHeight]current page.east)
-      {%
-        \parbox[t]{0.9\paperwidth}{\raggedleft
-         \spaceskip=\fontdimen2\font plus \fontdimen3\font minus \fontdimen4\font
-         \advance\spaceskip by \mcmTitleWordSpacing
-         \usebeamerfont{title}\color{mcmPrimaryFg}\mcmTitleFormat{\inserttitle}\par}%
-        \ifx\insertsubtitle\@empty\else\par\vskip0.25cm%
-          {\usebeamerfont{subtitle}\color{mcmPrimaryAccent!60!white}\insertsubtitle\par}%
-        \fi\vskip0.50cm
-        {\usebeamerfont{author}\color{mcmPrimaryFg}\insertauthor\par}\vskip0.08cm
-        {\usebeamerfont{institute}\color{mcmPrimaryFg}\insertinstitute\par}%
-      };
-    \node[anchor=south east, inner sep=0pt]
-      at ([xshift=-0.06\paperwidth, yshift=\mcmFooterHeight + 0.5cm]current page.south east)
-      {{\usebeamerfont{date}\color{mcmPrimaryFg}\insertdate}};
+    \node[anchor=north east, inner sep=0pt]
+      at ([xshift=-\mcmTitleRightMargin, yshift=\mcmTitleTop]current page.south east)
+      {\usebox{\mcmTitleBlockBox}};
+    \ifdim\mcm@tboxh{\mcmTitleDateBox}>\z@
+      \node[anchor=south east, inner sep=0pt]
+        at ([xshift=-\mcmTitleRightMargin,
+             yshift=\dimexpr\mcmFooterHeight+\mcmTitleFooterGap\relax]current page.south east)
+        {\usebox{\mcmTitleDateBox}};
+    \fi
   \end{tikzpicture}%
 }
 
