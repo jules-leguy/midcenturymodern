@@ -357,35 +357,32 @@
 \addtobeamertemplate{block example begin}{\renewcommand{\mcmBulletColor}{mcmExample}}{}
 \addtobeamertemplate{block example end}{\renewcommand{\mcmBulletColor}{mcmPip}}{}
 
-\setbeamertemplate{itemize item}{%
-  \tikz[baseline=-0.8ex]{%
-    \draw[\mcmBulletColor, line width=0.5pt] (0,0) circle(0.08);
-    \fill[\mcmBulletColor] (0,0) circle(0.03);
-  }%
-}
-\setbeamertemplate{itemize subitem}{%
-  \tikz[baseline=-0.7ex]{%
-    \draw[\mcmBulletColor, line width=0.5pt] (0,0.09) -- (0.09,0) -- (0,-0.09) -- (-0.09,0) -- cycle;
-    \fill[\mcmBulletColor] (0,0) circle(0.025);
-  }%
-}
-\setbeamertemplate{itemize subsubitem}{%
-  \tikz[baseline=-0.7ex]{%
-    \draw[\mcmBulletColor, line width=0.5pt] (-0.06,-0.06) rectangle (0.06,0.06);
-    \fill[\mcmBulletColor] (0,0) circle(0.02);
-  }%
-}
+% The mark is the running font's own en dash, at every level: it inherits the
+% font, the series and — crucially — the size of the level it sits on, so the
+% three levels need no separate calibration and stay right if the body size
+% ever changes. Hierarchy is carried by the indentation, as in Swiss practice.
+\setbeamertemplate{itemize item}{\textcolor{\mcmBulletColor}{\textendash}}
+\setbeamertemplate{itemize subitem}{\textcolor{\mcmBulletColor}{\textendash}}
+\setbeamertemplate{itemize subsubitem}{\textcolor{\mcmBulletColor}{\textendash}}
+
+% Numerals, bare: bold at level 1, light below. Each numeral is one step
+% smaller than the body text of its own level.
+%
+% Trap: \usebeamerfont*{itemize subitem} does NOT shrink a label — it resets it
+% to \normalsize, so a nested numeral comes out at level-1 size beside \small
+% text. The size must come from the *body* font names below, plus the explicit
+% one-step reduction.
 \setbeamertemplate{enumerate item}{%
-  \tikz[baseline=-0.725ex]{%
-    \fill[\mcmBulletColor] (0,0) circle(0.12);
-    \node[white, font=\tiny\bfseries] at (0,0) {\insertenumlabel};
-  }%
+  {\usebeamerfont*{itemize/enumerate body}\small
+   \color{\mcmBulletColor}\bfseries\insertenumlabel}%
 }
 \setbeamertemplate{enumerate subitem}{%
-  \tikz[baseline=-0.65ex]{%
-    \fill[\mcmBulletColor] (0,0) circle(0.105);
-    \node[white, font=\tiny] at (0,0) {\insertsubenumlabel};
-  }%
+  {\usebeamerfont*{itemize/enumerate subbody}\footnotesize
+   \color{\mcmBulletColor}\insertsubenumlabel}%
+}
+\setbeamertemplate{enumerate subsubitem}{%
+  {\usebeamerfont*{itemize/enumerate subsubbody}\scriptsize
+   \color{\mcmBulletColor}\insertsubsubenumlabel}%
 }
 % ---------------------------------------------------------------------------
 % TABLE OF CONTENTS
