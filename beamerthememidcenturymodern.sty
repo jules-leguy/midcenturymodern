@@ -12,8 +12,11 @@
 %
 % FONTS
 %
-%   Body: Lato (fallback: Helvetica).
-%   Titles: TeX Gyre Heros (fallback: default sans).
+%   Body: TeX Gyre Heros — Helvetica (Miedinger, 1957).
+%   Titles: TeX Gyre Adventor — Avant Garde Gothic (Lubalin, 1970), letterspaced.
+%
+%   Both ship with TeX Live, so the theme renders identically everywhere and
+%   needs no font installed by the user.
 %
 %   Override in your preamble after loading the template:
 %     \setsansfont{Font Name}
@@ -37,15 +40,18 @@
 % ---------------------------------------------------------------------------
 % FONTS
 % ---------------------------------------------------------------------------
-\IfFontExistsTF{Lato}{%
-  \setsansfont{Lato}%
+\IfFontExistsTF{TeX Gyre Heros}{%
+  \setsansfont{TeX Gyre Heros}%
 }{%
   \IfFontExistsTF{Helvetica}{\setsansfont{Helvetica}}{}%
 }
 \renewcommand{\familydefault}{\sfdefault}
 
-\IfFontExistsTF{TeX Gyre Heros}{%
-  \newfontfamily\mcmTitleFont{TeX Gyre Heros}%
+% Titles are letterspaced: Avant Garde was drawn for wide-set capitals, and the
+% uppercase frame titles/title page need the extra fit. LetterSpace is a
+% percentage of the font size, so it scales with the title auto-fit on its own.
+\IfFontExistsTF{TeX Gyre Adventor}{%
+  \newfontfamily\mcmTitleFont{TeX Gyre Adventor}[LetterSpace=6.0]%
 }{%
   \let\mcmTitleFont\sffamily
 }
@@ -459,7 +465,10 @@
     \node[anchor=west, text width=0.80\paperwidth,
           align=left, inner sep=0pt]
       at ([xshift=1.1cm, yshift=-0.55cm]current page.west)
-      {{\usebeamerfont{title}\color{mcmPrimary}\insertsection}};
+      % \mcmTitleFont, so a section title is set in the title face like every
+      % other title in the theme. \usebeamerfont{title} alone would leave it in
+      % the *body* font, which is where it used to sit.
+      {{\mcmTitleFont\usebeamerfont{title}\color{mcmPrimary}\insertsection}};
   \end{tikzpicture}%
 }
 
@@ -483,7 +492,9 @@
       {%
         {\small\color{mcmPrimary!60}\MakeUppercase{Section}\ %
          \insertsectionnumber.\insertsubsectionnumber}\\[0.3cm]
-        {\usebeamerfont{frametitle}\color{mcmPrimary}\insertsubsection}%
+        % \mcmTitleFont for the same reason as on the section page above.
+        {\mcmTitleFont\usebeamerfont{frametitle}\color{mcmPrimary}%
+         \insertsubsection}%
       };
   \end{tikzpicture}%
 }

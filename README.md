@@ -30,7 +30,7 @@ The theme supports standard, alert, and example blocks, each with a coloured acc
 ![Alert and example blocks](img/blockspage.png)
 *Alert and example blocks — Kraft on the left, DeepBlue on the right.*
 
-Lists use custom geometric markers at every nesting level.
+Lists are marked with the running font's own en dash at every nesting level, so the mark follows the size and weight of the text it belongs to.
 
 ![Itemize and enumerate](img/itemspage.png)
 *Itemize and enumerate — Kraft on the left, DeepBlue on the right.*
@@ -64,6 +64,19 @@ Clone the repository and place `beamerthememidcenturymodern.sty` in the same dir
 ```
 
 Compile with LuaLaTeX.
+
+## Typography
+
+Body text is set in **TeX Gyre Heros** (a Helvetica) and titles in **TeX Gyre
+Adventor** (an Avant Garde Gothic), letterspaced and uppercased. Both ship with
+TeX Live, so nothing needs installing and the theme renders the same everywhere.
+
+Override either in your preamble, after loading the theme:
+
+```latex
+\setsansfont{Font Name}                      % body
+\renewfontfamily\mcmTitleFont{Font Name}     % titles
+```
 
 ## Availability
 
