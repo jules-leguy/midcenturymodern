@@ -40,10 +40,14 @@
 % ---------------------------------------------------------------------------
 % FONTS
 % ---------------------------------------------------------------------------
+% \if@mcmfontspec records whether the fonts below really are fontspec
+% families: \addfontfeature (used for the letterspaced title-page capitals)
+% only works on a font fontspec itself selected.
+\newif\if@mcmfontspec
 \IfFontExistsTF{TeX Gyre Heros}{%
-  \setsansfont{TeX Gyre Heros}%
+  \setsansfont{TeX Gyre Heros}\@mcmfontspectrue
 }{%
-  \IfFontExistsTF{Helvetica}{\setsansfont{Helvetica}}{}%
+  \IfFontExistsTF{Helvetica}{\setsansfont{Helvetica}\@mcmfontspectrue}{}%
 }
 \renewcommand{\familydefault}{\sfdefault}
 
@@ -52,9 +56,38 @@
 % percentage of the font size, so it scales with the title auto-fit on its own.
 \IfFontExistsTF{TeX Gyre Adventor}{%
   \newfontfamily\mcmTitleFont{TeX Gyre Adventor}[LetterSpace=6.0]%
+  \@mcmfontspectrue
 }{%
   \let\mcmTitleFont\sffamily
 }
+
+% Secondary title-page text (subtitle, author, institute, date) is set in
+% widely letterspaced capitals -- the mid-century way of ranking a title block
+% by tracking rather than by size or tint. The tracked font is derived from
+% \mcmTitleFont at use time, so a user who redefines the title font gets the
+% tracked variant of their own font too. Disable with \mcmTitleMetaCapsfalse.
+\newcommand{\mcmTitleMetaTracking}{14.0}
+\newcommand{\mcm@metatrack}{\addfontfeature{LetterSpace=\mcmTitleMetaTracking}}
+\if@mcmfontspec\else\let\mcm@metatrack\relax\fi
+\newcommand{\mcmTitleMetaFont}{\mcmTitleFont\mcm@metatrack}
+\newif\ifmcmTitleMetaCaps
+\mcmTitleMetaCapstrue
+\newcommand{\mcmTitleMetaFormat}[1]{%
+  \ifmcmTitleMetaCaps{\mcmTitleMetaFont\mcm@upper{#1}}\else#1\fi}
+
+% \mcm@upper: \MakeUppercase for a beamer title field.  Beamer prefixes
+% \insertauthor and \insertinstitute with two \def's that give \inst and
+% \and the meaning that field wants (\quad between authors, a line break
+% between institutes).  The case changer expands its argument and cannot
+% expand a \def, which raises three errors per title page and mangles the
+% separators.  So: expand the field once, run those \def's here -- as
+% \protected macros, so the case changer copies \inst/\and through
+% untouched instead of expanding \quad or \\[1em] into uppercased garbage --
+% and hand it only what is left, the text itself.
+\long\def\mcm@upper#1{\begingroup\expandafter\mcm@stripdefs#1\mcm@stop}
+\long\def\mcm@stripdefs{\@ifnextchar\def{\mcm@takedef}{\mcm@upperrest}}
+\long\def\mcm@takedef\def#1#2{\protected\def#1{#2}\mcm@stripdefs}
+\long\def\mcm@upperrest#1\mcm@stop{\MakeUppercase{#1}\endgroup}
 
 % Uppercase titles (default on). Disable: \mcmTitleUppercasefalse
 \newif\ifmcmTitleUppercase
@@ -509,13 +542,18 @@
 %   \mcmLineSpacing        scan line spacing                (default 0.18cm)
 %   \mcmTitleBlockWidth    width of the text block          (default 0.88\paperwidth)
 %   \mcmTitleRightMargin   its distance to the right edge   (default 0.06\paperwidth)
-%   \mcmTitleTopMargin     clearance below the top edge     (default 0.75cm)
+%   \mcmTitleTopMargin     clearance below the top edge     (default 1.30cm)
 %   \mcmTitleFooterGap     clearance above the footer strip (default 0.5cm)
 %
 % Type sizes and vertical rhythm (all scaled together by the auto-fit below)
 %   \mcmTitleFS \mcmSubtitleFS \mcmAuthorFS \mcmInstituteFS \mcmDateFS
-%   \mcmTitleSubtitleSep \mcmTitleAuthorSep \mcmTitleInstituteSep
-%   \mcmTitleDateSep
+%   \mcmTitleSubtitleSep \mcmTitleRuleSep \mcmTitleAuthorSep
+%   \mcmTitleInstituteSep \mcmTitleDateSep
+%   \mcmTitleRuleWidth \mcmTitleRuleThickness
+%
+% Subtitle, author, institute and date are set in letterspaced capitals
+% (\mcmTitleMetaFormat); \mcmTitleMetaCapsfalse gives them back as written,
+% which is what a nine-name author list wants.
 %
 % AUTO-FIT.  Title, subtitle, author and institute are typeset into a single
 % box which is then measured.  Too tall for the space between the top margin
@@ -551,7 +589,7 @@
 \newlength{\mcmTitleBlockWidth}
 \newlength{\mcmTitleRightMargin}
 \newlength{\mcmTitleTopMargin}
-\setlength{\mcmTitleTopMargin}{0.75cm}
+\setlength{\mcmTitleTopMargin}{1.30cm}
 \newlength{\mcmTitleFooterGap}
 \setlength{\mcmTitleFooterGap}{0.5cm}
 % (set here, not \AtBeginDocument, so a preamble override wins)
@@ -559,16 +597,27 @@
 \setlength{\mcmTitleRightMargin}{0.06\paperwidth}
 
 % --- Type sizes and vertical rhythm on the title page ----------------------
+% The secondary fields are small: their rank comes from the letterspaced
+% capitals, not from size. The author stays at 9.5pt on purpose -- larger, a
+% four-author line breaks between first and last name once the auto-fit stops
+% shrinking it (it is a matter of width, not of the growth cap).
 \newlength{\mcmTitleFS}     \setlength{\mcmTitleFS}{21pt}
-\newlength{\mcmSubtitleFS}  \setlength{\mcmSubtitleFS}{12.3pt}
-\newlength{\mcmAuthorFS}    \setlength{\mcmAuthorFS}{14.4pt}
-\newlength{\mcmInstituteFS} \setlength{\mcmInstituteFS}{9pt}
-\newlength{\mcmDateFS}      \setlength{\mcmDateFS}{7pt}
+\newlength{\mcmSubtitleFS}  \setlength{\mcmSubtitleFS}{8.5pt}
+\newlength{\mcmAuthorFS}    \setlength{\mcmAuthorFS}{9.5pt}
+\newlength{\mcmInstituteFS} \setlength{\mcmInstituteFS}{8pt}
+\newlength{\mcmDateFS}      \setlength{\mcmDateFS}{6.5pt}
 
-\newlength{\mcmTitleSubtitleSep}  \setlength{\mcmTitleSubtitleSep}{0.25cm}
-\newlength{\mcmTitleAuthorSep}    \setlength{\mcmTitleAuthorSep}{0.50cm}
-\newlength{\mcmTitleInstituteSep} \setlength{\mcmTitleInstituteSep}{0.08cm}
+% The rule sits under the title *and its subtitle*: the subtitle names the
+% talk, not the people giving it, so it belongs with the title. Hence the
+% tight title/subtitle gap and the equal gaps on either side of the rule.
+\newlength{\mcmTitleSubtitleSep}  \setlength{\mcmTitleSubtitleSep}{0.22cm}
+\newlength{\mcmTitleRuleSep}      \setlength{\mcmTitleRuleSep}{0.42cm}
+\newlength{\mcmTitleAuthorSep}    \setlength{\mcmTitleAuthorSep}{0.42cm}
+\newlength{\mcmTitleInstituteSep} \setlength{\mcmTitleInstituteSep}{0.18cm}
 \newlength{\mcmTitleDateSep}      \setlength{\mcmTitleDateSep}{0.45cm}
+
+\newlength{\mcmTitleRuleWidth}     \setlength{\mcmTitleRuleWidth}{2.2cm}
+\newlength{\mcmTitleRuleThickness} \setlength{\mcmTitleRuleThickness}{0.7pt}
 
 % --- Auto-fit bounds, in percent of the nominal size -----------------------
 \newcommand{\mcmTitleMinScale}{55}   % never shrink below 55%
@@ -622,15 +671,20 @@
       \mcm@tifny{\insertsubtitle}{%
         \vskip\mcm@tsc{\mcmTitleSubtitleSep}%
         {\usebeamerfont{subtitle}\mcm@tfs{\mcmSubtitleFS}{1.25}%
-         \color{mcmPrimaryAccent!60!white}\insertsubtitle\par}}%
+         \color{mcmPrimaryAccent!60!white}%
+         \mcmTitleMetaFormat{\insertsubtitle}\par}}%
+      \mcm@tifny{\inserttitle}{%
+        \vskip\mcm@tsc{\mcmTitleRuleSep}%
+        {\color{mcmPrimaryFg}%
+         \rule{\mcm@tsc{\mcmTitleRuleWidth}}{\mcmTitleRuleThickness}\par}}%
       \mcm@tifny{\insertauthor}{%
         \vskip\mcm@tsc{\mcmTitleAuthorSep}%
         {\usebeamerfont{author}\mcm@tfs{\mcmAuthorFS}{1.20}%
-         \color{mcmPrimaryFg}\insertauthor\par}}%
+         \color{mcmPrimaryFg}\mcmTitleMetaFormat{\insertauthor}\par}}%
       \mcm@tifny{\insertinstitute}{%
         \vskip\mcm@tsc{\mcmTitleInstituteSep}%
         {\usebeamerfont{institute}\mcm@tfs{\mcmInstituteFS}{1.30}%
-         \color{mcmPrimaryFg}\insertinstitute\par}}%
+         \color{mcmPrimaryFg}\mcmTitleMetaFormat{\insertinstitute}\par}}%
     \end{minipage}}%
 }
 
@@ -737,7 +791,7 @@
     \begin{minipage}{\mcmTitleBlockWidth}\raggedleft
       \mcm@tifny{\insertdate}{%
         {\usebeamerfont{date}\fontsize{\the\mcmDateFS}{1.35\mcmDateFS}\selectfont
-         \color{mcmPrimaryFg}\insertdate\par}}%
+         \color{mcmPrimaryFg}\mcmTitleMetaFormat{\insertdate}\par}}%
     \end{minipage}}%
   %
   % Room available to the title block, and the y of its floor.
