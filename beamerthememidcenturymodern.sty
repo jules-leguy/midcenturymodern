@@ -537,9 +537,10 @@
 % TITLE PAGE
 %
 % Layout knobs
-%   \mcmFooterHeight       footer strip height              (default 5em)
+%   \mcmFooterHeight       footer strip height              (default 4.15em)
 %   \mcmLogoVOffset        logo vertical offset             (default 0cm)
-%   \mcmLineSpacing        scan line spacing                (default 0.18cm)
+%   \mcmLineSpacing        scan line spacing                (default 0.15cm)
+%   \mcmTitleStripRef      strip height the text block sits on (default 5em)
 %   \mcmTitleBlockWidth    width of the text block          (default 0.88\paperwidth)
 %   \mcmTitleRightMargin   its distance to the right edge   (default 0.06\paperwidth)
 %   \mcmTitleTopMargin     clearance below the top edge     (default 1.30cm)
@@ -576,14 +577,18 @@
 \newsavebox{\mcmTitleGraphicBox}
 \newlength{\mcmLogoW}
 \newlength{\mcmLogoH}
+% Strip height. 4.15em is 1.6cm at the default 11pt; the floor is the logo,
+% 0.8cm tall for the demo's 3cm-wide mark, which leaves it 0.4cm of air.
 \newlength{\mcmFooterHeight}
-\setlength{\mcmFooterHeight}{5em}
+\setlength{\mcmFooterHeight}{4.15em}
 \newlength{\mcmLogoVOffset}
 \setlength{\mcmLogoVOffset}{0cm}
 \newif\if@mcmhaslogo
 
+% Scan line spacing, kept at ~9.3% of the strip height so the seven lines hold
+% the same proportion of it they had when the strip was taller.
 \newlength{\mcmLineSpacing}
-\setlength{\mcmLineSpacing}{0.18cm}
+\setlength{\mcmLineSpacing}{0.15cm}
 
 % --- Text block geometry ---------------------------------------------------
 \newlength{\mcmTitleBlockWidth}
@@ -595,6 +600,18 @@
 % (set here, not \AtBeginDocument, so a preamble override wins)
 \setlength{\mcmTitleBlockWidth}{0.88\paperwidth}
 \setlength{\mcmTitleRightMargin}{0.06\paperwidth}
+
+% --- Where the title block's floor sits ------------------------------------
+% The floor follows max(\mcmFooterHeight, \mcmTitleStripRef), not the strip
+% itself: a shorter strip then frees coloured background under the date instead
+% of pulling the whole block down (and letting the auto-fit grow it). 5em is the
+% height the strip had when the block's position was settled, so shortening the
+% strip to 4.15em left everything above it exactly where it was. A *taller*
+% strip still pushes the block up. \setlength{\mcmTitleStripRef}{0pt} makes the
+% block follow the strip again.
+\newlength{\mcmTitleStripRef}
+\setlength{\mcmTitleStripRef}{5em}
+\newlength{\mcmTitleFloorH}
 
 % --- Type sizes and vertical rhythm on the title page ----------------------
 % The secondary fields are small: their rank comes from the letterspaced
@@ -795,7 +812,11 @@
     \end{minipage}}%
   %
   % Room available to the title block, and the y of its floor.
-  \setlength{\mcmTitleBase}{\dimexpr\mcmFooterHeight+\mcmTitleFooterGap\relax}%
+  \setlength{\mcmTitleFloorH}{\mcmFooterHeight}%
+  \ifdim\mcmTitleFloorH<\mcmTitleStripRef
+    \setlength{\mcmTitleFloorH}{\mcmTitleStripRef}%
+  \fi
+  \setlength{\mcmTitleBase}{\dimexpr\mcmTitleFloorH+\mcmTitleFooterGap\relax}%
   \ifdim\mcm@tboxh{\mcmTitleDateBox}>\z@
     \addtolength{\mcmTitleBase}{\dimexpr\mcm@tboxh{\mcmTitleDateBox}
                                        +\mcmTitleDateSep\relax}%
@@ -820,7 +841,7 @@
     \ifdim\mcm@tboxh{\mcmTitleDateBox}>\z@
       \node[anchor=south east, inner sep=0pt]
         at ([xshift=-\mcmTitleRightMargin,
-             yshift=\dimexpr\mcmFooterHeight+\mcmTitleFooterGap\relax]current page.south east)
+             yshift=\dimexpr\mcmTitleFloorH+\mcmTitleFooterGap\relax]current page.south east)
         {\usebox{\mcmTitleDateBox}};
     \fi
   \end{tikzpicture}%
