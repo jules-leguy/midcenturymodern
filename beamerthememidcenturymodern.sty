@@ -854,7 +854,12 @@
     \addtolength{\mcmTitleMass}{\dimexpr\mcm@tboxh{\mcmTitleDateBox}
                                        +\mcmTitleDateSep\relax}%
   \fi
-  \setlength{\mcmTitleAir}{\dimexpr0.5\paperheight-0.5\mcmTitleFloorH
+  % Centred on the strip that is actually drawn (\mcmFooterHeight), not on the
+  % reference height the *sizing* uses: the air must read equal above and below,
+  % and the eye measures it to the strip it can see.  A shorter strip therefore
+  % lowers the mass by half the difference -- but never resizes it, which is
+  % what \mcmTitleStripRef is there to guarantee.
+  \setlength{\mcmTitleAir}{\dimexpr0.5\paperheight-0.5\mcmFooterHeight
                                   -0.5\mcmTitleMass\relax}%
   \ifdim\mcmTitleAir<\mcmTitleTopMin
     \setlength{\mcmTitleAir}{\mcmTitleTopMin}%
