@@ -601,6 +601,11 @@
 \setlength{\mcmTitleBlockWidth}{0.88\paperwidth}
 \setlength{\mcmTitleRightMargin}{0.06\paperwidth}
 
+% Never let the mass rise closer than this to the top edge (it only bites when
+% the block is still too tall at \mcmTitleMinScale).
+\newlength{\mcmTitleTopMin}
+\setlength{\mcmTitleTopMin}{0.45cm}
+
 % --- Where the title block's floor sits ------------------------------------
 % The floor follows max(\mcmFooterHeight, \mcmTitleStripRef), not the strip
 % itself: a shorter strip then frees coloured background under the date instead
@@ -645,7 +650,11 @@
 \newsavebox{\mcmTitleBlockBox}
 \newsavebox{\mcmTitleDateBox}
 \newsavebox{\mcmTitleProbeBox}
+\newsavebox{\mcmTitleEmptyBox}
+\newif\if@mcmhasdate       % set while the date box is built
 \newlength{\mcmTitleAvail}   % vertical room the block must fit in
+\newlength{\mcmTitleMass}    % block + its gap to the date + the date
+\newlength{\mcmTitleAir}     % empty space above the mass (= below it)
 \newlength{\mcmTitleBase}    % y of the bottom of that room, from page south
 \newlength{\mcmTitleTop}     % y of the top of the block, from page south
 \newlength{\mcmTitleFSa}
@@ -663,10 +672,15 @@
   \fontsize{\the\mcmTitleFSa}{\the\mcmTitleFSb}\selectfont}
 
 % Emit #2 only if #1 typesets to something. Measured in a parbox so that
-% fields containing \\ (multi-line institutes, author lists) are legal.
+% fields containing \\ (multi-line institutes, author lists) are legal -- and
+% compared against an *empty* parbox, not against zero: an empty \parbox is
+% 2.74pt tall, not 0pt, so testing >\z@ called every field non-empty and left
+% the separation of each absent one behind.
 \newcommand{\mcm@tifny}[2]{%
   \sbox{\mcmTitleProbeBox}{\parbox{\mcmTitleBlockWidth}{#1}}%
-  \ifdim\dimexpr\ht\mcmTitleProbeBox+\dp\mcmTitleProbeBox\relax>\z@ #2\fi}
+  \sbox{\mcmTitleEmptyBox}{\parbox{\mcmTitleBlockWidth}{}}%
+  \ifdim\dimexpr\ht\mcmTitleProbeBox+\dp\mcmTitleProbeBox\relax
+        >\dimexpr\ht\mcmTitleEmptyBox+\dp\mcmTitleEmptyBox\relax #2\fi}
 
 % Height (height + depth) of a box, as a dimen expression.
 \newcommand{\mcm@tboxh}[1]{\dimexpr\ht#1+\dp#1\relax}
@@ -804,9 +818,11 @@
   % Date: pinned just above the footer strip, at its nominal size (it is
   % small enough already), and its height is reserved before the main block
   % is fitted so the two can never collide.
+  \global\@mcmhasdatefalse
   \sbox{\mcmTitleDateBox}{%
     \begin{minipage}{\mcmTitleBlockWidth}\raggedleft
       \mcm@tifny{\insertdate}{%
+        \global\@mcmhasdatetrue
         {\usebeamerfont{date}\fontsize{\the\mcmDateFS}{1.35\mcmDateFS}\selectfont
          \color{mcmPrimaryFg}\mcmTitleMetaFormat{\insertdate}\par}}%
     \end{minipage}}%
@@ -817,7 +833,7 @@
     \setlength{\mcmTitleFloorH}{\mcmTitleStripRef}%
   \fi
   \setlength{\mcmTitleBase}{\dimexpr\mcmTitleFloorH+\mcmTitleFooterGap\relax}%
-  \ifdim\mcm@tboxh{\mcmTitleDateBox}>\z@
+  \if@mcmhasdate
     \addtolength{\mcmTitleBase}{\dimexpr\mcm@tboxh{\mcmTitleDateBox}
                                        +\mcmTitleDateSep\relax}%
   \fi
@@ -825,23 +841,35 @@
                                     -\mcmTitleBase\relax}%
   \mcm@tfit
   %
-  % Top edge of the block: centred in the room that is left, but never above
-  % the top margin (which is where it lands if the block is still too tall at
-  % \mcmTitleMinScale).
-  \setlength{\mcmTitleTop}{\dimexpr\mcmTitleBase+0.5\mcmTitleAvail
-                                  +0.5\ht\mcmTitleBlockBox
-                                  +0.5\dp\mcmTitleBlockBox\relax}%
-  \ifdim\mcmTitleTop>\dimexpr\paperheight-\mcmTitleTopMargin\relax
-    \setlength{\mcmTitleTop}{\dimexpr\paperheight-\mcmTitleTopMargin\relax}%
+  % Placement.  The mass -- the block, its gap to the date, and the date -- is
+  % centred in the empty area between the top edge and the strip, so a page
+  % carries the same amount of air above the title as below the date.  (Sizing
+  % and placement are separate: \mcmTitleTopMargin above bounds how *much*
+  % room the mass may take, this decides where that mass sits.  Before, the
+  % date was pinned to the strip and only the block was centred above it,
+  % which on a dense page left roughly three times more air at the top than
+  % under the date.)
+  \setlength{\mcmTitleMass}{\mcm@tboxh{\mcmTitleBlockBox}}%
+  \if@mcmhasdate
+    \addtolength{\mcmTitleMass}{\dimexpr\mcm@tboxh{\mcmTitleDateBox}
+                                       +\mcmTitleDateSep\relax}%
   \fi
+  \setlength{\mcmTitleAir}{\dimexpr0.5\paperheight-0.5\mcmTitleFloorH
+                                  -0.5\mcmTitleMass\relax}%
+  \ifdim\mcmTitleAir<\mcmTitleTopMin
+    \setlength{\mcmTitleAir}{\mcmTitleTopMin}%
+  \fi
+  \setlength{\mcmTitleTop}{\dimexpr\paperheight-\mcmTitleAir\relax}%
   \begin{tikzpicture}[remember picture, overlay]
     \node[anchor=north east, inner sep=0pt]
       at ([xshift=-\mcmTitleRightMargin, yshift=\mcmTitleTop]current page.south east)
       {\usebox{\mcmTitleBlockBox}};
-    \ifdim\mcm@tboxh{\mcmTitleDateBox}>\z@
-      \node[anchor=south east, inner sep=0pt]
+    % The date travels with the block, \mcmTitleDateSep below it.
+    \if@mcmhasdate
+      \node[anchor=north east, inner sep=0pt]
         at ([xshift=-\mcmTitleRightMargin,
-             yshift=\dimexpr\mcmTitleFloorH+\mcmTitleFooterGap\relax]current page.south east)
+             yshift=\dimexpr\mcmTitleTop-\mcm@tboxh{\mcmTitleBlockBox}
+                            -\mcmTitleDateSep\relax]current page.south east)
         {\usebox{\mcmTitleDateBox}};
     \fi
   \end{tikzpicture}%
