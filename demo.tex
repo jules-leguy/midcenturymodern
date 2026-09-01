@@ -304,22 +304,37 @@
 % =====================================================================
 
 \begin{frame}{Adjustable Parameters}
-  \begin{block}{Lengths}
-    \begin{itemize}
-      \item \texttt{\textbackslash mcmFrameTitleLeft} — frame title left padding
-      \item \texttt{\textbackslash mcmBlockTitleIndent} — block title indent
-      \item \texttt{\textbackslash mcmBlockSep} — gap above and below blocks
-      \item \texttt{\textbackslash mcmTitleWordSpacing} — title page word spacing
-      \item \texttt{\textbackslash mcmFooterHeight} — title page footer height
-      \item \texttt{\textbackslash mcmLogoVOffset} — logo vertical offset
-    \end{itemize}
-  \end{block}
+  \framesubtitle{Every slide can carry a subtitle like this one}
+  \begin{columns}[T]
+    \begin{column}{0.56\textwidth}
+      \begin{block}{Lengths}
+        \begin{itemize}
+          \item \texttt{\textbackslash mcmFrameTitleLeft} — frame title left padding
+          \item \texttt{\textbackslash mcmFrameTitleHeight} — one-line title band
+          \item \texttt{\textbackslash mcmFrameSubtitleGrow} — height a subtitle adds
+          \item \texttt{\textbackslash mcmBlockTitleIndent} — block title indent
+          \item \texttt{\textbackslash mcmBlockSep} — gap around blocks
+          \item \texttt{\textbackslash mcmBandPad} — block title band padding
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \begin{column}{0.40\textwidth}
+      \begin{block}{Lengths (cont.)}
+        \begin{itemize}
+          \item \texttt{\textbackslash mcmFrameTitleRise}
+          \item \texttt{\textbackslash mcmTitleWordSpacing}
+          \item \texttt{\textbackslash mcmFooterHeight}
+          \item \texttt{\textbackslash mcmLogoVOffset}
+        \end{itemize}
+      \end{block}
 
-  \begin{block}{Toggles}
-    \begin{itemize}
-      \item \texttt{\textbackslash mcmTitleUppercasefalse} — disable uppercase titles
-    \end{itemize}
-  \end{block}
+      \begin{block}{Toggles}
+        \begin{itemize}
+          \item \texttt{\textbackslash mcmTitleUppercasefalse}
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
 \end{frame}
 
 \begin{frame}{Customisation Examples}

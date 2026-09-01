@@ -103,6 +103,15 @@
    \ifmcmTitleUppercase\MakeUppercase{#1}\else#1\fi}%
 }
 
+% Helper: the frame subtitle, in the *body* face, sentence case, never
+% tracked. The display face is wide: the same sentence set in it runs to the
+% right margin and reads as a second title rather than as a line explaining
+% the first. Inside the band the hierarchy is carried by face, case and size,
+% the title above already having the capitals. Switch families only -- a
+% \normalfont here would silently undo the series asked for by
+% \setbeamerfont{framesubtitle}.
+\newcommand{\mcmFrameSubtitleFormat}[1]{{\sffamily#1}}
+
 \mode<presentation>{
   \usetheme{default}
   \usefonttheme{professionalfonts}
@@ -145,9 +154,7 @@
 \colorlet{mcmBlockTitleFg}{mcmDeepBlue}
 \colorlet{mcmScanLine}{mcmDeepBlue!55}
 \colorlet{mcmAlert}{mcmPink}
-\colorlet{mcmAlertBg}{mcmLightPink}
 \colorlet{mcmExample}{mcmMintTitle}
-\colorlet{mcmExampleBg}{mcmMintBlock}
 
 % ---------------------------------------------------------------------------
 % THEME COMMAND
@@ -164,9 +171,7 @@
     \colorlet{mcmBlockTitleFg}{mcmTerracotta}%
     \colorlet{mcmScanLine}{mcmTerracotta!55}%
     \colorlet{mcmAlert}{mcmAmber}%
-    \colorlet{mcmAlertBg}{mcmLightAmber}%
     \colorlet{mcmExample}{mcmSage}%
-    \colorlet{mcmExampleBg}{mcmLightSage}%
     \mcm@applytheme
   }{%
     \colorlet{mcmPrimary}{mcmDeepBlue}%
@@ -178,19 +183,35 @@
     \colorlet{mcmBlockTitleFg}{mcmDeepBlue}%
     \colorlet{mcmScanLine}{mcmDeepBlue!55}%
     \colorlet{mcmAlert}{mcmPink}%
-    \colorlet{mcmAlertBg}{mcmLightPink}%
     \colorlet{mcmExample}{mcmMintTitle}%
-    \colorlet{mcmExampleBg}{mcmMintBlock}%
     \mcm@applytheme
   }%
 }
 
+% The four pastels used to be four hand-picked hex values, and measuring them
+% showed no common rule at all: expressed as their own accent mixed into the
+% page, mcmLightPink was 2 %, mcmLightSage 6 %, mcmMintBlock 7 % and
+% mcmLightAmber 12 % — six times' spread, which is why the alert block was
+% barely visible in DeepBlue and clearly visible in Kraft. Every block colour
+% is now built from its accent by one rule (roadmap point 7, "socle B"):
+%   body  = accent!12!mcmBg     the tinted surface
+%   band  = accent!35!mcmBg     the title band, two values of the same pastel
+%   title = accent!75!black     dark enough to read on the band
+% The named pastels are kept in the palette above for anyone who uses them
+% directly, but no block reads them any more.
 \newcommand{\mcm@applytheme}{%
+  \colorlet{mcmAlertBg}{mcmAlert!12!mcmBg}%
+  \colorlet{mcmAlertBandBg}{mcmAlert!35!mcmBg}%
+  \colorlet{mcmAlertBandFg}{mcmAlert!75!black}%
+  \colorlet{mcmExampleBg}{mcmExample!12!mcmBg}%
+  \colorlet{mcmExampleBandBg}{mcmExample!35!mcmBg}%
+  \colorlet{mcmExampleBandFg}{mcmExample!75!black}%
   \setbeamercolor{frametitle}{fg=mcmPrimaryFg, bg=mcmPrimary}%
+  \setbeamercolor{framesubtitle}{fg=mcmPrimaryAccent, bg=mcmPrimary}%
   \setbeamercolor{block title}{fg=mcmBlockTitleFg, bg=mcmBg}%
-  \setbeamercolor{block title alerted}{fg=mcmAlert, bg=mcmAlertBg}%
+  \setbeamercolor{block title alerted}{fg=mcmAlertBandFg, bg=mcmAlertBandBg}%
   \setbeamercolor{block body alerted}{fg=mcmBlack, bg=mcmAlertBg}%
-  \setbeamercolor{block title example}{fg=mcmExample, bg=mcmExampleBg}%
+  \setbeamercolor{block title example}{fg=mcmExampleBandFg, bg=mcmExampleBandBg}%
   \setbeamercolor{block body example}{fg=mcmBlack, bg=mcmExampleBg}%
   \setbeamercolor{alerted text}{fg=mcmAlert}%
   \setbeamercolor{example text}{fg=mcmExample}%
@@ -227,47 +248,296 @@
 \setbeamerfont{institute}{size=\small}
 \setbeamerfont{date}{size=\scriptsize}
 \setbeamerfont{frametitle}{size=\large, series=\bfseries}
+\setbeamerfont{framesubtitle}{size=\small, series=\mdseries}
 \setbeamerfont{block title}{size=\normalsize, series=\bfseries}
 \setbeamerfont{section in toc}{size=\normalsize, series=\bfseries}
 \setbeamerfont{subsection in toc}{size=\small}
 
 % ---------------------------------------------------------------------------
-% FRAME TITLE — coloured band with accent line below
+% FRAME TITLE — coloured band with accent line below, title + optional subtitle
 %
-% Left padding: \mcmFrameTitleLeft (default 0.35cm)
+% Knobs
+%   \mcmFrameTitleLeft    0.35cm  left padding of the band
+%   \mcmFrameTitleRight   0.40cm  right padding
+%   \mcmFrameTitleHeight  1.10cm  height of a one-line band; the white above
+%                                 and below the text is derived from it, so
+%                                 this one length sets the whole band
+%   \mcmFrameSubtitleSep  0.03cm  title to subtitle, on top of the line's own
+%                                 baselineskip: enough to tie the two lines
+%                                 together, not enough to separate them
+%   \mcmFrameTitleRise    0pt     manual nudge: the text sits that much higher
+%                                 in the band. The optical correction a line
+%                                 of capitals needs is applied automatically
+%                                 (see the template), this is only for taste
+%   \mcmFrameSubtitleSink 1pt     how much lower than geometric centre a
+%                                 title+subtitle pair sits. Two reasons, both
+%                                 optical: the pair is top-heavy (bold
+%                                 capitals over a small light line), and the
+%                                 accent rule adds 0.8pt of visible band
+%                                 below. Centred by measurement it reads as
+%                                 high — Jules, 2026-09-01
+%   \mcmFrameSubtitleGrow 0.30cm  all the height a one-line subtitle adds to
+%                                 the band. The subtitle's own line rides in
+%                                 the white a one-line band already carries;
+%                                 this is only what has to be given back so
+%                                 the two lines are not pressed against the
+%                                 edges. At 0 the band is strictly unchanged
+%                                 but the worst case (an accented capital over
+%                                 a line of descenders) is left with 1.7pt of
+%                                 white top and bottom, which reads as glued;
+%                                 0.30cm leaves 5.5pt there and 7.2pt in the
+%                                 ordinary case, against the 9.6pt of a
+%                                 one-line band.
+%   \setbeamerfont/color{framesubtitle}, \mcmFrameSubtitleFormat
+%
+% The band measures its content and grows: a `\framesubtitle`, or a title long
+% enough to wrap, used to be typeset into a `\vbox to 1.10cm` and simply ran
+% out through the bottom edge and across the accent line. The line is drawn at
+% the band's real height, so it follows, and the body starts below it.
+%
+% A one-line title comes out at exactly \mcmFrameTitleHeight with its ink where
+% the theme has always put it — existing decks and screenshots do not move.
+%
+% Three traps here:
+%
+% 1. The height is measured on a *strutted* copy of the content and the
+%    unstrutted copy is what gets printed, centred in it. Measuring the printed
+%    copy instead makes the band's height follow the letters of the title: the
+%    demo's own "Customisation Examples (cont.)" grew the band by 2.4pt over
+%    its neighbours, because parentheses descend. Struts make the height depend
+%    on the number of lines and nothing else, while centring the real ink keeps
+%    an all-capitals line optically centred instead of sitting low by its
+%    (absent) descender. The content is therefore built twice — so a
+%    \footnote or anything else with a side effect does not belong in a frame
+%    title.
+% 2. `\ifx\insertframesubtitle\@empty` is not to be trusted for "is this field
+%    empty" (see the title page, where the same test on \insertsubtitle is
+%    never true). \mcm@ftifny answers it by measurement: the field goes into a
+%    \parbox whose height is compared with that of an empty one — an empty
+%    \parbox is 2.74pt tall, not 0pt, so the comparison must be against an
+%    empty box and never against \z@.
+% 3. The subtitle is not uppercased and not tracked, and the band is ragged
+%    right: a wrapping title justified to the margin comes out with gaping
+%    word spaces, and the tracked capitals of \mcmTitleMetaFormat are for the
+%    title page's meta lines — a sentence set that way is unreadable.
 % ---------------------------------------------------------------------------
 \newlength{\mcmFrameTitleLeft}
 \setlength{\mcmFrameTitleLeft}{0.35cm}
 
+\newlength{\mcmFrameTitleRight}
+\setlength{\mcmFrameTitleRight}{0.40cm}
+
+\newlength{\mcmFrameTitleHeight}
+\setlength{\mcmFrameTitleHeight}{1.10cm}
+
+\newlength{\mcmFrameSubtitleSep}
+\setlength{\mcmFrameSubtitleSep}{0.03cm}
+
+\newlength{\mcmFrameSubtitleGrow}
+\setlength{\mcmFrameSubtitleGrow}{0.30cm}
+
+\newlength{\mcmFrameTitleRise}
+\setlength{\mcmFrameTitleRise}{0pt}
+
+\newlength{\mcmFrameSubtitleSink}
+\setlength{\mcmFrameSubtitleSink}{1pt}
+
+\newcommand{\mcmFrameTitleWidth}{%
+  \dimexpr\paperwidth-\mcmFrameTitleLeft-\mcmFrameTitleRight\relax}
+
+\newsavebox{\mcm@ftbox}      % the content as printed
+\newsavebox{\mcm@ftref}      % the same, strutted, for the height
+\newsavebox{\mcm@ftline}     % one strutted line of title, for the white
+\newsavebox{\mcm@ftsline}    % one strutted line of subtitle
+\newsavebox{\mcm@ftprobe}
+\newsavebox{\mcm@ftvoid}
+\newlength{\mcm@fth}
+\newlength{\mcm@ftnom}   % content height by line count
+\newlength{\mcm@fttop}   % white above the capitals
+\newlength{\mcm@ftbls}     % \baselineskip of the title font
+\newlength{\mcm@ftsbls}    % \baselineskip of the subtitle font
+\newcount\mcm@ftnt         % lines in the title
+\newcount\mcm@ftns         % lines in the subtitle
+\newif\if@mcmftsub
+
+\newcommand{\mcm@ftstrut}{\vphantom{Xp}}
+
+% "#1 is not empty" — measured, not tested with \ifx. (The title page has its
+% own copy of this, \mcm@tifny, tied to \mcmTitleBlockWidth.)
+\newcommand{\mcm@ftifny}[2]{%
+  \sbox\mcm@ftprobe{\parbox{\mcmFrameTitleWidth}{#1}}%
+  \sbox\mcm@ftvoid{\parbox{\mcmFrameTitleWidth}{}}%
+  \ifdim\dimexpr\ht\mcm@ftprobe+\dp\mcm@ftprobe\relax
+       >\dimexpr\ht\mcm@ftvoid+\dp\mcm@ftvoid\relax #2\fi}
+
+% The band's content. #1 is \mcm@ftstrut for the copy that is measured and
+% \relax for the copy that is printed.
+% The content, as a \vtop: its \ht is the FIRST line's height and its \dp
+% everything below that first baseline. That is what the placement below needs
+% — a minipage would not do, [c] putting the reference point in the middle and
+% [t] putting it at the very top of the box, neither of which is a baseline.
+% #1 is \mcm@ftstrut for the copy that is measured and \relax for the copy
+% that is printed.
+\newcommand{\mcm@ftbuild}[1]{%
+  \vtop{\hsize\mcmFrameTitleWidth
+    \parindent\z@\raggedright\hyphenpenalty=5000\relax
+    % \noindent FIRST: \usebeamercolor drops a colour whatsit, and a whatsit
+    % contributed in vertical mode becomes the \vtop's first item — its \ht
+    % would then be 0 and the whole content would hang below the baseline,
+    % which is not what the placement below expects.
+    {\usebeamerfont{frametitle}\noindent\usebeamercolor[fg]{frametitle}%
+     #1\mcmTitleFormat{\insertframetitle}\if@mcmftsub\else#1\fi\par}%
+    \if@mcmftsub
+      \vskip\mcmFrameSubtitleSep
+      {\usebeamerfont{framesubtitle}\noindent\usebeamercolor[fg]{framesubtitle}%
+       \mcmFrameSubtitleFormat{\insertframesubtitle}#1\par}%
+    \fi}}
+
+% How many lines each field takes, and at what baselineskip. \prevgraf is the
+% line count of the paragraph just ended; it has to be read inside the box and
+% carried out with \global.
+\newcommand{\mcm@ftcount}{%
+  \global\mcm@ftnt=1 \global\mcm@ftns=0
+  \setbox\mcm@ftref\vbox{\hsize\mcmFrameTitleWidth
+    \raggedright\hyphenpenalty=5000\relax
+    {\usebeamerfont{frametitle}\global\mcm@ftbls=\baselineskip
+     \mcmTitleFormat{\insertframetitle}\par\global\mcm@ftnt=\prevgraf}%
+    \if@mcmftsub
+      {\usebeamerfont{framesubtitle}\global\mcm@ftsbls=\baselineskip
+       \mcmFrameSubtitleFormat{\insertframesubtitle}\par
+       \global\mcm@ftns=\prevgraf}%
+    \fi}%
+  \ifnum\mcm@ftnt<1 \global\mcm@ftnt=1 \fi}
+
 \setbeamertemplate{frametitle}{%
   \nointerlineskip
+  \@mcmftsubfalse
+  \mcm@ftifny{\insertframesubtitle}{\@mcmftsubtrue}%
+  % The band's height is a *line count*, never a measurement of the ink: one
+  % line is \mcmFrameTitleHeight, every further title line adds one title
+  % baselineskip, and a subtitle adds the separation plus its own lines. That
+  % is what keeps the band — and the body under it — from shifting by a point
+  % or two between slides because one title has an accented capital and the
+  % next has none. Measuring the box instead moved the demo's own
+  % "Customisation Examples (cont.)" down by 2.4pt: parentheses descend.
+  \mcm@ftcount
+  % the reference: one strutted line of title, as a \vtop, so \ht is the
+  % line's height above its baseline and \dp the descender the strut reserves
+  \sbox\mcm@ftline{\vtop{\hsize\mcmFrameTitleWidth\parindent\z@
+      \usebeamerfont{frametitle}\mcm@ftstrut\par}}%
+  \sbox\mcm@ftsline{\vtop{\hsize\mcmFrameTitleWidth\parindent\z@
+      \usebeamerfont{framesubtitle}\mcm@ftstrut\par}}%
+  \setlength{\mcm@fth}{\mcmFrameTitleHeight}%
+  \advance\mcm@fth\mcm@ftnt\mcm@ftbls
+  \advance\mcm@fth-\mcm@ftbls
+  % The first subtitle line rides in the white a one-line band already carries
+  % (some 22pt of it), so it costs \mcmFrameSubtitleGrow rather than a whole
+  % line: 0.30cm instead of the 14.7pt a second line would otherwise add.
+  % Every further subtitle line, like every further title line, does add its
+  % own baselineskip — past two lines the white really has been spent.
+  \if@mcmftsub
+    \advance\mcm@fth\mcmFrameSubtitleGrow
+    \ifnum\mcm@ftns>1
+      \advance\mcm@fth\mcm@ftns\mcm@ftsbls
+      \advance\mcm@fth-\mcm@ftsbls
+    \fi
+  \fi
+  % The content's *nominal* height, by the same line count — what the band
+  % would hold if every line were exactly one strutted line.
+  % Careful: the depth to count is the LAST line's, not the title's. Adding the
+  % title's descender when a subtitle follows counts a depth that sits in the
+  % middle of the block, and the pair comes out a point too high.
+  \setlength{\mcm@ftnom}{\ht\mcm@ftline}%
+  \advance\mcm@ftnom\mcm@ftnt\mcm@ftbls
+  \advance\mcm@ftnom-\mcm@ftbls
+  \if@mcmftsub
+    \advance\mcm@ftnom\mcmFrameSubtitleSep
+    \advance\mcm@ftnom\mcm@ftns\mcm@ftsbls
+    \advance\mcm@ftnom\dp\mcm@ftsline
+  \else
+    \advance\mcm@ftnom\dp\mcm@ftline
+  \fi
+  \sbox\mcm@ftbox{\mcm@ftbuild{\relax}}%
+  % Overflow guard: should the ink ever be taller than the band the line count
+  % asked for (a huge font override), give it room rather than let it run out.
+  % The margin is deliberately small — it must not undo the line above.
+  \ifdim\dimexpr\ht\mcm@ftbox+\dp\mcm@ftbox+0.12cm\relax>\mcm@fth
+    \setlength{\mcm@fth}{\dimexpr\ht\mcm@ftbox+\dp\mcm@ftbox+0.12cm\relax}%
+  \fi
+  % --- where the text sits in the band -------------------------------------
+  % The white above is measured to the CAPITALS and computed from the line
+  % count, never from the ink: the box is placed by a fixed \vskip and its
+  % height is forced to that of one strutted line, so the first baseline lands
+  % at the same place on every slide. Centring the ink instead — which is what
+  % \vfil...\vfil around the real box does — lifts a title whose glyphs have
+  % depth: "Customisation Examples (cont.)" sat 1.5pt higher than its
+  % neighbours because parentheses descend, and that is the "too high on some
+  % slides" this replaces. Accents now hang into the white above and
+  % descenders into the white below, as they do in the blocks.
+  %
+  % Then one correction: what the eye centres is the ink block, from the
+  % capitals of the first line down to the LAST BASELINE, not the strutted box
+  % whose bottom sits a descender lower. So half the last line's reference
+  % descender is given back to the white above — the title's own when it is
+  % alone, the subtitle's when there is one. Without it the pair of lines
+  % reads as sitting high in the band.
+  \setlength{\mcm@fttop}{0.5\dimexpr\mcm@fth-\mcm@ftnom\relax}%
+  \if@mcmftsub
+    \advance\mcm@fttop0.5\dp\mcm@ftsline
+    \advance\mcm@fttop\mcmFrameSubtitleSink
+  \else
+    \advance\mcm@fttop0.5\dp\mcm@ftline
+  \fi
+  \advance\mcm@fttop-\mcmFrameTitleRise
+  \ifdim\mcm@fttop<\z@\setlength{\mcm@fttop}{\z@}\fi
+  \ht\mcm@ftbox=\ht\mcm@ftline
   \begin{beamercolorbox}[%
       wd=\paperwidth,
-      ht=1.10cm, dp=0.0cm,
-      leftskip=\mcmFrameTitleLeft, rightskip=0.4cm]{frametitle}%
-    \vbox to 1.10cm{%
-      \vfil
-      \usebeamerfont{frametitle}\mcmTitleFormat{\insertframetitle}%
-      \ifx\insertframesubtitle\@empty\else
-        \hspace{0.4em}{\small\color{mcmPrimaryAccent!70}\insertframesubtitle}%
-      \fi
-      \vfil
+      ht=\mcm@fth, dp=0.0cm,
+      leftskip=\mcmFrameTitleLeft, rightskip=\mcmFrameTitleRight]{frametitle}%
+    \vbox to \mcm@fth{%
+      \vskip\mcm@fttop
+      \noindent\usebox\mcm@ftbox\par
+      \vss
     }%
   \end{beamercolorbox}%
+  % The accent line is drawn *in the flow*, in a box of zero height so it
+  % takes no space, and never as a `remember picture, overlay` tikzpicture:
+  % pgf resolves `current page` anchors at shipout, and a yshift written as
+  % \mcm@fth is re-expanded there too — with whatever value that length holds
+  % by then. The line then lands inside the band on a slide whose band is
+  % taller than the last one's. A literal 1.10cm never showed the bug because
+  % it could not change.
+  % Bleeding to the page edges is done the way beamercolorbox does it: an
+  % \hbox to\textwidth whose two glues may shrink by the frame margins. A bare
+  % \rule{\paperwidth} starts at the text block's left edge instead and leaves
+  % the first 0.76cm of the line unpainted.
   \nointerlineskip
-  \begin{tikzpicture}[remember picture, overlay]
-    \fill[mcmPrimaryFg]
-      ([yshift=-1.10cm]current page.north west)
-      rectangle ([yshift=-1.10cm - 0.8pt]current page.north east);
-  \end{tikzpicture}%
+  \vbox to 0pt{%
+    \hbox to\textwidth{%
+      \hskip0pt minus\beamer@leftmargin\relax
+      \color{mcmPrimaryFg}\rule{\paperwidth}{0.8pt}%
+      \hskip0pt minus\beamer@rightmargin\relax}%
+    \vss}%
+  \nointerlineskip
 }
 
 % ---------------------------------------------------------------------------
-% BLOCKS — pip + title, single colorbox per block
+% BLOCKS
 %
-% Internal padding: \mcmBlockPad (default 0.45em)
-% Title indent: \mcmBlockTitleIndent (default 0.3em)
-% Gap to neighbours: \mcmBlockSep (default 1em)
+% A plain block is a pip, a title and its text on the page background. An
+% alert or example block is a *title band* in a strong value of its own pastel
+% over a body in the pale one (roadmap point 7: base "B" + treatment "J3",
+% settled 2026-09-01 after seven rounds of mock-ups in local_testing/blocks/).
+%
+% Knobs
+%   \mcmBlockPad          0.45em  horizontal padding inside a block
+%   \mcmBlockPadTop       0.55em  white above the title's ink        (6.0pt/11pt)
+%   \mcmBlockPadBot       0.55em  white below the last baseline      (6.0pt/11pt)
+%   \mcmBandPad           0.47em  white above the capital and below the
+%                                 baseline of a title band           (5.2pt/11pt)
+%   \mcmBlockTitleIndent  0.3em   title indent; the pip hangs left of it
+%   \mcmBlockSep          1em     visible gap a block leaves around itself
 %
 % \mcmBlockSep is the *visible* gap a block leaves around itself, and stacking
 % blocks needs no manual \vspace: half of it is placed above and half below.
@@ -278,7 +548,7 @@
 % is visible — it is the coloured margin around the text. On a plain block the
 % background is mcmBg, the same colour as the page, so the identical inset is
 % invisible whitespace, and two stacked plain blocks read as though they were
-% pushed 2*(\mcmBlockPad+0.5ex) further apart than two coloured ones.
+% pushed 2*\mcmBlockInset further apart than two coloured ones.
 %
 % So a plain block subtracts that invisible inset back out of the skips around
 % it, and coloured blocks do not. The visible gap then comes out at
@@ -308,9 +578,57 @@
 %
 % (The subtraction assumes the plain "block body" colour keeps a bg — beamer
 % only applies colsep* when one is set. Blanking it would over-subtract.)
+%
+% ---- VERTICAL WHITE: five traps, every one of them measured on rendered
+% ---- pages at 600dpi, not read off the source ------------------------------
+%
+% 1. `vmode` is NOT optional on these beamercolorboxes. Without it beamer runs
+%    \leavevmode just before the content, a \vskip there splits the paragraph
+%    in two, and TeX slides ~3.1pt of interline glue in above the title: the
+%    padding then bites only from the bottom. That was the whole of the third
+%    round of mock-ups, discarded for this bug.
+%
+% 2. colsep* and sep put the same space at the top and the bottom as at the
+%    sides. 0.45em + 0.5ex = 7.82pt is right horizontally and too much
+%    vertically, so every box opens and closes with a negative \vskip that
+%    trims it back to the wanted value. Change \mcmBlockPad or the sep= and
+%    those trims follow automatically — they are written as differences.
+%
+% 3. A line's height and depth follow the glyphs that are actually in it. A
+%    title with no descender ("Limite") made a band 2.2pt shorter than one with
+%    ("Exemple"), and an accented capital made it 0.9pt taller. Every title and
+%    every body's last line therefore carries \mcmBlockStrut (\vphantom{Xp}),
+%    the reference capital-plus-descender, and what an accent sticks out above
+%    that reference is measured and taken off the white above. The band is then
+%    pad + capital + pad whatever the letters, and descenders hang into the
+%    bottom white the way accents hang into the top one.
+%
+% 4. The strut has to be at BOTH ends of the title, and the overshoot has to be
+%    measured on the real first line — hence the \vtop at \linewidth in
+%    \mcm@blockrefs, whose \ht is by definition the first line. Measuring the
+%    title in an \hbox instead (as the first version did) charges the top white
+%    for an accent that ends up on the second line, and leaves the last line
+%    with no depth at all: a two-line title then swung 4.3pt in height.
+%
+% 5. The title indent is \advance\leftskip, never \leftskip=: the
+%    beamercolorbox builds its own left inset out of that same register
+%    (beamerbasecolor.sty), so assigning to it drags the whole title 7.8pt to
+%    the left. The pip stays in an \llap, so it marks the first line only.
+%
+% The title is typeset twice — once measured, once printed — so a \footnote or
+% anything else with a side effect does not belong in a block title.
 % ---------------------------------------------------------------------------
 \newlength{\mcmBlockPad}
 \setlength{\mcmBlockPad}{0.45em}
+
+\newlength{\mcmBlockPadTop}
+\setlength{\mcmBlockPadTop}{0.55em}
+
+\newlength{\mcmBlockPadBot}
+\setlength{\mcmBlockPadBot}{0.55em}
+
+\newlength{\mcmBandPad}
+\setlength{\mcmBandPad}{0.47em}
 
 \newlength{\mcmBlockTitleIndent}
 \setlength{\mcmBlockTitleIndent}{0.3em}
@@ -318,9 +636,10 @@
 \newlength{\mcmBlockSep}
 \setlength{\mcmBlockSep}{1em}
 
-% The inset beamer draws inside a block's background box. The 0.5ex must match
-% the sep= given to each beamercolorbox below.
-\newcommand{\mcmBlockInset}{\dimexpr\mcmBlockPad+0.5ex\relax}
+% The invisible inset of a plain block, on which the gap correction rests: the
+% white above the title's ink and below the last baseline, i.e. the mean of the
+% two vertical pads.
+\newcommand{\mcmBlockInset}{\dimexpr0.5\mcmBlockPadTop+0.5\mcmBlockPadBot\relax}
 
 % Half of \mcmBlockSep, less the invisible inset of a plain block.
 \newcommand{\mcmBlockHalfSep}{\dimexpr0.5\mcmBlockSep-\mcmBlockInset\relax}
@@ -340,53 +659,101 @@
 \newcommand{\mcmBlockAboveColoured}{\vskip0.5\mcmBlockSep}
 \newcommand{\mcmBlockBelowColoured}{\vskip0.5\mcmBlockSep\nointerlineskip}
 
+% --- line metrics ----------------------------------------------------------
+\newlength{\mcm@bover}                 % accent above the reference capital
+\newlength{\mcm@bdesc}                 % reference descender
+\newlength{\mcm@pover}                 % pip above the first line of the title
+\newsavebox{\mcm@titlebox}
+\newsavebox{\mcm@refbox}
+\newsavebox{\mcm@pipbox}
+
+\newcommand{\mcmBlockStrut}{\vphantom{Xp}}
+
+% The title as it will really be broken, plus the reference line. Call inside
+% the colorbox, where \linewidth is the block's width.
+\newcommand{\mcm@blockrefs}{%
+  \sbox\mcm@refbox{\usebeamerfont{block title}Xp}%
+  \setbox\mcm@titlebox\vtop{\hsize\linewidth
+    \usebeamerfont{block title}%
+    \noindent\mcmBlockStrut\insertblocktitle\mcmBlockStrut\par}%
+  \setlength{\mcm@bdesc}{\dp\mcm@refbox}%
+  \setlength{\mcm@bover}{\dimexpr\ht\mcm@titlebox-\ht\mcm@refbox\relax}%
+  \ifdim\mcm@bover<\z@\setlength{\mcm@bover}{\z@}\fi
+  \sbox\mcm@pipbox{\rule{3pt}{1.75ex}}%
+  \setlength{\mcm@pover}{\dimexpr\ht\mcm@pipbox-\ht\mcm@titlebox\relax}%
+  \ifdim\mcm@pover<\z@\setlength{\mcm@pover}{\z@}\fi}
+
+% top of a block whose first line carries the pip (the pip is taller than the
+% capitals, so what it sticks out comes off the white)
+\newcommand{\mcm@toptrim}[1]{\vskip\dimexpr#1-\mcmBlockPad-0.5ex-\mcm@pover\relax}
+% top of a block body under a band: no pip, nothing to deduct
+\newcommand{\mcm@toptrimflat}[1]{\vskip\dimexpr#1-\mcmBlockPad-0.5ex\relax}
+% bottom of a block body: the white is counted under the last BASELINE, so a
+% descender hangs into it instead of making the block 2.3pt taller. Only when
+% the body ends in horizontal mode — after a list there is no line of ours to
+% strut, and the reference descender must then not be subtracted either.
+\newcommand{\mcm@bottrim}[1]{%
+  \ifhmode
+    \sbox\mcm@refbox{\mcmBlockStrut}%
+    \mcmBlockStrut\par
+    \vskip\dimexpr#1-\dp\mcm@refbox-\mcmBlockPad-0.5ex\relax
+  \else
+    \vskip\dimexpr#1-\mcmBlockPad-0.5ex\relax
+  \fi}
+
+% --- plain block: pip + title, no visible background -----------------------
 \setbeamertemplate{block begin}{%
   \par\mcmBlockAbove%
   \begin{beamercolorbox}[%
       wd=\textwidth, colsep*=\mcmBlockPad,
-      sep=0.5ex]{block body}%
-    {\hspace{\mcmBlockTitleIndent}%
-     \llap{\textcolor{mcmPip}{\rule{3pt}{1.75ex}}\hspace{0.45em}}%
+      sep=0.5ex, vmode]{block body}%
+    \mcm@blockrefs\mcm@toptrim{\mcmBlockPadTop}%
+    {\advance\leftskip\mcmBlockTitleIndent
+     \noindent\llap{\textcolor{mcmPip}{\rule{3pt}{1.75ex}}\hspace{0.45em}}%
      \usebeamerfont{block title}\usebeamercolor[fg]{block title}%
-     \insertblocktitle\par}%
+     \mcmBlockStrut\insertblocktitle\mcmBlockStrut\par}%
     \vskip0.4ex
     \usebeamerfont{block body}\usebeamercolor[fg]{block body}%
 }
 \setbeamertemplate{block end}{%
-  \end{beamercolorbox}\mcmBlockBelow%
+  \mcm@bottrim{\mcmBlockPadBot}\end{beamercolorbox}\mcmBlockBelow%
+}
+
+% --- coloured blocks: title band over a pale body ---------------------------
+% Two stacked colorboxes. The \vskip-0.5pt closes the hairline the renderer
+% would otherwise show between them; the {\parskip0pt\par}\nointerlineskip
+% keeps the paragraph break between the two boxes from adding anything.
+\newcommand{\mcm@bandbegin}[3]{% #1 band colour, #2 body colour, #3 bullet colour
+  \par\mcmBlockAboveColoured%
+  \begin{beamercolorbox}[%
+      wd=\textwidth, colsep*=\mcmBlockPad,
+      sep=0.5ex, vmode]{#1}%
+    \mcm@blockrefs
+    \vskip\dimexpr\mcmBandPad-\mcmBlockPad-0.5ex-\mcm@bover\relax
+    {\usebeamerfont{block title}\mcmBlockStrut\insertblocktitle\mcmBlockStrut\par}%
+    \par\vskip\dimexpr\mcmBandPad-\mcm@bdesc-\mcmBlockPad-0.5ex\relax
+  \end{beamercolorbox}%
+  {\parskip0pt\par}\nointerlineskip\vskip-0.5pt%
+  \begin{beamercolorbox}[%
+      wd=\textwidth, colsep*=\mcmBlockPad,
+      sep=0.5ex, vmode]{#2}%
+    \mcm@toptrimflat{\mcmBlockPadTop}%
+    \usebeamerfont{block body}\usebeamercolor[fg]{#2}%
+    \renewcommand{\mcmBulletColor}{#3}%
+}
+\newcommand{\mcm@bandend}{%
+  \mcm@bottrim{\mcmBlockPadBot}\end{beamercolorbox}\mcmBlockBelowColoured%
 }
 
 \setbeamertemplate{block alerted begin}{%
-  \par\mcmBlockAboveColoured%
-  \begin{beamercolorbox}[%
-      wd=\textwidth, colsep*=\mcmBlockPad,
-      sep=0.5ex]{block body alerted}%
-    {\hspace{\mcmBlockTitleIndent}%
-     \llap{\textcolor{mcmAlert}{\rule{3pt}{1.75ex}}\hspace{0.45em}}%
-     \usebeamerfont{block title}\usebeamercolor[fg]{block title alerted}%
-     \insertblocktitle\par}%
-    \vskip0.4ex
-    \usebeamerfont{block body}\usebeamercolor[fg]{block body alerted}%
+  \mcm@bandbegin{block title alerted}{block body alerted}{mcmAlert}%
 }
-\setbeamertemplate{block alerted end}{%
-  \end{beamercolorbox}\mcmBlockBelowColoured%
-}
+\setbeamertemplate{block alerted end}{\mcm@bandend}
 
 \setbeamertemplate{block example begin}{%
-  \par\mcmBlockAboveColoured%
-  \begin{beamercolorbox}[%
-      wd=\textwidth, colsep*=\mcmBlockPad,
-      sep=0.5ex]{block body example}%
-    {\hspace{\mcmBlockTitleIndent}%
-     \llap{\textcolor{mcmExample}{\rule{3pt}{1.75ex}}\hspace{0.45em}}%
-     \usebeamerfont{block title}\usebeamercolor[fg]{block title example}%
-     \insertblocktitle\par}%
-    \vskip0.4ex
-    \usebeamerfont{block body}\usebeamercolor[fg]{block body example}%
+  \mcm@bandbegin{block title example}{block body example}{mcmExample}%
 }
-\setbeamertemplate{block example end}{%
-  \end{beamercolorbox}\mcmBlockBelowColoured%
-}
+\setbeamertemplate{block example end}{\mcm@bandend}
 
 % ---------------------------------------------------------------------------
 % ITEMIZE / ENUMERATE — geometric bullets, colour follows theme

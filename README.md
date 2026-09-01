@@ -65,6 +65,17 @@ Clone the repository and place `beamerthememidcenturymodern.sty` in the same dir
 
 Compile with LuaLaTeX.
 
+## Frame titles
+
+Every frame can carry a subtitle. The coloured band takes it on a second line, in the body face, and opens by 3 mm to make room — not by a whole line, since a one-line band already carries the white for it. It does grow by a full line for a title long enough to wrap, or for a subtitle running to a second line.
+
+```latex
+\begin{frame}{Research work}
+  \framesubtitle{Axis 1 — combinatorial optimisation}
+  ...
+\end{frame}
+```
+
 ## Typography
 
 Body text is set in **TeX Gyre Heros** (a Helvetica) and titles in **TeX Gyre
