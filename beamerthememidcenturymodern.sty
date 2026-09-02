@@ -986,13 +986,16 @@
 \newlength{\mcmTitleFloorH}
 
 % --- Type sizes and vertical rhythm on the title page ----------------------
-% The secondary fields are small: their rank comes from the letterspaced
-% capitals, not from size. The author stays at 9.5pt on purpose -- larger, a
-% four-author line breaks between first and last name once the auto-fit stops
-% shrinking it (it is a matter of width, not of the growth cap).
+% The secondary fields are small: their rank comes mostly from the letterspaced
+% capitals, not from size. The one exception is the author, at 11pt: the name
+% is what the reader looks for, so it must clearly outrank the institute below
+% it -- 9.5pt over 8pt was a difference one had to go looking for. 11pt is the
+% ceiling, not a taste: at 12pt the nine-author case of test/titlepage.tex
+% breaks between a first name and its surname (GRETA / KELLWIG), and nothing
+% catches that -- the auto-fit measures height, never the width of a line.
 \newlength{\mcmTitleFS}     \setlength{\mcmTitleFS}{21pt}
 \newlength{\mcmSubtitleFS}  \setlength{\mcmSubtitleFS}{8.5pt}
-\newlength{\mcmAuthorFS}    \setlength{\mcmAuthorFS}{9.5pt}
+\newlength{\mcmAuthorFS}    \setlength{\mcmAuthorFS}{11pt}
 \newlength{\mcmInstituteFS} \setlength{\mcmInstituteFS}{8pt}
 \newlength{\mcmDateFS}      \setlength{\mcmDateFS}{6.5pt}
 
