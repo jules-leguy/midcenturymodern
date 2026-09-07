@@ -7,6 +7,8 @@
 
 **Midcenturymodern** is a modern Beamer template with a retro feel. It requires LuaLaTeX.
 
+Open it in [the Overleaf gallery](https://www.overleaf.com/latex/templates/midcenturymodern-beamer-theme/zdvwhytpqvgf) to start from a working project without installing anything, or clone this repository (see [Getting started](#getting-started)).
+
 
 ## Two built-in themes
 
