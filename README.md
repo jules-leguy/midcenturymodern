@@ -1,4 +1,4 @@
-# Midcenturymodern — a retro-inspired Beamer template
+# MID-CENTURY MODERN
 
 
 <div align="center">
