@@ -63,13 +63,35 @@
 
 % Secondary title-page text (subtitle, author, institute, date) is set in
 % widely letterspaced capitals -- the mid-century way of ranking a title block
-% by tracking rather than by size or tint. The tracked font is derived from
-% \mcmTitleFont at use time, so a user who redefines the title font gets the
-% tracked variant of their own font too. Disable with \mcmTitleMetaCapsfalse.
+% by tracking rather than by size or tint. Disable with \mcmTitleMetaCapsfalse.
+%
+% It is set in UNIVERSALIS ADF, not in the title face: squarer and 8.6% narrower
+% on the line than Adventor at the same size, which reads as the technical
+% counterpart to Adventor's geometry rather than as a second helping of it. The
+% boundary between the two faces is the rule -- title above, everything else
+% below. Universalis ships with TeX Live (fonts/opentype/arkandis/universalis),
+% so this needs no installing; it is loaded BY FILENAME, not by system name, so
+% it resolves from the TeX tree on machines where fontconfig cannot see it
+% (Overleaf among them). Override it wholesale with \renewfontfamily.
+%
+% Consequence to know: redefining \mcmTitleFont now changes the title alone.
+% The meta block used to be derived from it, so an override reached both.
 \newcommand{\mcmTitleMetaTracking}{14.0}
 \newcommand{\mcm@metatrack}{\addfontfeature{LetterSpace=\mcmTitleMetaTracking}}
 \if@mcmfontspec\else\let\mcm@metatrack\relax\fi
-\newcommand{\mcmTitleMetaFont}{\mcmTitleFont\mcm@metatrack}
+\IfFontExistsTF{[UniversalisADFStd-Regular.otf]}{%
+  \newfontfamily\mcmTitleMetaFont{UniversalisADFStd}[%
+    Extension      = .otf,
+    UprightFont    = *-Regular,
+    BoldFont       = *-Bold,
+    ItalicFont     = *-Italic,
+    BoldItalicFont = *-BoldItalic,
+    LetterSpace    = \mcmTitleMetaTracking]%
+}{%
+  % No Universalis: fall back to what the theme did before, the title face
+  % tracked. Nothing breaks, the meta block simply loses the second voice.
+  \newcommand{\mcmTitleMetaFont}{\mcmTitleFont\mcm@metatrack}%
+}
 \newif\ifmcmTitleMetaCaps
 \mcmTitleMetaCapstrue
 \newcommand{\mcmTitleMetaFormat}[1]{%
@@ -86,6 +108,20 @@
 % and hand it only what is left, the text itself.
 \long\def\mcm@upper#1{\begingroup\expandafter\mcm@stripdefs#1\mcm@stop}
 \long\def\mcm@stripdefs{\@ifnextchar\def{\mcm@takedef}{\mcm@upperrest}}
+% A long author line breaks where TeX likes, and TeX may well like the space
+% inside somebody's name: the field is user text and nothing here can tell a
+% first name from a surname. Two things were tried and do not work.
+%
+% Giving \and a negative penalty is BIMODAL, not a nudge: 0 and -5 leave the
+% break inside the name, -10 and beyond put every author on a line of its own.
+% There is no value in between, because \and is a rigid \quad -- a worse
+% breakpoint than a stretchy interword space until the penalty overwhelms the
+% badness, at which point it overwhelms it everywhere. Measured on case 12 of
+% test/titlepage.tex, nine authors.
+%
+% So the field is left alone. Write a long list with \and, which at least
+% offers TeX a wide separator to land on, and bind a name that must not split
+% with a tie: Alice~Vaudrenne.
 \long\def\mcm@takedef\def#1#2{\protected\def#1{#2}\mcm@stripdefs}
 \long\def\mcm@upperrest#1\mcm@stop{\MakeUppercase{#1}\endgroup}
 
@@ -1005,10 +1041,10 @@
 % they are in different groups. Past 10.5pt it starts to rival the title's own
 % measure and the group reads as two titles.
 \newlength{\mcmTitleFS}     \setlength{\mcmTitleFS}{21pt}
-\newlength{\mcmSubtitleFS}  \setlength{\mcmSubtitleFS}{10pt}
-\newlength{\mcmAuthorFS}    \setlength{\mcmAuthorFS}{11pt}
-\newlength{\mcmInstituteFS} \setlength{\mcmInstituteFS}{8pt}
-\newlength{\mcmDateFS}      \setlength{\mcmDateFS}{6.5pt}
+\newlength{\mcmSubtitleFS}  \setlength{\mcmSubtitleFS}{11pt}
+\newlength{\mcmAuthorFS}    \setlength{\mcmAuthorFS}{12pt}
+\newlength{\mcmInstituteFS} \setlength{\mcmInstituteFS}{8.7pt}
+\newlength{\mcmDateFS}      \setlength{\mcmDateFS}{7.1pt}
 
 % The rule sits under the title *and its subtitle*: the subtitle names the
 % talk, not the people giving it, so it belongs with the title. Two pairs of
