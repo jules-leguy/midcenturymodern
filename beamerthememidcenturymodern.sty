@@ -236,6 +236,15 @@
 % The named pastels are kept in the palette above for anyone who uses them
 % directly, but no block reads them any more.
 \newcommand{\mcm@applytheme}{%
+  % The one lighter tint on the title page. It sits on the AUTHOR: the name is
+  % what a reader looks for first, and it is the reason the author line is the
+  % only field given a size of its own. It used to sit on the subtitle, which
+  % left the name tonally indistinguishable from the institute and the date
+  % below it while a secondary descriptor carried the only accent on the page.
+  % Named here rather than written inline so the choice of which line is
+  % emphasised is one \color{mcmTitleEmph} to move, and so the tint follows the
+  % theme.
+  \colorlet{mcmTitleEmph}{mcmPrimaryAccent!60!white}%
   \colorlet{mcmAlertBg}{mcmAlert!12!mcmBg}%
   \colorlet{mcmAlertBandBg}{mcmAlert!35!mcmBg}%
   \colorlet{mcmAlertBandFg}{mcmAlert!75!black}%
@@ -1187,7 +1196,7 @@
       \mcm@tifny{\insertsubtitle}{%
         \vskip\mcm@tsc{\mcm@tsubsep}%
         {\usebeamerfont{subtitle}\mcm@tfs{\mcmSubtitleFS}{1.25}%
-         \color{mcmPrimaryAccent!60!white}%
+         \color{mcmPrimaryFg}%
          \mcmTitleMetaFormat{\insertsubtitle}\par}}%
       \mcm@tifny{\inserttitle}{%
         \vskip\mcm@tsc{\mcm@trulesep}%
@@ -1196,7 +1205,7 @@
       \mcm@tifny{\insertauthor}{%
         \vskip\mcm@tsc{\mcmTitleAuthorSep}%
         {\usebeamerfont{author}\mcm@tfs{\mcmAuthorFS}{1.20}%
-         \color{mcmPrimaryFg}\mcmTitleMetaFormat{\insertauthor}\par}}%
+         \color{mcmTitleEmph}\mcmTitleMetaFormat{\insertauthor}\par}}%
       \mcm@tifny{\insertinstitute}{%
         \vskip\mcm@tsc{\mcmTitleInstituteSep}%
         {\usebeamerfont{institute}\mcm@tfs{\mcmInstituteFS}{1.30}%
