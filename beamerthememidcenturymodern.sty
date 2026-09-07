@@ -236,15 +236,6 @@
 % The named pastels are kept in the palette above for anyone who uses them
 % directly, but no block reads them any more.
 \newcommand{\mcm@applytheme}{%
-  % The one lighter tint on the title page. It sits on the AUTHOR: the name is
-  % what a reader looks for first, and it is the reason the author line is the
-  % only field given a size of its own. It used to sit on the subtitle, which
-  % left the name tonally indistinguishable from the institute and the date
-  % below it while a secondary descriptor carried the only accent on the page.
-  % Named here rather than written inline so the choice of which line is
-  % emphasised is one \color{mcmTitleEmph} to move, and so the tint follows the
-  % theme.
-  \colorlet{mcmTitleEmph}{mcmPrimaryAccent!60!white}%
   \colorlet{mcmAlertBg}{mcmAlert!12!mcmBg}%
   \colorlet{mcmAlertBandBg}{mcmAlert!35!mcmBg}%
   \colorlet{mcmAlertBandFg}{mcmAlert!75!black}%
@@ -1184,6 +1175,12 @@
   \sbox{\mcmTitleBlockBox}{%
     \begin{minipage}{\mcmTitleBlockWidth}%
       \raggedleft
+      % One ink for the whole block. Title, subtitle, rule, author and institute
+      % (and the date, built beside it) are all \mcmPrimaryFg: the order between
+      % them is carried by size, by tracking and by the rule, not by tint. A
+      % lighter tint was tried on the subtitle, then on the author, and either
+      % way it read as a second hierarchy competing with that one.
+      \color{mcmPrimaryFg}%
       % Discourage hyphenation strongly (a hyphen inside an uppercase title
       % reads badly) but do not forbid it: a word longer than the block still
       % has to break somewhere, or it runs off both edges of the slide.
@@ -1192,24 +1189,22 @@
         {\spaceskip=\fontdimen2\font plus \fontdimen3\font minus \fontdimen4\font
          \advance\spaceskip by \mcm@tsc{\mcmTitleWordSpacing}%
          \usebeamerfont{title}\mcm@tfs{\mcmTitleFS}{1.10}%
-         \color{mcmPrimaryFg}\mcmTitleFormat{\inserttitle}\par}}%
+         \mcmTitleFormat{\inserttitle}\par}}%
       \mcm@tifny{\insertsubtitle}{%
         \vskip\mcm@tsc{\mcm@tsubsep}%
         {\usebeamerfont{subtitle}\mcm@tfs{\mcmSubtitleFS}{1.25}%
-         \color{mcmPrimaryFg}%
          \mcmTitleMetaFormat{\insertsubtitle}\par}}%
       \mcm@tifny{\inserttitle}{%
         \vskip\mcm@tsc{\mcm@trulesep}%
-        {\color{mcmPrimaryFg}%
-         \rule{\mcm@tsc{\mcmTitleRuleWidth}}{\mcmTitleRuleThickness}\par}}%
+        {\rule{\mcm@tsc{\mcmTitleRuleWidth}}{\mcmTitleRuleThickness}\par}}%
       \mcm@tifny{\insertauthor}{%
         \vskip\mcm@tsc{\mcmTitleAuthorSep}%
         {\usebeamerfont{author}\mcm@tfs{\mcmAuthorFS}{1.20}%
-         \color{mcmTitleEmph}\mcmTitleMetaFormat{\insertauthor}\par}}%
+         \mcmTitleMetaFormat{\insertauthor}\par}}%
       \mcm@tifny{\insertinstitute}{%
         \vskip\mcm@tsc{\mcmTitleInstituteSep}%
         {\usebeamerfont{institute}\mcm@tfs{\mcmInstituteFS}{1.30}%
-         \color{mcmPrimaryFg}\mcmTitleMetaFormat{\insertinstitute}\par}}%
+         \mcmTitleMetaFormat{\insertinstitute}\par}}%
     \end{minipage}}%
 }
 
