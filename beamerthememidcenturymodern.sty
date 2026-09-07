@@ -1036,8 +1036,62 @@
 % balance without moving the rule, the author, or anything below them by a
 % single pixel. Change one, change the other the same amount, unless you mean
 % to resize the whole block.
+%
+% And the right ratio is not one ratio. A title that WRAPS carries its own
+% interline as a reference: the subtitle has to clear it, or it reads as one
+% more title line, and 0.36 / 0.28 is what does that. A title on ONE line
+% offers no such reference -- the eye has only the gap above the subtitle
+% against the gap below it, and at 1.35 the subtitle floats between the title
+% and the rule instead of joining it. Jules, 2026-09-07: "cela donne
+% l'impression qu'il n'y a pas de bloc cohérent de titre". Hence two pairs,
+% chosen by whether the title is one line or more. Both SUM TO 0.64cm, so the
+% rule, the author and everything below sit at the same height whichever
+% branch is taken -- keep it that way, or a one-line title starts resizing the
+% whole block.
 \newlength{\mcmTitleSubtitleSep}  \setlength{\mcmTitleSubtitleSep}{0.36cm}
 \newlength{\mcmTitleRuleSep}      \setlength{\mcmTitleRuleSep}{0.28cm}
+\newlength{\mcmTitleSubtitleSepOne}\setlength{\mcmTitleSubtitleSepOne}{0.20cm}
+\newlength{\mcmTitleRuleSepOne}   \setlength{\mcmTitleRuleSepOne}{0.44cm}
+
+% Is the title one line, or more? \prevgraf -- what the frame title band uses
+% for the same question -- is WRONG here: a title broken with \\ comes back as
+% one line, so the demo's own two-line title took the one-line branch. Measure
+% instead. The title is typeset into a throwaway \vbox at the block width and
+% at the current auto-fit scale (both matter: the same title is one line at
+% 60% and two at 120%), and its height is compared against one and a half
+% baselineskips of its own font. Same reasoning as \mcm@tifny: measure the
+% box, never trust a macro-level test.
+\newif\if@mcmtsub \@mcmtsubfalse
+\newsavebox{\mcm@ttitlebox}
+\newlength{\mcm@ttitlebls}
+\newcount\mcm@tlines \mcm@tlines=1
+\newlength{\mcm@tsubsep}
+\newlength{\mcm@trulesep}
+\newcommand{\mcm@tcountlines}{%
+  \setbox\mcm@ttitlebox\vbox{\hsize\mcmTitleBlockWidth
+    \raggedleft\hyphenpenalty=5000\relax \exhyphenpenalty=5000\relax
+    {\spaceskip=\fontdimen2\font plus \fontdimen3\font minus \fontdimen4\font
+     \advance\spaceskip by \mcm@tsc{\mcmTitleWordSpacing}%
+     \usebeamerfont{title}\mcm@tfs{\mcmTitleFS}{1.10}%
+     \global\mcm@ttitlebls=\baselineskip
+     \mcmTitleFormat{\inserttitle}\par}}%
+  \ifdim\dimexpr\ht\mcm@ttitlebox+\dp\mcm@ttitlebox\relax
+        >\dimexpr 1.5\mcm@ttitlebls\relax
+    \global\mcm@tlines=2 \else \global\mcm@tlines=1 \fi
+  % The one-line pair is about binding a subtitle to a one-line title. With no
+  % subtitle there is nothing to bind, and the shorter \mcmTitleRuleSep is what
+  % keeps the rule under the title -- without this test, a bare one-line title
+  % (QA cases 02, 03, 12, 23) had its rule drop 0.16cm away from it.
+  \global\@mcmtsubfalse
+  \mcm@tifny{\insertsubtitle}{\global\@mcmtsubtrue}%
+  \setlength{\mcm@tsubsep}{\mcmTitleSubtitleSep}%
+  \setlength{\mcm@trulesep}{\mcmTitleRuleSep}%
+  \ifnum\mcm@tlines>\@ne\else
+    \if@mcmtsub
+      \setlength{\mcm@tsubsep}{\mcmTitleSubtitleSepOne}%
+      \setlength{\mcm@trulesep}{\mcmTitleRuleSepOne}%
+    \fi
+  \fi}
 \newlength{\mcmTitleAuthorSep}    \setlength{\mcmTitleAuthorSep}{0.42cm}
 \newlength{\mcmTitleInstituteSep} \setlength{\mcmTitleInstituteSep}{0.18cm}
 \newlength{\mcmTitleDateSep}      \setlength{\mcmTitleDateSep}{0.45cm}
@@ -1091,6 +1145,7 @@
 
 % Typeset the title/subtitle/author/institute block at the current scale.
 \newcommand{\mcm@tbuild}{%
+  \mcm@tcountlines
   \sbox{\mcmTitleBlockBox}{%
     \begin{minipage}{\mcmTitleBlockWidth}%
       \raggedleft
@@ -1104,12 +1159,12 @@
          \usebeamerfont{title}\mcm@tfs{\mcmTitleFS}{1.10}%
          \color{mcmPrimaryFg}\mcmTitleFormat{\inserttitle}\par}}%
       \mcm@tifny{\insertsubtitle}{%
-        \vskip\mcm@tsc{\mcmTitleSubtitleSep}%
+        \vskip\mcm@tsc{\mcm@tsubsep}%
         {\usebeamerfont{subtitle}\mcm@tfs{\mcmSubtitleFS}{1.25}%
          \color{mcmPrimaryAccent!60!white}%
          \mcmTitleMetaFormat{\insertsubtitle}\par}}%
       \mcm@tifny{\inserttitle}{%
-        \vskip\mcm@tsc{\mcmTitleRuleSep}%
+        \vskip\mcm@tsc{\mcm@trulesep}%
         {\color{mcmPrimaryFg}%
          \rule{\mcm@tsc{\mcmTitleRuleWidth}}{\mcmTitleRuleThickness}\par}}%
       \mcm@tifny{\insertauthor}{%
