@@ -1024,14 +1024,20 @@
 % implies. Jules read exactly that in 2026-09-07: too close to the title, too
 % far from the rule.
 %
-% 0.40 / 0.24 measures 43px above the subtitle, 51px below, and 51 / 45 either
-% side of the rule -- the subtitle still belongs to the title, and the rule is
-% now near enough centred in its own white. Their SUM is what the auto-fit
-% sees, so keeping it at 0.64cm changes the balance without moving the rule,
-% the author, or anything below them by a single pixel. Change one, change the
-% other the same amount, unless you mean to resize the whole block.
-\newlength{\mcmTitleSubtitleSep}  \setlength{\mcmTitleSubtitleSep}{0.40cm}
-\newlength{\mcmTitleRuleSep}      \setlength{\mcmTitleRuleSep}{0.24cm}
+% 0.36 / 0.28 measures, in the same units: 40px above the subtitle, 54px
+% below, and 54 / 45 either side of the rule. The ratio is the point. 0.44 /
+% 0.20 comes out 46 / 48, all but equal -- and equal is wrong: a subtitle
+% equidistant from the title and the rule floats between them instead of
+% belonging to the title. 0.40 / 0.24 (43 / 51) was still read as not quite
+% attached enough. 1.35 is the settled ratio; if the type sizes move again,
+% re-measure and aim for it rather than reusing these lengths.
+%
+% Their SUM is what the auto-fit sees, so keeping it at 0.64cm changes the
+% balance without moving the rule, the author, or anything below them by a
+% single pixel. Change one, change the other the same amount, unless you mean
+% to resize the whole block.
+\newlength{\mcmTitleSubtitleSep}  \setlength{\mcmTitleSubtitleSep}{0.36cm}
+\newlength{\mcmTitleRuleSep}      \setlength{\mcmTitleRuleSep}{0.28cm}
 \newlength{\mcmTitleAuthorSep}    \setlength{\mcmTitleAuthorSep}{0.42cm}
 \newlength{\mcmTitleInstituteSep} \setlength{\mcmTitleInstituteSep}{0.18cm}
 \newlength{\mcmTitleDateSep}      \setlength{\mcmTitleDateSep}{0.45cm}
