@@ -71,6 +71,9 @@ Compile with LuaLaTeX.
 
 Every frame can carry a subtitle. The coloured band takes it on a second line, in the body face, and opens by 3 mm to make room — not by a whole line, since a one-line band already carries the white for it. It does grow by a full line for a title long enough to wrap, or for a subtitle running to a second line.
 
+![Frame title band](img/frametitle.png)
+*The band with a title alone, and with a title and a subtitle — 3 mm apart.*
+
 ```latex
 \begin{frame}{Research work}
   \framesubtitle{Axis 1 — combinatorial optimisation}
