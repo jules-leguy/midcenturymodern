@@ -27,6 +27,11 @@ Select a theme in your preamble:
 
 ## A look at the slides
 
+Every frame title sits in a coloured band, and can carry a subtitle on a second line. The band opens by 3 mm to take it, not by a whole line.
+
+![Frame title band](img/frametitle.png)
+*The band with a title alone, and with a title and a subtitle.*
+
 The theme supports standard, alert, and example blocks, each with a coloured accent that adapts to the active theme.
 
 ![Alert and example blocks](img/blockspage.png)
@@ -66,37 +71,6 @@ Clone the repository and place `beamerthememidcenturymodern.sty` in the same dir
 ```
 
 Compile with LuaLaTeX.
-
-## Frame titles
-
-Every frame can carry a subtitle. The coloured band takes it on a second line, in the body face, and opens by 3 mm to make room — not by a whole line, since a one-line band already carries the white for it. It does grow by a full line for a title long enough to wrap, or for a subtitle running to a second line.
-
-![Frame title band](img/frametitle.png)
-*The band with a title alone, and with a title and a subtitle — 3 mm apart.*
-
-```latex
-\begin{frame}{Research work}
-  \framesubtitle{Axis 1 — combinatorial optimisation}
-  ...
-\end{frame}
-```
-
-## Typography
-
-Body text is set in **TeX Gyre Heros** (a Helvetica) and titles in **TeX Gyre
-Adventor** (an Avant Garde Gothic), letterspaced and uppercased. Both ship with
-TeX Live, so nothing needs installing and the theme renders the same everywhere.
-
-Override either in your preamble, after loading the theme:
-
-```latex
-\setsansfont{Font Name}                      % body
-\renewfontfamily\mcmTitleFont{Font Name}     % titles
-```
-
-## Availability
-
-The theme is also available in the [Overleaf gallery](https://www.overleaf.com/latex/templates/midcenturymodern-beamer-theme/zdvwhytpqvgf).
 
 ## Feedback
 
