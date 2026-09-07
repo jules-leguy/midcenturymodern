@@ -5,7 +5,7 @@
 <img src="/img/sample.png" alt="Sample" width="70%" >
 </div>
 
-**Midcenturymodern** is a modern Beamer template with a retro feel. It requires LuaLaTeX.
+**Mid-Century Modern** is a Beamer template with a retro feel. It requires LuaLaTeX.
 
 Open it in [the Overleaf gallery](https://www.overleaf.com/latex/templates/midcenturymodern-beamer-theme/zdvwhytpqvgf) to start from a working project without installing anything, or clone this repository (see [Getting started](#getting-started)).
 
@@ -47,7 +47,7 @@ Section and subsection pages give the audience a clear visual indication of wher
 ![Section page](img/sectionpages.png)
 *Section page — Kraft on the left, DeepBlue on the right.*
 
-The full demo slides [can be found here](demo.pdf).
+The full demo slides [are available there](demo.pdf).
 
 ## Getting started
 
