@@ -987,14 +987,25 @@
 
 % --- Type sizes and vertical rhythm on the title page ----------------------
 % The secondary fields are small: their rank comes mostly from the letterspaced
-% capitals, not from size. The one exception is the author, at 11pt: the name
-% is what the reader looks for, so it must clearly outrank the institute below
-% it -- 9.5pt over 8pt was a difference one had to go looking for. 11pt is the
-% ceiling, not a taste: at 12pt the nine-author case of test/titlepage.tex
-% breaks between a first name and its surname (GRETA / KELLWIG), and nothing
-% catches that -- the auto-fit measures height, never the width of a line.
+% capitals, not from size. Two exceptions.
+%
+% The author, at 11pt: the name is what the reader looks for, so it must
+% clearly outrank the institute below it -- 9.5pt over 8pt was a difference one
+% had to go looking for. 11pt is the ceiling, not a taste: at 12pt the
+% nine-author case of test/titlepage.tex breaks between a first name and its
+% surname (GRETA / KELLWIG), and nothing catches that -- the auto-fit measures
+% height, never the width of a line.
+%
+% The subtitle, at 10pt (8.5pt until 2026-09-07, "a bit too small" -- Jules).
+% Nothing mechanical bounds it: 8.5, 9.5, 10 and 10.5 all give the 25 cases of
+% test/titlepage.tex zero Overfull and zero errors, and on an uncrowded page
+% the auto-fit does not have to shrink the title to pay for the extra height.
+% The bound is optical. The subtitle belongs to the title group, above the
+% rule, so it may sit close to the author's 11pt without inverting anything --
+% they are in different groups. Past 10.5pt it starts to rival the title's own
+% measure and the group reads as two titles.
 \newlength{\mcmTitleFS}     \setlength{\mcmTitleFS}{21pt}
-\newlength{\mcmSubtitleFS}  \setlength{\mcmSubtitleFS}{8.5pt}
+\newlength{\mcmSubtitleFS}  \setlength{\mcmSubtitleFS}{10pt}
 \newlength{\mcmAuthorFS}    \setlength{\mcmAuthorFS}{11pt}
 \newlength{\mcmInstituteFS} \setlength{\mcmInstituteFS}{8pt}
 \newlength{\mcmDateFS}      \setlength{\mcmDateFS}{6.5pt}
