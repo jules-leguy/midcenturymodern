@@ -1011,47 +1011,37 @@
 \newlength{\mcmDateFS}      \setlength{\mcmDateFS}{6.5pt}
 
 % The rule sits under the title *and its subtitle*: the subtitle names the
-% talk, not the people giving it, so it belongs with the title. So the
-% subtitle stays nearer the title than the rule -- but nearer, not glued.
+% talk, not the people giving it, so it belongs with the title. Two pairs of
+% gaps, chosen by whether the title is one line or more, and both summing to
+% 0.49cm so the rule -- and the author, institute and date under it -- sit at
+% the same height whichever branch is taken. Keep that sum equal, or a
+% one-line title starts resizing the whole block.
 %
-% These two are nominal lengths, and nominal is not what the eye reads. The
-% pair used to be 0.22 / 0.42, "tight above, equal on either side of the rule"
-% -- yet measured on the render (600dpi, ink to ink) that gave 29px above the
-% subtitle and 65px below it, and put the rule 65px under the subtitle against
-% 45px over the author. Nothing is equal there: an all-caps subtitle has no
-% descenders, so the white under its baseline is not the white its line box
-% suggests, and the author's capitals start sooner than a nominal 0.42cm
-% implies. Jules read exactly that in 2026-09-07: too close to the title, too
-% far from the rule.
+% Three things decide these four numbers, none of them obvious from the
+% source:
 %
-% 0.36 / 0.28 measures, in the same units: 40px above the subtitle, 54px
-% below, and 54 / 45 either side of the rule. The ratio is the point. 0.44 /
-% 0.20 comes out 46 / 48, all but equal -- and equal is wrong: a subtitle
-% equidistant from the title and the rule floats between them instead of
-% belonging to the title. 0.40 / 0.24 (43 / 51) was still read as not quite
-% attached enough. 1.35 is the settled ratio; if the type sizes move again,
-% re-measure and aim for it rather than reusing these lengths.
+% 1. NOMINAL LENGTHS ARE NOT WHAT THE EYE READS. Measured on the render, ink
+%    to ink, the gap under an all-caps subtitle is some 20px larger than the
+%    gap above it for the same nominal length: the subtitle has no descenders,
+%    so the white below its baseline is not the white its line box suggests.
+%    Equal lengths look lopsided. Always re-measure on a render; never reason
+%    from these numbers alone.
+% 2. THE SUBTITLE MUST READ AS NEARER THE TITLE THAN THE RULE -- nearer, not
+%    glued, and by a clear margin. Made equidistant it floats between the two
+%    instead of belonging to the title, and the title stops reading as a
+%    block. Aim for roughly 1.4 to 1.7 between the measured gaps.
+% 3. ONE LINE AND SEVERAL ARE DIFFERENT PROBLEMS. A title that WRAPS carries
+%    its own interline as a reference: the subtitle has to clear it or it
+%    reads as one more title line. A title on ONE line offers no such
+%    reference -- and, set flush right, no left edge either -- so it needs the
+%    subtitle closer to bind the two into a group.
 %
-% Their SUM is what the auto-fit sees, so keeping it at 0.64cm changes the
-% balance without moving the rule, the author, or anything below them by a
-% single pixel. Change one, change the other the same amount, unless you mean
-% to resize the whole block.
-%
-% And the right ratio is not one ratio. A title that WRAPS carries its own
-% interline as a reference: the subtitle has to clear it, or it reads as one
-% more title line, and 0.36 / 0.28 is what does that. A title on ONE line
-% offers no such reference -- the eye has only the gap above the subtitle
-% against the gap below it, and at 1.35 the subtitle floats between the title
-% and the rule instead of joining it. Jules, 2026-09-07: "cela donne
-% l'impression qu'il n'y a pas de bloc cohérent de titre". Hence two pairs,
-% chosen by whether the title is one line or more. Both SUM TO 0.64cm, so the
-% rule, the author and everything below sit at the same height whichever
-% branch is taken -- keep it that way, or a one-line title starts resizing the
-% whole block.
-\newlength{\mcmTitleSubtitleSep}  \setlength{\mcmTitleSubtitleSep}{0.36cm}
-\newlength{\mcmTitleRuleSep}      \setlength{\mcmTitleRuleSep}{0.28cm}
-\newlength{\mcmTitleSubtitleSepOne}\setlength{\mcmTitleSubtitleSepOne}{0.20cm}
-\newlength{\mcmTitleRuleSepOne}   \setlength{\mcmTitleRuleSepOne}{0.44cm}
+% If the type sizes move, re-measure and aim for those ratios rather than
+% reusing these lengths.
+\newlength{\mcmTitleSubtitleSep}  \setlength{\mcmTitleSubtitleSep}{0.28cm}
+\newlength{\mcmTitleRuleSep}      \setlength{\mcmTitleRuleSep}{0.21cm}
+\newlength{\mcmTitleSubtitleSepOne}\setlength{\mcmTitleSubtitleSepOne}{0.24cm}
+\newlength{\mcmTitleRuleSepOne}   \setlength{\mcmTitleRuleSepOne}{0.25cm}
 
 % Is the title one line, or more? \prevgraf -- what the frame title band uses
 % for the same question -- is WRONG here: a title broken with \\ comes back as
