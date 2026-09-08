@@ -62,6 +62,7 @@ Clone the repository and place `beamerthememidcenturymodern.sty` in the same dir
 \author{Your Name}
 \institute{Your Institution}
 \date{\today}
+\titlegraphic{\includegraphics[width=3cm]{your-logo.png}}
 
 \begin{document}
 \begin{frame}
@@ -71,6 +72,8 @@ Clone the repository and place `beamerthememidcenturymodern.sty` in the same dir
 ```
 
 Compile with LuaLaTeX.
+
+The logo on the title page is your own: set it with `\titlegraphic`. Leave it out and the scan lines run the full width of the strip.
 
 ## Feedback
 
