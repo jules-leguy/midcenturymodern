@@ -1,0 +1,39 @@
+% Placeholder logo shipped with the demo — "your logo", for the user to replace.
+% Two pages: 1 = Kraft (terracotta), 2 = DeepBlue (navy).
+% Drawn from scratch: a filled disc carrying a knocked-out Sputnik starburst,
+% next to the wordmark in the theme's title face, bold and tightly set.
+%
+% Rebuild:
+%   lualatex your-logo.tex
+%   pdfseparate your-logo.pdf your-logo-%d.pdf
+%   mv your-logo-1.pdf your-logo-kraft.pdf ; mv your-logo-2.pdf your-logo-deepblue.pdf
+%
+% Sizes are final: the artwork is 8.8 mm tall, meant to be placed with
+% \includegraphics[height=0.8cm].
+\documentclass[multi=tikzpicture,border=0.4pt]{standalone}
+\usepackage{fontspec}
+\usepackage{tikz}
+\definecolor{kraftink}{HTML}{9C4732}
+\definecolor{blueink}{HTML}{002D4D}
+\newfontfamily\advtight{TeX Gyre Adventor}[LetterSpace=-1.5]
+\newcommand{\R}{3.7}
+
+% #1 = ink colour
+\newcommand{\mcmlogo}[1]{%
+  \begin{tikzpicture}[x=1mm,y=1mm]
+    \path (0,-4.4) (0,4.4);              % common box, 8.8 mm tall
+    \fill[#1] (0,0) circle (4.3);        % the disc
+    \begin{scope}[scale=0.78]            % the starburst, knocked out of it
+      \foreach \a in {0,45,...,315}{
+        \draw[white,line width=0.5,line cap=round] (0,0) -- (\a:\R-0.55);
+        \fill[white] (\a:\R) circle (0.6);}
+      \fill[white] (0,0) circle (1.05);
+    \end{scope}
+    \node[anchor=west,inner sep=0,text=#1,
+          font=\advtight\bfseries\fontsize{16}{16}\selectfont] at (5.6,0) {your logo};
+  \end{tikzpicture}}
+
+\begin{document}
+\mcmlogo{kraftink}
+\mcmlogo{blueink}
+\end{document}

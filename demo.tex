@@ -21,16 +21,11 @@
 
 
 % --- Logo ---
-% Your own logo goes here. Delete this block and the scan lines run the full
-% width of the strip.
-\titlegraphic{
-  \begin{minipage}{0.21\linewidth}
-    \begin{center}
-    \includegraphics[width=3cm]{logos/logo_kraft.png}
-    % \includegraphics[width=3cm]{logos/logo_deepblue.png}
-    \end{center}
-  \end{minipage}
-}
+% Your own logo goes here — give it a height, not a width: the footer strip is
+% built around the logo's height. Delete this line and the scan lines run the
+% full width of the strip.
+\titlegraphic{\includegraphics[height=0.8cm]{logos/your-logo-kraft.pdf}}
+% \titlegraphic{\includegraphics[height=0.8cm]{logos/your-logo-deepblue.pdf}}
 
 % --- Automatic section/subsection pages ---
 \AtBeginSection[]{%

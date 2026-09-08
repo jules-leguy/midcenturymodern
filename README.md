@@ -62,7 +62,7 @@ Clone the repository and place `beamerthememidcenturymodern.sty` in the same dir
 \author{Your Name}
 \institute{Your Institution}
 \date{\today}
-\titlegraphic{\includegraphics[width=3cm]{your-logo.png}}
+\titlegraphic{\includegraphics[height=0.8cm]{your-logo.pdf}}
 
 \begin{document}
 \begin{frame}
@@ -73,7 +73,7 @@ Clone the repository and place `beamerthememidcenturymodern.sty` in the same dir
 
 Compile with LuaLaTeX.
 
-The logo on the title page is your own: set it with `\titlegraphic`. Leave it out and the scan lines run the full width of the strip.
+The logo on the title page is your own: set it with `\titlegraphic`, giving it a height rather than a width — the footer strip is built around the logo's height. Leave it out and the scan lines run the full width of the strip.
 
 ## Feedback
 
