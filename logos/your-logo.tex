@@ -1,27 +1,29 @@
-% Placeholder logo shipped with the demo — "YOUR LOGO", for the user to replace.
+% Logo shipped with the demo: the theme's own mark, "midcentury / modern", for
+% the user to replace with theirs. The file names keep "your-logo" so the
+% \titlegraphic line in demo.tex says as much.
 % Two pages: 1 = Kraft (terracotta), 2 = DeepBlue (navy).
 %
-% Drawn from primitives, nothing traced: the wordmark sits inside a flat
-% ellipse, with a second, wider ellipse tilted 9 degrees around it — one orbit,
-% the mark it circles being the word itself. The wordmark is in the theme's
-% title face, in letterspaced capitals like the title page's secondary block.
+% Drawn from primitives, nothing traced: two orbits crossed at +/-45 degrees
+% around a small nucleus, over a pale disc printed off register, as in a
+% two-colour job. Each orbit is the ring between an ellipse and a smaller one
+% shifted inside it, so the stroke swells along one side and thins along the
+% other. The wordmark is lowercase TeX Gyre Adventor, the theme's title face,
+% on two lines.
 %
-% Chosen by Jules on 2026-09-08 out of a 42-lockup study (seven marks by six
-% wordmark voices) kept in local_testing/logo-finalists/ — page 15 of its deck,
-% "C3". The five other marks he kept are in that folder's README; nothing else
-% from it is applied.
+% Chosen by Jules on 2026-10-20 out of the study in local_testing/logo-atom/
+% (mark 9 with align.pdf p.2, raised 0.25 mm: raise.pdf p.2).
 %
 % Deliberate choices, all settled by rendering at final size:
-%   - ONE orbit, tilted, and no electrons on it. The electron dots (the same
-%     drawing with two beads at the orbit's ends) were the other half of the
-%     pair he liked; they read as clutter at 0.8 cm.
-%   - The ellipse is FITTED to the wordmark, never hard-coded: change the font
-%     or the size below and the two ellipses follow. A fixed ellipse would set
-%     the padding, not the type.
-%   - Orbit at 0.30 and ellipse at 0.42 in the drawing's own units, i.e. 0.21
-%     and 0.29 mm once the artwork is scaled to 0.8 cm. 0.20 mm is the floor:
-%     thinner and a line falls under the footer strip's own scan lines, which
-%     are the same weight. The orbit is deliberately the lighter of the two.
+%   - Orbits at +/-45, not +/-30: at 30 degrees the two orbits merge into an
+%     almond and the nucleus into a pupil, and the mark reads as an eye.
+%   - The text is centred on the nucleus by its INK, not by its box, then
+%     raised 0.25 mm (\mcmwmrise). The box keeps room under "modern" for a
+%     descender it does not have, so box-centred text sits 0.7 mm high.
+%     Ink extents come from the boxes of the two lines (glyph-true heights
+%     under luaotfload), so changing the words keeps them centred.
+%   - The thin side of an orbit is 0.23 in the drawing's own units (0.55 on
+%     the thick side), i.e. 0.21 mm once placed: just above the 0.20 mm floor
+%     under which a line falls under the footer strip's own scan lines.
 %
 % Rebuild:
 %   lualatex your-logo.tex
@@ -29,43 +31,49 @@
 %   mv tmp-1.pdf your-logo-kraft.pdf ; mv tmp-2.pdf your-logo-deepblue.pdf
 %   rm -f your-logo.aux your-logo.log your-logo.pdf
 %
-% Sizes are final: the page box is 12.0 mm tall (11.7 mm of art plus the
-% standalone border), meant to be placed with \includegraphics[height=0.8cm],
-% which puts it at 2.4 cm wide — against the 3.0 cm of the two-orbit mark it
-% replaces. The theme measures whatever \titlegraphic is handed, so the gap in
-% the scan lines follows on its own.
+% Sizes are final: the artwork is 8.8 mm tall, meant to be placed with
+% \includegraphics[height=0.8cm]. The theme measures whatever \titlegraphic is
+% handed, so the gap in the scan lines follows the logo's width on its own.
 \documentclass[multi=tikzpicture,border=0.4pt]{standalone}
 \usepackage{fontspec}
 \usepackage{tikz}
+\definecolor{mcmBg}{HTML}{F8F6F2}
 \definecolor{kraftink}{HTML}{9C4732}
 \definecolor{blueink}{HTML}{002D4D}
-\newfontfamily\mcmwordmark{TeX Gyre Adventor}[LetterSpace=16.0]
-\newcommand{\mcmwmfont}{\mcmwordmark\fontsize{9.5}{9.5}\selectfont}
-\newcommand{\mcmwmtext}{YOUR LOGO}
-% Half the trailing letterspace, in mm: LetterSpace puts a track after the last
-% letter too, so a box-centred string reads left of centre. size(mm) * LS / 200.
-\newcommand{\mcmwmcorr}{0.27}
+\newfontfamily\mcmwordmark{TeX Gyre Adventor}[LetterSpace=-1.0]
+\newcommand{\mcmwmfont}{\mcmwordmark\fontsize{12.5}{12.5}\selectfont}
+\newcommand{\mcmwmone}{midcentury}
+\newcommand{\mcmwmtwo}{modern}
+\newcommand{\mcmwmrise}{0.25}% mm the text sits above true centre
+\newcommand{\mcmwmx}{5.2}%     mm from the nucleus to the text
 
-% Measuring the wordmark. This MUST run outside any tikzpicture: an \sbox
-% inside one, under standalone[multi=tikzpicture], comes back zero-width, and
-% the ellipse then draws at 9 mm around a 30 mm word with nothing in the log.
-\newsavebox{\mcmbxa}\newsavebox{\mcmbxb}\newsavebox{\mcmbxc}
+% One orbit, tilted by #2: the ring between two ellipses.
+\newcommand{\mcmorbit}[2]{%
+  \fill[#1,even odd rule,rotate=#2]
+    (0,0) ellipse (4.35 and 1.95) (0,0.16) ellipse (4.08 and 1.56);}
+
+% Measuring the two lines. This MUST run outside any tikzpicture: an \sbox
+% inside one, under standalone[multi=tikzpicture], comes back zero-width.
+% \mcmL is the baseline-to-baseline gap; \mcmB the first line's baseline, so
+% that the ink (top of line 1 to bottom of line 2) is centred on 0, then
+% raised.
+\newsavebox{\mcmbxa}\newsavebox{\mcmbxb}
 \newcommand{\mcmfit}{%
-  \sbox\mcmbxa{\mcmwmfont\mcmwmtext}%
-  \sbox\mcmbxb{\mcmwmfont X}\sbox\mcmbxc{\mcmwmfont y}%
-  \pgfmathsetmacro{\mcmTW}{(\the\wd\mcmbxa)/2.84528}%      wordmark width, mm
-  \pgfmathsetmacro{\mcmTH}{((\the\ht\mcmbxb)+(\the\dp\mcmbxc))/2.84528}%
-  \pgfmathsetmacro{\mcmEx}{\mcmTW/2+4.6}%                  inner ellipse
-  \pgfmathsetmacro{\mcmEy}{\mcmTH/2+1.9}%
-  \pgfmathsetmacro{\mcmOx}{\mcmEx+1.4}%                    the orbit
-  \pgfmathsetmacro{\mcmOy}{\mcmEy+1.3}}
+  \sbox\mcmbxa{\mcmwmfont\mcmwmone}\sbox\mcmbxb{\mcmwmfont\mcmwmtwo}%
+  \pgfmathsetmacro{\mcmL}{3.106}%
+  \pgfmathsetmacro{\mcmB}{(\mcmL+((\the\dp\mcmbxb)-(\the\ht\mcmbxa))/2.84528)/2
+                          +\mcmwmrise}}
 
-% #1 = ink colour
 \newcommand{\mcmlogo}[1]{%
   \begin{tikzpicture}[x=1mm,y=1mm]
-    \draw[#1,line width=0.42] (0,0) ellipse ({\mcmEx} and {\mcmEy});
-    \draw[#1,line width=0.30,rotate=-9] (0,0) ellipse ({\mcmOx} and {\mcmOy});
-    \node[inner sep=0,text=#1,font=\mcmwmfont] at (\mcmwmcorr,0) {\mcmwmtext};
+    \path (0,-4.4) (0,4.4);                    % common box, 8.8 mm tall
+    \fill[#1!20!mcmBg] (0.7,-0.5) circle (3.5);
+    \mcmorbit{#1}{45}\mcmorbit{#1}{135}
+    \fill[#1] (0,0) circle (0.6);
+    \node[anchor=base west,inner sep=0,text=#1,font=\mcmwmfont]
+      at (\mcmwmx,\mcmB) {\mcmwmone};
+    \node[anchor=base west,inner sep=0,text=#1,font=\mcmwmfont]
+      at (\mcmwmx,\mcmB-\mcmL) {\mcmwmtwo};
   \end{tikzpicture}}
 
 \begin{document}
