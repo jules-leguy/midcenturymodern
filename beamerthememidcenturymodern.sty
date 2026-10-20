@@ -236,6 +236,10 @@
 % The named pastels are kept in the palette above for anyone who uses them
 % directly, but no block reads them any more.
 \newcommand{\mcm@applytheme}{%
+  % The one lighter tint on the title page, on the SUBTITLE. Named here rather
+  % than written inline so the tint follows the theme. It reads clearly in
+  % Kraft and barely in DeepBlue, where mcmPrimaryFg is already near white.
+  \colorlet{mcmTitleEmph}{mcmPrimaryAccent!60!white}%
   \colorlet{mcmAlertBg}{mcmAlert!12!mcmBg}%
   \colorlet{mcmAlertBandBg}{mcmAlert!35!mcmBg}%
   \colorlet{mcmAlertBandFg}{mcmAlert!75!black}%
@@ -1175,11 +1179,10 @@
   \sbox{\mcmTitleBlockBox}{%
     \begin{minipage}{\mcmTitleBlockWidth}%
       \raggedleft
-      % One ink for the whole block. Title, subtitle, rule, author and institute
-      % (and the date, built beside it) are all \mcmPrimaryFg: the order between
-      % them is carried by size, by tracking and by the rule, not by tint. A
-      % lighter tint was tried on the subtitle, then on the author, and either
-      % way it read as a second hierarchy competing with that one.
+      % One ink for the block, \mcmPrimaryFg, declared once so a field added
+      % later inherits it. The subtitle alone is set in the lighter
+      % mcmTitleEmph; everything else (and the date, built beside it) is
+      % ranked by size, by tracking and by the rule.
       \color{mcmPrimaryFg}%
       % Discourage hyphenation strongly (a hyphen inside an uppercase title
       % reads badly) but do not forbid it: a word longer than the block still
@@ -1193,7 +1196,7 @@
       \mcm@tifny{\insertsubtitle}{%
         \vskip\mcm@tsc{\mcm@tsubsep}%
         {\usebeamerfont{subtitle}\mcm@tfs{\mcmSubtitleFS}{1.25}%
-         \mcmTitleMetaFormat{\insertsubtitle}\par}}%
+         \color{mcmTitleEmph}\mcmTitleMetaFormat{\insertsubtitle}\par}}%
       \mcm@tifny{\inserttitle}{%
         \vskip\mcm@tsc{\mcm@trulesep}%
         {\rule{\mcm@tsc{\mcmTitleRuleWidth}}{\mcmTitleRuleThickness}\par}}%
