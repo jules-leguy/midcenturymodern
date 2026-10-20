@@ -1,5 +1,8 @@
 <h1 align="center">
-<img src="img/logo.svg" alt="midcentury modern" width="340">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="img/logo-dark.svg">
+  <img src="img/logo-light.svg" alt="midcentury modern" width="300">
+</picture>
 </h1>
 
 
