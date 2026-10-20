@@ -1,4 +1,6 @@
-# MID-CENTURY MODERN
+<h1 align="center">
+<img src="img/logo.svg" alt="midcentury modern" width="340">
+</h1>
 
 
 <div align="center">
