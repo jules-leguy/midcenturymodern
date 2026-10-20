@@ -952,10 +952,11 @@
 %   \mcmTitleRightMargin   its distance to the right edge   (default 0.06\paperwidth)
 %   \mcmTitleTopMargin     clearance below the top edge     (default 1.30cm)
 %   \mcmTitleFooterGap     clearance above the footer strip (default 0.5cm)
+%   \mcmTitleAxisMinAir    least air the rule's axis may leave (default 1.0cm)
 %
 % Type sizes and vertical rhythm (all scaled together by the auto-fit below)
 %   \mcmTitleFS \mcmSubtitleFS \mcmAuthorFS \mcmInstituteFS \mcmDateFS
-%   \mcmTitleSubtitleSep \mcmTitleRuleSep \mcmTitleAuthorSep
+%   \mcmTitleSubtitleSep \mcmTitleRuleGap \mcmTitleAuthorSep
 %   \mcmTitleInstituteSep \mcmTitleDateSep
 %   \mcmTitleRuleWidth \mcmTitleRuleThickness
 %
@@ -1013,6 +1014,14 @@
 \newlength{\mcmTitleTopMin}
 \setlength{\mcmTitleTopMin}{0.45cm}
 
+% The rule is the page's axis: it sits on the middle of the coloured area, the
+% title group above it and the author group below, so it stays at the same
+% height from one deck to the next. It leaves that middle only as far as
+% needed to keep this much air above and below the mass. Larger values give
+% back equal air top and bottom sooner; 0pt holds the axis at any cost.
+\newlength{\mcmTitleAxisMinAir}
+\setlength{\mcmTitleAxisMinAir}{1.0cm}
+
 % --- Where the title block's floor sits ------------------------------------
 % The floor follows max(\mcmFooterHeight, \mcmTitleStripRef), not the strip
 % itself: a shorter strip then frees coloured background under the date instead
@@ -1051,13 +1060,12 @@
 \newlength{\mcmDateFS}      \setlength{\mcmDateFS}{7.1pt}
 
 % The rule sits under the title *and its subtitle*: the subtitle names the
-% talk, not the people giving it, so it belongs with the title. Two pairs of
-% gaps, chosen by whether the title is one line or more, and both summing to
-% 0.49cm so the rule -- and the author, institute and date under it -- sit at
-% the same height whichever branch is taken. Keep that sum equal, or a
-% one-line title starts resizing the whole block.
+% talk, not the people giving it, so it belongs with the title. The gap from
+% the title to its subtitle comes in two values, chosen by whether the title
+% is one line or more; the rule then sits \mcmTitleRuleGap below the last
+% baseline above it, whichever branch was taken (see \mcmTitleRuleGap).
 %
-% Three things decide these four numbers, none of them obvious from the
+% Three things decide the subtitle gaps, none of them obvious from the
 % source:
 %
 % 1. NOMINAL LENGTHS ARE NOT WHAT THE EYE READS. Measured on the render, ink
@@ -1079,8 +1087,10 @@
 % If the type sizes move, re-measure and aim for those ratios rather than
 % reusing these lengths.
 \newlength{\mcmTitleSubtitleSep}  \setlength{\mcmTitleSubtitleSep}{0.28cm}
-\newlength{\mcmTitleRuleSep}      \setlength{\mcmTitleRuleSep}{0.21cm}
 \newlength{\mcmTitleSubtitleSepOne}\setlength{\mcmTitleSubtitleSepOne}{0.24cm}
+% No longer read (\mcmTitleRuleGap replaced them); kept so a preamble that
+% sets them still compiles.
+\newlength{\mcmTitleRuleSep}      \setlength{\mcmTitleRuleSep}{0.21cm}
 \newlength{\mcmTitleRuleSepOne}   \setlength{\mcmTitleRuleSepOne}{0.25cm}
 
 % Is the title one line, or more? \prevgraf -- what the frame title band uses
@@ -1096,7 +1106,6 @@
 \newlength{\mcm@ttitlebls}
 \newcount\mcm@tlines \mcm@tlines=1
 \newlength{\mcm@tsubsep}
-\newlength{\mcm@trulesep}
 \newcommand{\mcm@tcountlines}{%
   \setbox\mcm@ttitlebox\vbox{\hsize\mcmTitleBlockWidth
     \raggedleft\hyphenpenalty=5000\relax \exhyphenpenalty=5000\relax
@@ -1108,21 +1117,41 @@
   \ifdim\dimexpr\ht\mcm@ttitlebox+\dp\mcm@ttitlebox\relax
         >\dimexpr 1.5\mcm@ttitlebls\relax
     \global\mcm@tlines=2 \else \global\mcm@tlines=1 \fi
-  % The one-line pair is about binding a subtitle to a one-line title. With no
-  % subtitle there is nothing to bind, and the shorter \mcmTitleRuleSep is what
-  % keeps the rule under the title -- without this test, a bare one-line title
-  % (QA cases 02, 03, 12, 23) had its rule drop 0.16cm away from it.
+  % The one-line value is about binding a subtitle to a one-line title.
   \global\@mcmtsubfalse
   \mcm@tifny{\insertsubtitle}{\global\@mcmtsubtrue}%
   \setlength{\mcm@tsubsep}{\mcmTitleSubtitleSep}%
-  \setlength{\mcm@trulesep}{\mcmTitleRuleSep}%
   \ifnum\mcm@tlines>\@ne\else
     \if@mcmtsub
       \setlength{\mcm@tsubsep}{\mcmTitleSubtitleSepOne}%
-      \setlength{\mcm@trulesep}{\mcmTitleRuleSepOne}%
     \fi
   \fi}
 \newlength{\mcmTitleAuthorSep}    \setlength{\mcmTitleAuthorSep}{0.42cm}
+% The air on each side of the rule: from the last baseline above it to the
+% rule, and from the rule to the cap tops of the first line below. One value,
+% scaled with the block, so the rule stays halfway between the two groups at
+% any size. Measured as nominal gaps rather than through each paragraph's
+% interline glue: that glue came from the block's unscaled body font above the
+% rule and from the scaled author font below it, so a shrunk block pressed
+% the rule onto the name (5.8mm above, 3.6mm below on the longest titles).
+% Accents and superscripts above the capitals hang into that white, as they
+% do in the frame title band.
+\newlength{\mcmTitleRuleGap}      \setlength{\mcmTitleRuleGap}{0.65cm}
+\newif\if@mcmtupper \@mcmtupperfalse     % build the block only down to the rule
+\newif\if@mcmafterrule \@mcmafterrulefalse
+\newif\if@mcmhasrule
+\newlength{\mcm@trulepos}                % block top to the rule's centre
+\newsavebox{\mcm@tfullbox}
+% Right after the rule: put the next line's cap tops \mcmTitleRuleGap below
+% it. #1 = beamer font, #2 = nominal size, #3 = leading factor -- the same
+% three the line is then set with. The skip is computed for a \prevdepth of
+% zero, so the line's own interline glue is exactly its baselineskip minus
+% its height.
+\newcommand{\mcm@tcapskip}[3]{%
+  \sbox{\mcmTitleProbeBox}{\usebeamerfont{#1}\mcm@tfs{#2}{#3}\mcmTitleMetaFormat{X}}%
+  \setlength{\mcmTitleFSa}{\mcm@tsc{#2}}%
+  \vskip\dimexpr\mcm@tsc{\mcmTitleRuleGap}+\ht\mcmTitleProbeBox-#3\mcmTitleFSa\relax
+  \prevdepth\z@}
 \newlength{\mcmTitleInstituteSep} \setlength{\mcmTitleInstituteSep}{0.18cm}
 \newlength{\mcmTitleDateSep}      \setlength{\mcmTitleDateSep}{0.45cm}
 
@@ -1197,17 +1226,33 @@
         \vskip\mcm@tsc{\mcm@tsubsep}%
         {\usebeamerfont{subtitle}\mcm@tfs{\mcmSubtitleFS}{1.25}%
          \color{mcmTitleEmph}\mcmTitleMetaFormat{\insertsubtitle}\par}}%
+      % The rule, \mcmTitleRuleGap under the last baseline above it (back up
+      % over that line's depth first), in a box of its own so no interline
+      % glue is added; whichever field comes next places itself the same gap
+      % below it with \mcm@tcapskip.
+      \global\@mcmafterrulefalse
       \mcm@tifny{\inserttitle}{%
-        \vskip\mcm@tsc{\mcm@trulesep}%
-        {\rule{\mcm@tsc{\mcmTitleRuleWidth}}{\mcmTitleRuleThickness}\par}}%
+        \vskip-\prevdepth \vskip\mcm@tsc{\mcmTitleRuleGap}%
+        \nointerlineskip
+        \hbox to\linewidth{\hfill
+          \rule{\mcm@tsc{\mcmTitleRuleWidth}}{\mcmTitleRuleThickness}}%
+        \global\@mcmafterruletrue}%
+      % \if@mcmtupper stops here: the box then ends on the rule, which is how
+      % the title page finds where the rule sits in the block.
+      \if@mcmtupper\else
       \mcm@tifny{\insertauthor}{%
-        \vskip\mcm@tsc{\mcmTitleAuthorSep}%
+        \if@mcmafterrule \mcm@tcapskip{author}{\mcmAuthorFS}{1.20}%
+          \global\@mcmafterrulefalse
+        \else \vskip\mcm@tsc{\mcmTitleAuthorSep}\fi
         {\usebeamerfont{author}\mcm@tfs{\mcmAuthorFS}{1.20}%
          \mcmTitleMetaFormat{\insertauthor}\par}}%
       \mcm@tifny{\insertinstitute}{%
-        \vskip\mcm@tsc{\mcmTitleInstituteSep}%
+        \if@mcmafterrule \mcm@tcapskip{institute}{\mcmInstituteFS}{1.30}%
+          \global\@mcmafterrulefalse
+        \else \vskip\mcm@tsc{\mcmTitleInstituteSep}\fi
         {\usebeamerfont{institute}\mcm@tfs{\mcmInstituteFS}{1.30}%
          \mcmTitleMetaFormat{\insertinstitute}\par}}%
+      \fi
     \end{minipage}}%
 }
 
@@ -1332,6 +1377,22 @@
   \setlength{\mcmTitleAvail}{\dimexpr\paperheight-\mcmTitleTopMargin
                                     -\mcmTitleBase\relax}%
   \mcm@tfit
+  % Where the rule sits in the block: rebuilt at the final scale down to the
+  % rule only, the box's bottom is the rule's bottom. With nothing under the
+  % rule (no author, institute or date) there is no lower group to set
+  % against the title, and the mass simply stays centred.
+  \global\@mcmhasrulefalse
+  \mcm@tifny{\inserttitle}{%
+    \if@mcmhasdate \global\@mcmhasruletrue \fi
+    \mcm@tifny{\insertauthor}{\global\@mcmhasruletrue}%
+    \mcm@tifny{\insertinstitute}{\global\@mcmhasruletrue}}%
+  \if@mcmhasrule
+    \setbox\mcm@tfullbox\box\mcmTitleBlockBox
+    \@mcmtuppertrue \mcm@tbuild \@mcmtupperfalse
+    \setlength{\mcm@trulepos}{\dimexpr\mcm@tboxh{\mcmTitleBlockBox}
+                                    -0.5\mcmTitleRuleThickness\relax}%
+    \setbox\mcmTitleBlockBox\box\mcm@tfullbox
+  \fi
   %
   % Placement.  The mass -- the block, its gap to the date, and the date -- is
   % centred in the empty area between the top edge and the strip, so a page
@@ -1357,6 +1418,24 @@
     \setlength{\mcmTitleAir}{\mcmTitleTopMin}%
   \fi
   \setlength{\mcmTitleTop}{\dimexpr\paperheight-\mcmTitleAir\relax}%
+  % Then the axis: move the mass so the rule lands on the middle of the
+  % coloured area, clamped so neither the air above nor the air below drops
+  % under \mcmTitleAxisMinAir. A mass too tall for even that keeps the centred
+  % position above. The axis wins over equal air: on a page whose title group
+  % outweighs its author group, the white above and below differ by the
+  % difference.
+  \if@mcmhasrule
+    \begingroup
+      \dimen0=\dimexpr0.5\paperheight+0.5\mcmFooterHeight+\mcm@trulepos\relax
+      \dimen2=\dimexpr\paperheight-\mcmTitleAxisMinAir\relax
+      \dimen4=\dimexpr\mcmFooterHeight+\mcmTitleAxisMinAir+\mcmTitleMass\relax
+      \ifdim\dimen4>\dimen2 \else
+        \ifdim\dimen0>\dimen2 \dimen0=\dimen2 \fi
+        \ifdim\dimen0<\dimen4 \dimen0=\dimen4 \fi
+        \global\mcmTitleTop=\dimen0
+      \fi
+    \endgroup
+  \fi
   \begin{tikzpicture}[remember picture, overlay]
     \node[anchor=north east, inner sep=0pt]
       at ([xshift=-\mcmTitleRightMargin, yshift=\mcmTitleTop]current page.south east)
