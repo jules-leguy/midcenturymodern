@@ -10,7 +10,7 @@
 <img src="/img/sample.png" alt="Sample" width="70%" >
 </div>
 
-**Mid-Century Modern** is a Beamer template with a retro feel. It requires LuaLaTeX.
+**Midcentury Modern** is a Beamer template with a retro feel. It requires LuaLaTeX.
 
 Open it in [the Overleaf gallery](https://www.overleaf.com/latex/templates/midcenturymodern-beamer-theme/zdvwhytpqvgf) to start from a working project without installing anything, or clone this repository (see [Getting started](#getting-started)).
 
