@@ -96,6 +96,15 @@
 \mcmTitleMetaCapstrue
 \newcommand{\mcmTitleMetaFormat}[1]{%
   \ifmcmTitleMetaCaps{\mcmTitleMetaFont\mcm@upper{#1}}\else#1\fi}
+% The subtitle: the same voice, its strokes thickened a touch
+% (\mcmTitleSubtitleBold, fontspec's FakeBold) like the frame subtitles'.
+% Universalis Bold was tried and stood out too much. 0 gives the plain
+% Regular back. The switch sits outside \mcm@upper, which would uppercase it.
+\newcommand{\mcmTitleSubtitleBold}{1.0}
+\newcommand{\mcm@tsubbold}{\addfontfeature{FakeBold=\mcmTitleSubtitleBold}}
+\if@mcmfontspec\else\let\mcm@tsubbold\relax\fi
+\newcommand{\mcmTitleSubtitleFormat}[1]{%
+  \ifmcmTitleMetaCaps{\mcmTitleMetaFont\mcm@tsubbold\mcm@upper{#1}}\else#1\fi}
 
 % \mcm@upper: \MakeUppercase for a beamer title field.  Beamer prefixes
 % \insertauthor and \insertinstitute with two \def's that give \inst and
@@ -293,7 +302,7 @@
 % FONT ASSIGNMENTS
 % ---------------------------------------------------------------------------
 \setbeamerfont{title}{size={\fontsize{21}{23}}, series=\bfseries}
-\setbeamerfont{subtitle}{size=\large, series=\bfseries}
+\setbeamerfont{subtitle}{size=\large, series=\mdseries}
 \setbeamerfont{author}{size=\Large}
 \setbeamerfont{institute}{size=\small}
 \setbeamerfont{date}{size=\scriptsize}
@@ -1063,10 +1072,6 @@
 % rule, so it may sit close to the author's 11pt without inverting anything --
 % they are in different groups. Past 10.5pt it starts to rival the title's own
 % measure and the group reads as two titles.
-%
-% The subtitle is bold (\setbeamerfont{subtitle}{series=\bfseries}): the one
-% weight contrast on the page, tying it to the bold title above the rule.
-% \setbeamerfont{subtitle}{series=\mdseries} gives the regular back.
 \newlength{\mcmTitleFS}     \setlength{\mcmTitleFS}{21pt}
 \newlength{\mcmSubtitleFS}  \setlength{\mcmSubtitleFS}{11pt}
 \newlength{\mcmAuthorFS}    \setlength{\mcmAuthorFS}{12pt}
@@ -1239,7 +1244,7 @@
       \mcm@tifny{\insertsubtitle}{%
         \vskip\mcm@tsc{\mcm@tsubsep}%
         {\usebeamerfont{subtitle}\mcm@tfs{\mcmSubtitleFS}{1.25}%
-         \color{mcmTitleEmph}\mcmTitleMetaFormat{\insertsubtitle}\par}}%
+         \color{mcmTitleEmph}\mcmTitleSubtitleFormat{\insertsubtitle}\par}}%
       % The rule, \mcmTitleRuleGap under the last baseline above it (back up
       % over that line's depth first), in a box of its own so no interline
       % glue is added; whichever field comes next places itself the same gap
