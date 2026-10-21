@@ -288,7 +288,7 @@
 % FONT ASSIGNMENTS
 % ---------------------------------------------------------------------------
 \setbeamerfont{title}{size={\fontsize{21}{23}}, series=\bfseries}
-\setbeamerfont{subtitle}{size=\large, series=\mdseries}
+\setbeamerfont{subtitle}{size=\large, series=\bfseries}
 \setbeamerfont{author}{size=\Large}
 \setbeamerfont{institute}{size=\small}
 \setbeamerfont{date}{size=\scriptsize}
@@ -1058,6 +1058,10 @@
 % rule, so it may sit close to the author's 11pt without inverting anything --
 % they are in different groups. Past 10.5pt it starts to rival the title's own
 % measure and the group reads as two titles.
+%
+% The subtitle is bold (\setbeamerfont{subtitle}{series=\bfseries}): the one
+% weight contrast on the page, tying it to the bold title above the rule.
+% \setbeamerfont{subtitle}{series=\mdseries} gives the regular back.
 \newlength{\mcmTitleFS}     \setlength{\mcmTitleFS}{21pt}
 \newlength{\mcmSubtitleFS}  \setlength{\mcmSubtitleFS}{11pt}
 \newlength{\mcmAuthorFS}    \setlength{\mcmAuthorFS}{12pt}
