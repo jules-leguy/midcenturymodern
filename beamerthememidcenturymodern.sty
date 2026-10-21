@@ -145,9 +145,14 @@
 % against 14): at this size 14 runs the words together, and a long subtitle
 % takes one more line. \mcmTitleMetaCapsfalse, which turns the title page's
 % capitals off, gives the subtitle back in the body face and as written.
+% The strokes are thickened a touch (\mcmFrameSubtitleBold, fontspec's
+% FakeBold): Universalis has no weight between Regular and Bold, and Bold
+% rivals the bold title on the band. 0 gives the plain Regular back.
 \newcommand{\mcmFrameSubtitleTracking}{10.0}
+\newcommand{\mcmFrameSubtitleBold}{1.0}
 \newcommand{\mcm@subtrack}{%
-  \addfontfeature{LetterSpace=\mcmFrameSubtitleTracking}}
+  \addfontfeature{LetterSpace=\mcmFrameSubtitleTracking,
+    FakeBold=\mcmFrameSubtitleBold}}
 \if@mcmfontspec\else\let\mcm@subtrack\relax\fi
 \newcommand{\mcmFrameSubtitleFormat}[1]{%
   \ifmcmTitleMetaCaps{\mcmTitleMetaFont\mcm@subtrack\mcm@upper{#1}}%
