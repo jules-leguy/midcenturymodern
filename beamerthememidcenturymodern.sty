@@ -139,14 +139,19 @@
    \ifmcmTitleUppercase\MakeUppercase{#1}\else#1\fi}%
 }
 
-% Helper: the frame subtitle, in the *body* face, sentence case, never
-% tracked. The display face is wide: the same sentence set in it runs to the
-% right margin and reads as a second title rather than as a line explaining
-% the first. Inside the band the hierarchy is carried by face, case and size,
-% the title above already having the capitals. Switch families only -- a
-% \normalfont here would silently undo the series asked for by
-% \setbeamerfont{framesubtitle}.
-\newcommand{\mcmFrameSubtitleFormat}[1]{{\sffamily#1}}
+% Helper: the frame subtitle, in the title page's second voice -- uppercase,
+% tracked, \mcmTitleMetaFont -- at 8.5pt (\setbeamerfont{framesubtitle}
+% below). Tracked less than the title page (\mcmFrameSubtitleTracking, 10
+% against 14): at this size 14 runs the words together, and a long subtitle
+% takes one more line. \mcmTitleMetaCapsfalse, which turns the title page's
+% capitals off, gives the subtitle back in the body face and as written.
+\newcommand{\mcmFrameSubtitleTracking}{10.0}
+\newcommand{\mcm@subtrack}{%
+  \addfontfeature{LetterSpace=\mcmFrameSubtitleTracking}}
+\if@mcmfontspec\else\let\mcm@subtrack\relax\fi
+\newcommand{\mcmFrameSubtitleFormat}[1]{%
+  \ifmcmTitleMetaCaps{\mcmTitleMetaFont\mcm@subtrack\mcm@upper{#1}}%
+  \else{\sffamily#1}\fi}
 
 \mode<presentation>{
   \usetheme{default}
@@ -288,7 +293,7 @@
 \setbeamerfont{institute}{size=\small}
 \setbeamerfont{date}{size=\scriptsize}
 \setbeamerfont{frametitle}{size=\large, series=\bfseries}
-\setbeamerfont{framesubtitle}{size=\small, series=\mdseries}
+\setbeamerfont{framesubtitle}{size=\fontsize{8.5pt}{10.25pt}, series=\mdseries}
 \setbeamerfont{block title}{size=\normalsize, series=\bfseries}
 \setbeamerfont{section in toc}{size=\normalsize, series=\bfseries}
 \setbeamerfont{subsection in toc}{size=\small}
