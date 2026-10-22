@@ -1071,9 +1071,15 @@
 % The bound is optical. The subtitle belongs to the title group, above the
 % rule, so it may sit close to the author's 11pt without inverting anything --
 % they are in different groups. Past 10.5pt it starts to rival the title's own
-% measure and the group reads as two titles.
-\newlength{\mcmTitleFS}     \setlength{\mcmTitleFS}{21pt}
-\newlength{\mcmSubtitleFS}  \setlength{\mcmSubtitleFS}{11pt}
+% measure and the group reads as two titles. Below the author's size, it
+% also keeps the name the larger of the two.
+%
+% The title, at 19pt (21pt until 2026-10-22, with an 11pt subtitle). On a long
+% title the auto-fit was already shrinking the block, so a smaller title is
+% shrunk less and part of the reduction comes back; the fields under the rule
+% then come out larger than before.
+\newlength{\mcmTitleFS}     \setlength{\mcmTitleFS}{19pt}
+\newlength{\mcmSubtitleFS}  \setlength{\mcmSubtitleFS}{10pt}
 \newlength{\mcmAuthorFS}    \setlength{\mcmAuthorFS}{12pt}
 \newlength{\mcmInstituteFS} \setlength{\mcmInstituteFS}{8.7pt}
 \newlength{\mcmDateFS}      \setlength{\mcmDateFS}{7.1pt}
