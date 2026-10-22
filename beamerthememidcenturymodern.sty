@@ -61,9 +61,11 @@
   \let\mcmTitleFont\sffamily
 }
 
-% Secondary title-page text (subtitle, author, institute, date) is set in
-% widely letterspaced capitals -- the mid-century way of ranking a title block
-% by tracking rather than by size or tint. Disable with \mcmTitleMetaCapsfalse.
+% Secondary title-page text (subtitle and date) is set in widely
+% letterspaced capitals -- the mid-century way of ranking a title block by
+% tracking rather than by size or tint. Author and institute are the
+% exception, set as written (see \mcmTitleNameFont below). Disable all of it
+% with \mcmTitleMetaCapsfalse.
 %
 % It is set in UNIVERSALIS ADF, not in the title face: squarer and 8.6% narrower
 % on the line than Adventor at the same size, which reads as the technical
@@ -92,6 +94,15 @@
   % tracked. Nothing breaks, the meta block simply loses the second voice.
   \newcommand{\mcmTitleMetaFont}{\mcmTitleFont\mcm@metatrack}%
 }
+% Author and institute, as written, in the logo's voice: Adventor tracked
+% -1, the lowercase of the demo logo's "midcentury / modern". The names are
+% user text, often long and mixed-case; in tracked capitals they read as a
+% third heading under the title and the subtitle. Falls back to the title face.
+\IfFontExistsTF{TeX Gyre Adventor}{%
+  \newfontfamily\mcmTitleNameFont{TeX Gyre Adventor}[LetterSpace=-1.0]%
+}{%
+  \let\mcmTitleNameFont\mcmTitleFont
+}
 \newif\ifmcmTitleMetaCaps
 \mcmTitleMetaCapstrue
 \newcommand{\mcmTitleMetaFormat}[1]{%
@@ -105,6 +116,17 @@
 \if@mcmfontspec\else\let\mcm@tsubbold\relax\fi
 \newcommand{\mcmTitleSubtitleFormat}[1]{%
   \ifmcmTitleMetaCaps{\mcmTitleMetaFont\mcm@tsubbold\mcm@upper{#1}}\else#1\fi}
+% Author and institute. The author is told from the institute by weight and
+% size: its strokes thickened by \mcmTitleAuthorBold (FakeBold; Adventor Bold
+% is too heavy on a list of names), the institute left regular and in the
+% same ink -- a dimmed institute read as washed out on the coloured page.
+\newcommand{\mcmTitleAuthorBold}{1.5}
+\newcommand{\mcm@tauthbold}{\addfontfeature{FakeBold=\mcmTitleAuthorBold}}
+\if@mcmfontspec\else\let\mcm@tauthbold\relax\fi
+\newcommand{\mcmTitleAuthorFormat}[1]{%
+  \ifmcmTitleMetaCaps{\mcmTitleNameFont\mcm@tauthbold#1}\else#1\fi}
+\newcommand{\mcmTitleInstituteFormat}[1]{%
+  \ifmcmTitleMetaCaps{\mcmTitleNameFont#1}\else#1\fi}
 
 % \mcm@upper: \MakeUppercase for a beamer title field.  Beamer prefixes
 % \insertauthor and \insertinstitute with two \def's that give \inst and
@@ -979,9 +1001,10 @@
 %   \mcmTitleInstituteSep \mcmTitleDateSep
 %   \mcmTitleRuleWidth \mcmTitleRuleThickness
 %
-% Subtitle, author, institute and date are set in letterspaced capitals
-% (\mcmTitleMetaFormat); \mcmTitleMetaCapsfalse gives them back as written,
-% which is what a nine-name author list wants.
+% Subtitle and date are set in letterspaced capitals (\mcmTitleMetaFormat),
+% author and institute as written in the logo's Adventor
+% (\mcmTitleAuthorFormat, \mcmTitleInstituteFormat);
+% \mcmTitleMetaCapsfalse gives all four back as written, in the body face.
 %
 % AUTO-FIT.  Title, subtitle, author and institute are typeset into a single
 % box which is then measured.  Too tall for the space between the top margin
@@ -1054,22 +1077,18 @@
 \newlength{\mcmTitleFloorH}
 
 % --- Type sizes and vertical rhythm on the title page ----------------------
-% The secondary fields are small: their rank comes mostly from the letterspaced
-% capitals, not from size. Two exceptions.
-%
-% The author, at 11pt: the name is what the reader looks for, so it must
-% clearly outrank the institute below it -- 9.5pt over 8pt was a difference one
-% had to go looking for. 11pt is the ceiling, not a taste: at 12pt the
-% nine-author case of test/titlepage.tex breaks between a first name and its
-% surname (GRETA / KELLWIG), and nothing catches that -- the auto-fit measures
-% height, never the width of a line.
+% Author 11.5pt over institute 10.5pt (2026-10-22, when both left capitals
+% for Adventor as written): close in size, the author set apart by its
+% thickened strokes. Jules weighed every pair between 10.5 and 12pt; a wider
+% gap made the names shout over the institute. Long author lists still break
+% between a first name and its surname (see \mcm@upper above): a tie fixes it.
 %
 % The subtitle, at 10pt (8.5pt until 2026-09-07, "a bit too small" -- Jules).
 % Nothing mechanical bounds it: 8.5, 9.5, 10 and 10.5 all give the 25 cases of
 % test/titlepage.tex zero Overfull and zero errors, and on an uncrowded page
 % the auto-fit does not have to shrink the title to pay for the extra height.
 % The bound is optical. The subtitle belongs to the title group, above the
-% rule, so it may sit close to the author's 11pt without inverting anything --
+% rule, so it may sit close to the author's size without inverting anything --
 % they are in different groups. Past 10.5pt it starts to rival the title's own
 % measure and the group reads as two titles. Below the author's size, it
 % also keeps the name the larger of the two.
@@ -1080,8 +1099,8 @@
 % then come out larger than before.
 \newlength{\mcmTitleFS}     \setlength{\mcmTitleFS}{19pt}
 \newlength{\mcmSubtitleFS}  \setlength{\mcmSubtitleFS}{10pt}
-\newlength{\mcmAuthorFS}    \setlength{\mcmAuthorFS}{12pt}
-\newlength{\mcmInstituteFS} \setlength{\mcmInstituteFS}{8.7pt}
+\newlength{\mcmAuthorFS}    \setlength{\mcmAuthorFS}{11.5pt}
+\newlength{\mcmInstituteFS} \setlength{\mcmInstituteFS}{10.5pt}
 \newlength{\mcmDateFS}      \setlength{\mcmDateFS}{7.1pt}
 
 % The rule sits under the title *and its subtitle*: the subtitle names the
@@ -1169,14 +1188,22 @@
 \newsavebox{\mcm@tfullbox}
 % Right after the rule: put the next line's cap tops \mcmTitleRuleGap below
 % it. #1 = beamer font, #2 = nominal size, #3 = leading factor -- the same
-% three the line is then set with. The skip is computed for a \prevdepth of
-% zero, so the line's own interline glue is exactly its baselineskip minus
-% its height.
-\newcommand{\mcm@tcapskip}[3]{%
-  \sbox{\mcmTitleProbeBox}{\usebeamerfont{#1}\mcm@tfs{#2}{#3}\mcmTitleMetaFormat{X}}%
+% three the line is then set with, and #4 its format macro. The skip is
+% computed for a \prevdepth of zero, so the line's own interline glue is
+% exactly its baselineskip minus its height. The gap itself follows the
+% block's scale (\mcm@tscblock), as the one above the rule does, even where
+% the fields under it shrink less.
+\newcommand{\mcm@tcapskip}[4]{%
+  \sbox{\mcmTitleProbeBox}{\usebeamerfont{#1}\mcm@tfs{#2}{#3}#4{X}}%
   \setlength{\mcmTitleFSa}{\mcm@tsc{#2}}%
-  \vskip\dimexpr\mcm@tsc{\mcmTitleRuleGap}+\ht\mcmTitleProbeBox-#3\mcmTitleFSa\relax
+  \vskip\dimexpr\mcm@tscblock{\mcmTitleRuleGap}+\ht\mcmTitleProbeBox-#3\mcmTitleFSa\relax
   \prevdepth\z@}
+% Leading of a multi-line institute, and the extra gap between two
+% institutes given with \and (beamer's own is 1em): tight, so several
+% institutes read as one block, but not none, or a wrapped institute runs
+% into the next one.
+\newcommand{\mcmTitleInstituteLead}{1.15}
+\newlength{\mcmTitleInstituteAndSep} \setlength{\mcmTitleInstituteAndSep}{0.1em}
 \newlength{\mcmTitleInstituteSep} \setlength{\mcmTitleInstituteSep}{0.18cm}
 \newlength{\mcmTitleDateSep}      \setlength{\mcmTitleDateSep}{0.45cm}
 
@@ -1206,6 +1233,17 @@
 
 % Scale a length by the current auto-fit percentage.
 \newcommand{\mcm@tsc}[1]{\dimexpr#1*\mcm@tpc/100\relax}
+\let\mcm@tscblock\mcm@tsc
+% Under the rule, when the block shrinks, author and institute take only
+% \mcmTitleMetaShrink percent of the reduction: at 72% the names would come
+% out near 8pt, smaller than anyone reads from the back of a room; at 50
+% they stay at 86%, and the title gives up the difference. Growth is shared
+% in full. 100 makes them follow the block exactly.
+\newcommand{\mcmTitleMetaShrink}{50}
+\newcommand{\mcm@tscmeta}[1]{%
+  \ifnum\mcm@tpc<100
+    \dimexpr#1*(\mcmTitleMetaShrink*\mcm@tpc+(100-\mcmTitleMetaShrink)*100)/10000\relax
+  \else\dimexpr#1*\mcm@tpc/100\relax\fi}
 
 % Select a font at a scaled size; #1 = nominal size, #2 = leading factor.
 \newcommand{\mcm@tfs}[2]{%
@@ -1265,18 +1303,21 @@
       % \if@mcmtupper stops here: the box then ends on the rule, which is how
       % the title page finds where the rule sits in the block.
       \if@mcmtupper\else
+      \let\mcm@tsc\mcm@tscmeta
       \mcm@tifny{\insertauthor}{%
-        \if@mcmafterrule \mcm@tcapskip{author}{\mcmAuthorFS}{1.20}%
+        \if@mcmafterrule \mcm@tcapskip{author}{\mcmAuthorFS}{1.20}{\mcmTitleAuthorFormat}%
           \global\@mcmafterrulefalse
         \else \vskip\mcm@tsc{\mcmTitleAuthorSep}\fi
         {\usebeamerfont{author}\mcm@tfs{\mcmAuthorFS}{1.20}%
-         \mcmTitleMetaFormat{\insertauthor}\par}}%
+         \mcmTitleAuthorFormat{\insertauthor}\par}}%
       \mcm@tifny{\insertinstitute}{%
-        \if@mcmafterrule \mcm@tcapskip{institute}{\mcmInstituteFS}{1.30}%
+        \if@mcmafterrule
+          \mcm@tcapskip{institute}{\mcmInstituteFS}{\mcmTitleInstituteLead}{\mcmTitleInstituteFormat}%
           \global\@mcmafterrulefalse
         \else \vskip\mcm@tsc{\mcmTitleInstituteSep}\fi
-        {\usebeamerfont{institute}\mcm@tfs{\mcmInstituteFS}{1.30}%
-         \mcmTitleMetaFormat{\insertinstitute}\par}}%
+        {\usebeamerfont{institute}\mcm@tfs{\mcmInstituteFS}{\mcmTitleInstituteLead}%
+         \def\beamer@andinst{\\[\mcmTitleInstituteAndSep]}%
+         \mcmTitleInstituteFormat{\insertinstitute}\par}}%
       \fi
     \end{minipage}}%
 }
