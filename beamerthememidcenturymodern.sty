@@ -63,9 +63,11 @@
 
 % Monospace (\texttt, verbatim, listings): Inconsolata, a sans mono like the
 % two other faces, and the densest of the seven tried -- more code fits on a
-% slide line. Scaled to Heros's x-height. Loaded by filename, like Universalis
-% below, so it resolves from the TeX tree. Ligatures=TeXOff: the default
-% Ligatures=TeX above would turn the -- of `--depth' into an en dash in code.
+% slide line. Scaled to Heros's x-height. Loaded by filename, so it resolves
+% from the TeX tree. The test takes the bare filename: written [File.otf],
+% luaotfload throws a Lua error that is no `!' line and the test fails.
+% Ligatures=TeXOff: the default Ligatures=TeX above would turn the -- of
+% `--depth' into an en dash in code.
 \IfFontExistsTF{Inconsolatazi4-Regular.otf}{%
   \setmonofont{Inconsolatazi4}[%
     Extension = .otf,
@@ -83,33 +85,18 @@
 % exception, set as written (see \mcmTitleNameFont below). Disable all of it
 % with \mcmTitleMetaCapsfalse.
 %
-% It is set in UNIVERSALIS ADF, not in the title face: squarer and 8.6% narrower
-% on the line than Adventor at the same size, which reads as the technical
-% counterpart to Adventor's geometry rather than as a second helping of it. The
-% boundary between the two faces is the rule -- title above, everything else
-% below. Universalis ships with TeX Live (fonts/opentype/arkandis/universalis),
-% so this needs no installing; it is loaded BY FILENAME, not by system name, so
-% it resolves from the TeX tree on machines where fontconfig cannot see it
-% (Overleaf among them). Override it wholesale with \renewfontfamily.
-%
-% Consequence to know: redefining \mcmTitleFont now changes the title alone.
-% The meta block used to be derived from it, so an override reached both.
-\newcommand{\mcmTitleMetaTracking}{14.0}
+% It is set in the body face (Heros, a Helvetica), tracked by
+% \mcmTitleMetaTracking (6): a 1950s grotesque under the geometric title, kept
+% tight so the lines read as words rather than strings of letters. A user who
+% changes the body face with \setsansfont gets the tracked variant of theirs.
+% Universalis ADF was meant to fill this role from 2026-09-07, but its check
+% never succeeded (see \IfFontExistsTF below: no brackets around a filename),
+% so Adventor tracked 14 was what showed until 2026-10-22; Universalis's
+% high-waisted E and F read 1920s, and it was dropped.
+\newcommand{\mcmTitleMetaTracking}{6.0}
 \newcommand{\mcm@metatrack}{\addfontfeature{LetterSpace=\mcmTitleMetaTracking}}
 \if@mcmfontspec\else\let\mcm@metatrack\relax\fi
-\IfFontExistsTF{[UniversalisADFStd-Regular.otf]}{%
-  \newfontfamily\mcmTitleMetaFont{UniversalisADFStd}[%
-    Extension      = .otf,
-    UprightFont    = *-Regular,
-    BoldFont       = *-Bold,
-    ItalicFont     = *-Italic,
-    BoldItalicFont = *-BoldItalic,
-    LetterSpace    = \mcmTitleMetaTracking]%
-}{%
-  % No Universalis: fall back to what the theme did before, the title face
-  % tracked. Nothing breaks, the meta block simply loses the second voice.
-  \newcommand{\mcmTitleMetaFont}{\mcmTitleFont\mcm@metatrack}%
-}
+\newcommand{\mcmTitleMetaFont}{\sffamily\mcm@metatrack}
 % Author and institute, as written, in the logo's voice: Adventor tracked
 % -1, the lowercase of the demo logo's "midcentury / modern". The names are
 % user text, often long and mixed-case; in tracked capitals they read as a
@@ -125,7 +112,7 @@
   \ifmcmTitleMetaCaps{\mcmTitleMetaFont\mcm@upper{#1}}\else#1\fi}
 % The subtitle: the same voice, its strokes thickened a touch
 % (\mcmTitleSubtitleBold, fontspec's FakeBold) like the frame subtitles'.
-% Universalis Bold was tried and stood out too much. 0 gives the plain
+% A bold weight was tried and stood out too much. 0 gives the plain
 % Regular back. The switch sits outside \mcm@upper, which would uppercase it.
 \newcommand{\mcmTitleSubtitleBold}{1.0}
 \newcommand{\mcm@tsubbold}{\addfontfeature{FakeBold=\mcmTitleSubtitleBold}}
@@ -188,14 +175,14 @@
 
 % Helper: the frame subtitle, in the title page's second voice -- uppercase,
 % tracked, \mcmTitleMetaFont -- at 8.5pt (\setbeamerfont{framesubtitle}
-% below). Tracked less than the title page (\mcmFrameSubtitleTracking, 10
-% against 14): at this size 14 runs the words together, and a long subtitle
-% takes one more line. \mcmTitleMetaCapsfalse, which turns the title page's
+% below). Tracked less than the title page (\mcmFrameSubtitleTracking, 4.3
+% against 6, the ratio settled when both were in Adventor): at this size the
+% title page's tracking loosens the words, and a long subtitle takes one more
+% line. \mcmTitleMetaCapsfalse, which turns the title page's
 % capitals off, gives the subtitle back in the body face and as written.
 % The strokes are thickened a touch (\mcmFrameSubtitleBold, fontspec's
-% FakeBold): Universalis has no weight between Regular and Bold, and Bold
-% rivals the bold title on the band. 0 gives the plain Regular back.
-\newcommand{\mcmFrameSubtitleTracking}{10.0}
+% FakeBold): Bold rivals the bold title on the band. 0 gives the plain Regular back.
+\newcommand{\mcmFrameSubtitleTracking}{4.3}
 \newcommand{\mcmFrameSubtitleBold}{1.0}
 \newcommand{\mcm@subtrack}{%
   \addfontfeature{LetterSpace=\mcmFrameSubtitleTracking,
