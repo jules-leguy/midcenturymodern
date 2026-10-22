@@ -61,6 +61,22 @@
   \let\mcmTitleFont\sffamily
 }
 
+% Monospace (\texttt, verbatim, listings): Inconsolata, a sans mono like the
+% two other faces, and the densest of the seven tried -- more code fits on a
+% slide line. Scaled to Heros's x-height. Loaded by filename, like Universalis
+% below, so it resolves from the TeX tree. Ligatures=TeXOff: the default
+% Ligatures=TeX above would turn the -- of `--depth' into an en dash in code.
+\IfFontExistsTF{Inconsolatazi4-Regular.otf}{%
+  \setmonofont{Inconsolatazi4}[%
+    Extension = .otf,
+    UprightFont = *-Regular,
+    BoldFont    = *-Bold,
+    Scale       = MatchLowercase,
+    Ligatures   = TeXOff]%
+}{%
+  \setmonofont{Latin Modern Mono}[Scale=MatchLowercase, Ligatures=TeXOff]%
+}
+
 % Secondary title-page text (subtitle and date) is set in widely
 % letterspaced capitals -- the mid-century way of ranking a title block by
 % tracking rather than by size or tint. Author and institute are the
