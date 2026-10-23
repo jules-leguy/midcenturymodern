@@ -79,13 +79,14 @@
   \setmonofont{Latin Modern Mono}[Scale=MatchLowercase, Ligatures=TeXOff]%
 }
 
-% Secondary title-page text (subtitle and date) is set in widely
-% letterspaced capitals -- the mid-century way of ranking a title block by
+% Secondary title-page text (subtitle and date) is set in letterspaced
+% capitals -- the mid-century way of ranking a title block by
 % tracking rather than by size or tint. Author and institute are the
 % exception, set as written (see \mcmTitleNameFont below). Disable all of it
 % with \mcmTitleMetaCapsfalse.
 %
-% It is set in the body face (Heros, a Helvetica), tracked by
+% The date (and the frame subtitles) are set in the body face (Heros, a
+% Helvetica), tracked by
 % \mcmTitleMetaTracking (6): a 1950s grotesque under the geometric title, kept
 % tight so the lines read as words rather than strings of letters. A user who
 % changes the body face with \setsansfont gets the tracked variant of theirs.
@@ -110,15 +111,20 @@
 \mcmTitleMetaCapstrue
 \newcommand{\mcmTitleMetaFormat}[1]{%
   \ifmcmTitleMetaCaps{\mcmTitleMetaFont\mcm@upper{#1}}\else#1\fi}
-% The subtitle: the same voice, its strokes thickened a touch
-% (\mcmTitleSubtitleBold, fontspec's FakeBold) like the frame subtitles'.
-% A bold weight was tried and stood out too much. 0 gives the plain
-% Regular back. The switch sits outside \mcm@upper, which would uppercase it.
-\newcommand{\mcmTitleSubtitleBold}{1.0}
-\newcommand{\mcm@tsubbold}{\addfontfeature{FakeBold=\mcmTitleSubtitleBold}}
-\if@mcmfontspec\else\let\mcm@tsubbold\relax\fi
+% The subtitle: in the title's face, Adventor, tracked wide
+% (\mcmTitleSubtitleTracking, 14). Heros tracked 6 was tried on 2026-10-22:
+% denser and easier to read, but plainer -- the round, widely set capitals
+% are what gives the line its character. \mcmTitleSubtitleBold (fontspec's
+% FakeBold, 0) can thicken the strokes; at this size even 1 barely shows, and
+% a bold weight stood out too much. The switches sit outside \mcm@upper, which
+% would uppercase them.
+\newcommand{\mcmTitleSubtitleTracking}{14.0}
+\newcommand{\mcmTitleSubtitleBold}{0}
+\newcommand{\mcm@tsubfont}{\mcmTitleFont\addfontfeature{%
+  LetterSpace=\mcmTitleSubtitleTracking, FakeBold=\mcmTitleSubtitleBold}}
+\if@mcmfontspec\else\let\mcm@tsubfont\mcmTitleFont\fi
 \newcommand{\mcmTitleSubtitleFormat}[1]{%
-  \ifmcmTitleMetaCaps{\mcmTitleMetaFont\mcm@tsubbold\mcm@upper{#1}}\else#1\fi}
+  \ifmcmTitleMetaCaps{\mcm@tsubfont\mcm@upper{#1}}\else#1\fi}
 % Author and institute. The author is told from the institute by weight and
 % size: its strokes thickened by \mcmTitleAuthorBold (FakeBold; Adventor Bold
 % is too heavy on a list of names), the institute left regular and in the
@@ -1091,22 +1097,23 @@
 % gap made the names shout over the institute. Long author lists still break
 % between a first name and its surname (see \mcm@upper above): a tie fixes it.
 %
-% The subtitle, at 10pt (8.5pt until 2026-09-07, "a bit too small" -- Jules).
-% Nothing mechanical bounds it: 8.5, 9.5, 10 and 10.5 all give the 25 cases of
+% The subtitle, at 11pt (8.5pt until 2026-09-07, "a bit too small" -- Jules;
+% 10pt for a day on 2026-10-22, back to 11 with the Adventor setting).
+% Nothing mechanical bounds it: 8.5 to 11 all give the 25 cases of
 % test/titlepage.tex zero Overfull and zero errors, and on an uncrowded page
 % the auto-fit does not have to shrink the title to pay for the extra height.
 % The bound is optical. The subtitle belongs to the title group, above the
 % rule, so it may sit close to the author's size without inverting anything --
-% they are in different groups. Past 10.5pt it starts to rival the title's own
-% measure and the group reads as two titles. Below the author's size, it
+% they are in different groups. Much past 11pt it starts to rival the title's
+% own measure and the group reads as two titles. Below the author's size, it
 % also keeps the name the larger of the two.
 %
-% The title, at 19pt (21pt until 2026-10-22, with an 11pt subtitle). On a long
+% The title, at 19pt (21pt until 2026-10-22). On a long
 % title the auto-fit was already shrinking the block, so a smaller title is
 % shrunk less and part of the reduction comes back; the fields under the rule
 % then come out larger than before.
 \newlength{\mcmTitleFS}     \setlength{\mcmTitleFS}{19pt}
-\newlength{\mcmSubtitleFS}  \setlength{\mcmSubtitleFS}{10pt}
+\newlength{\mcmSubtitleFS}  \setlength{\mcmSubtitleFS}{11pt}
 \newlength{\mcmAuthorFS}    \setlength{\mcmAuthorFS}{11.5pt}
 \newlength{\mcmInstituteFS} \setlength{\mcmInstituteFS}{10.5pt}
 \newlength{\mcmDateFS}      \setlength{\mcmDateFS}{7.1pt}
