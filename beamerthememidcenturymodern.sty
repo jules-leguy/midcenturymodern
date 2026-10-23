@@ -94,41 +94,135 @@
 % Universalis's high-waisted E and F read 1920s, and it was dropped. Heros
 % tracked 6 and author/institute as written in Adventor were tried on
 % 2026-10-22 and abandoned the next day: easier to read, less retro.
-\newcommand{\mcmTitleMetaTracking}{14.0}   % date, and the base of the frame subtitles
-\newcommand{\mcmTitleNameTracking}{11.0}   % author and institute
+%
+% TRACKING STEPS. Every group on the title page (title, subtitle, author and
+% institute together, date) has three trackings, loose to tight, each loaded
+% as a family of its own. A group takes a tighter step only when there is a
+% lot of it: when tightening saves it a line, when it runs to three lines or
+% more, or (author, institute, subtitle) when the auto-fit had to shrink the
+% block under 84%. The first value of each is an ordinary page's tracking.
+\newcommand{\mcmTitleMetaTracking}{14.0}      % date (and base of the frame subtitles)
+\newcommand{\mcmTitleMetaTrackingB}{11.0}
+\newcommand{\mcmTitleMetaTrackingC}{8.0}
+\newcommand{\mcmTitleNameTracking}{11.0}      % author and institute
+\newcommand{\mcmTitleNameTrackingB}{9.0}
+\newcommand{\mcmTitleNameTrackingC}{7.0}
 \newcommand{\mcmTitleSubtitleTracking}{13.0}
+\newcommand{\mcmTitleSubtitleTrackingB}{11.0}
+\newcommand{\mcmTitleSubtitleTrackingC}{9.0}
+\newcommand{\mcmTitleTrackingB}{4.5}          % the title itself starts at 6.0
+\newcommand{\mcmTitleTrackingC}{3.0}
+% The author is told from the institute by thickened strokes (fontspec's
+% FakeBold) and a smaller size (\mcmAuthorFS): Adventor Bold is too heavy
+% on a list of names. 0 gives the plain Regular back.
+\newcommand{\mcmTitleAuthorBold}{2}
 \newcommand{\mcm@metatrack}{\addfontfeature{LetterSpace=\mcmTitleMetaTracking}}
 \if@mcmfontspec\else\let\mcm@metatrack\relax\fi
 \IfFontExistsTF{TeX Gyre Adventor}{%
   \newfontfamily\mcmTitleMetaFont{TeX Gyre Adventor}[LetterSpace=\mcmTitleMetaTracking]%
+  \newfontfamily\mcmTitleMetaFontB{TeX Gyre Adventor}[LetterSpace=\mcmTitleMetaTrackingB]%
+  \newfontfamily\mcmTitleMetaFontC{TeX Gyre Adventor}[LetterSpace=\mcmTitleMetaTrackingC]%
   \newfontfamily\mcmTitleNameFont{TeX Gyre Adventor}[LetterSpace=\mcmTitleNameTracking]%
+  \newfontfamily\mcmTitleNameFontB{TeX Gyre Adventor}[LetterSpace=\mcmTitleNameTrackingB]%
+  \newfontfamily\mcmTitleNameFontC{TeX Gyre Adventor}[LetterSpace=\mcmTitleNameTrackingC]%
+  \ifdim\mcmTitleAuthorBold pt>\z@
+    \edef\mcm@afb{,FakeBold=\mcmTitleAuthorBold}\else\def\mcm@afb{}\fi
+  \edef\mcm@tmp{\noexpand\newfontfamily\noexpand\mcmTitleAuthorFont{TeX Gyre Adventor}%
+    [LetterSpace=\mcmTitleNameTracking\mcm@afb]}\mcm@tmp
+  \edef\mcm@tmp{\noexpand\newfontfamily\noexpand\mcmTitleAuthorFontB{TeX Gyre Adventor}%
+    [LetterSpace=\mcmTitleNameTrackingB\mcm@afb]}\mcm@tmp
+  \edef\mcm@tmp{\noexpand\newfontfamily\noexpand\mcmTitleAuthorFontC{TeX Gyre Adventor}%
+    [LetterSpace=\mcmTitleNameTrackingC\mcm@afb]}\mcm@tmp
   \newfontfamily\mcmTitleSubtitleFont{TeX Gyre Adventor}[LetterSpace=\mcmTitleSubtitleTracking]%
+  \newfontfamily\mcmTitleSubtitleFontB{TeX Gyre Adventor}[LetterSpace=\mcmTitleSubtitleTrackingB]%
+  \newfontfamily\mcmTitleSubtitleFontC{TeX Gyre Adventor}[LetterSpace=\mcmTitleSubtitleTrackingC]%
+  \newfontfamily\mcmTitleFontB{TeX Gyre Adventor}[LetterSpace=\mcmTitleTrackingB]%
+  \newfontfamily\mcmTitleFontC{TeX Gyre Adventor}[LetterSpace=\mcmTitleTrackingC]%
 }{%
   \newcommand{\mcmTitleMetaFont}{\mcmTitleFont\mcm@metatrack}%
+  \let\mcmTitleMetaFontB\mcmTitleMetaFont \let\mcmTitleMetaFontC\mcmTitleMetaFont
   \let\mcmTitleNameFont\mcmTitleMetaFont
+  \let\mcmTitleNameFontB\mcmTitleMetaFont \let\mcmTitleNameFontC\mcmTitleMetaFont
+  \let\mcmTitleAuthorFont\mcmTitleMetaFont
+  \let\mcmTitleAuthorFontB\mcmTitleMetaFont \let\mcmTitleAuthorFontC\mcmTitleMetaFont
   \let\mcmTitleSubtitleFont\mcmTitleMetaFont
+  \let\mcmTitleSubtitleFontB\mcmTitleMetaFont \let\mcmTitleSubtitleFontC\mcmTitleMetaFont
+  \let\mcmTitleFontB\mcmTitleFont \let\mcmTitleFontC\mcmTitleFont
 }
+% Picking a step: each candidate is typeset in a throwaway \vbox at the
+% field's width and its lines counted with \prevgraf. #1 renderer (a macro
+% taking a family and the content), #2 family, #3 count register, #4 content.
+\newcount\mcm@la \newcount\mcm@lb \newcount\mcm@lc \newcount\mcm@lx
+\long\def\mcm@lines#1#2#3#4{\setbox\z@\vbox{\hsize\linewidth\noindent
+  #1{#2}{#4}\par\global#3=\prevgraf}}
+% The loosest step that reaches the fewest lines; the tightest one for a
+% group of three lines or more.
+\long\def\mcm@decide#1#2#3{%
+  \ifnum\mcm@la=\mcm@lc \let\mcm@fam#1\else
+    \ifnum\mcm@lb=\mcm@lc \let\mcm@fam#2\else\let\mcm@fam#3\fi\fi
+  \ifnum\mcm@lc>\tw@ \let\mcm@fam#3\fi}
+% #1 renderer, #2 content, #3 #4 #5 families loose to tight -> \mcm@fam
+\long\def\mcm@pick#1#2#3#4#5{%
+  \mcm@lines{#1}{#3}\mcm@la{#2}\mcm@lines{#1}{#4}\mcm@lb{#2}%
+  \mcm@lines{#1}{#5}\mcm@lc{#2}\mcm@decide{#3}{#4}{#5}}
+\long\def\mcm@rmeta#1#2{#1\mdseries\mcm@upper{#2}}
+\long\def\mcm@rtitle#1#2{#1\ifmcmTitleUppercase\MakeUppercase{#2}\else#2\fi}
+% Author and institute are one group, at the same step: their lines are
+% counted together, each field at its own size.
+\long\def\mcm@rauthor#1#2{\usebeamerfont{author}\mcm@tfs{\mcmAuthorFS}{1.20}%
+  #1\mdseries\mcm@upper{\insertauthor}}
+\long\def\mcm@rinst#1#2{\usebeamerfont{institute}%
+  \mcm@tfs{\mcmInstituteFS}{\mcmTitleInstituteLead}#1\mdseries\mcm@upper{\insertinstitute}}
+\def\mcm@namecount#1#2#3{%
+  \mcm@lines\mcm@rauthor{#1}\mcm@lx{}#3=\mcm@lx
+  \mcm@lines\mcm@rinst{#2}\mcm@lx{}\advance#3 by\mcm@lx}
+\def\mcm@stepA{\let\mcm@authfam\mcmTitleAuthorFont \let\mcm@instfam\mcmTitleNameFont}
+\def\mcm@stepB{\let\mcm@authfam\mcmTitleAuthorFontB\let\mcm@instfam\mcmTitleNameFontB}
+\def\mcm@stepC{\let\mcm@authfam\mcmTitleAuthorFontC\let\mcm@instfam\mcmTitleNameFontC}
+\def\mcm@picknames{%
+  \mcm@namecount\mcmTitleAuthorFont \mcmTitleNameFont \mcm@la
+  \mcm@namecount\mcmTitleAuthorFontB\mcmTitleNameFontB\mcm@lb
+  \mcm@namecount\mcmTitleAuthorFontC\mcmTitleNameFontC\mcm@lc
+  \mcm@decide\mcm@stepA\mcm@stepB\mcm@stepC
+  \ifnum\mcm@tpc<84 \let\mcm@fam\mcm@stepC\fi
+  \mcm@fam}
 \newif\ifmcmTitleMetaCaps
 \mcmTitleMetaCapstrue
 % The date.
+% The formats below open no group of their own: the \leftskip that
+% \mcm@balance sets has to reach the caller's \par, and every caller sets
+% its field inside a group.
 \newcommand{\mcmTitleMetaFormat}[1]{%
-  \ifmcmTitleMetaCaps{\mcmTitleMetaFont\mdseries\mcm@upper{#1}}\else#1\fi}
+  \ifmcmTitleMetaCaps
+    \mcm@pick\mcm@rmeta{#1}\mcmTitleMetaFont\mcmTitleMetaFontB\mcmTitleMetaFontC
+    \mcm@balance\mcm@rmeta\mcm@fam{#1}\mcm@fam\mdseries\mcm@upper{#1}%
+  \else#1\fi}
 % The subtitle, tracked a touch tighter than the date (13 against 14), so a
 % long one stays denser. \mcmTitleSubtitleBold (fontspec's FakeBold, 0) can
 % thicken the strokes; at 11pt even 1 barely shows, and a bold weight stood
 % out too much. The switches sit outside \mcm@upper, which would uppercase
 % them.
 \newcommand{\mcmTitleSubtitleBold}{0}
-\newcommand{\mcm@tsubfont}{\mcmTitleSubtitleFont\mdseries
+\newcommand{\mcm@tsubfont}{\mcm@fam\mdseries
   \ifdim\mcmTitleSubtitleBold pt>\z@\addfontfeature{FakeBold=\mcmTitleSubtitleBold}\fi}
 \newcommand{\mcmTitleSubtitleFormat}[1]{%
-  \ifmcmTitleMetaCaps{\mcm@tsubfont\mcm@upper{#1}}\else#1\fi}
+  \ifmcmTitleMetaCaps
+    \mcm@pick\mcm@rmeta{#1}\mcmTitleSubtitleFont\mcmTitleSubtitleFontB\mcmTitleSubtitleFontC
+    \ifnum\mcm@tpc<84 \let\mcm@fam\mcmTitleSubtitleFontC\fi
+    \mcm@balance\mcm@rmeta\mcm@fam{#1}\mcm@tsubfont\mcm@upper{#1}%
+  \else#1\fi}
 % Author and institute, tracked tighter still (11): two lines of names at 14
 % read as loose letters, and a long author line breaks sooner.
 \newcommand{\mcmTitleAuthorFormat}[1]{%
-  \ifmcmTitleMetaCaps{\mcmTitleNameFont\mdseries\mcm@upper{#1}}\else#1\fi}
+  \ifmcmTitleMetaCaps
+    \mcm@picknames\mcm@balance\mcm@rmeta\mcm@authfam{#1}%
+    \mcm@authfam\mdseries\mcm@upper{#1}%
+  \else#1\fi}
 \newcommand{\mcmTitleInstituteFormat}[1]{%
-  \ifmcmTitleMetaCaps{\mcmTitleNameFont\mdseries\mcm@upper{#1}}\else#1\fi}
+  \ifmcmTitleMetaCaps
+    \mcm@picknames\mcm@balance\mcm@rmeta\mcm@instfam{#1}%
+    \mcm@instfam\mdseries\mcm@upper{#1}%
+  \else#1\fi}
 
 % \mcm@upper: \MakeUppercase for a beamer title field.  Beamer prefixes
 % \insertauthor and \insertinstitute with two \def's that give \inst and
@@ -166,6 +260,53 @@
 \newlength{\mcmTitleWordSpacing}
 \setlength{\mcmTitleWordSpacing}{0.5em}
 
+% BALANCED LINES. A title-page field that runs to several lines is set in the
+% narrowest measure that keeps its number of lines, flush right as before:
+% the lines come out of even length instead of a full first line and a short
+% last one, the way display lines were set by hand. Binary search on the
+% measure; a measure is refused if any line of it is overfull (a long word
+% must never run out of the block). The overfull test needs LuaTeX; under
+% another engine the fields are simply not balanced.
+\newcount\mcm@of \newcount\mcm@ln \newcount\mcm@lfull
+\newdimen\mcm@blo \newdimen\mcm@bhi \newdimen\mcm@bmid
+\ifdefined\directlua
+  \directlua{
+    function mcm_overfull(b)
+      for n in node.traverse_id(node.id('hlist'), tex.box[b].head) do
+        local w = node.dimensions(n.glue_set, n.glue_sign, n.glue_order, n.head)
+        if w > n.width + 6554 then tex.count['mcm@of'] = 1 return end
+      end
+      tex.count['mcm@of'] = 0
+    end}
+  % #1 renderer, #2 family, #3 content, #4 measure -> \mcm@ln, \mcm@of
+  \long\def\mcm@tryw#1#2#3#4{\setbox\z@\vbox{\hsize\linewidth
+    \leftskip=\dimexpr\linewidth-#4\relax plus 1fil\noindent
+    #1{#2}{#3}\par\global\mcm@ln=\prevgraf}\directlua{mcm_overfull(0)}}
+  % Sets \leftskip; opens no group, so it reaches the caller's \par.
+  \long\def\mcm@balance#1#2#3{%
+    \mcm@tryw{#1}{#2}{#3}\linewidth \mcm@lfull=\mcm@ln
+    \mcm@bhi=\linewidth
+    \ifnum\mcm@lfull>\@ne
+      \mcm@blo=0.3\linewidth
+      \count@=\z@
+      \loop\ifnum\count@<12
+        \mcm@bmid=\dimexpr(\mcm@blo+\mcm@bhi)/2\relax
+        \mcm@tryw{#1}{#2}{#3}\mcm@bmid
+        \ifnum\mcm@ln>\mcm@lfull \mcm@blo=\mcm@bmid \else
+          \ifnum\mcm@of>\z@ \mcm@blo=\mcm@bmid \else \mcm@bhi=\mcm@bmid \fi\fi
+        \advance\count@\@ne
+      \repeat
+    \fi
+    \leftskip=\dimexpr\linewidth-\mcm@bhi\relax plus 1fil}
+\else
+  \long\def\mcm@balance#1#2#3{}
+\fi
+% The title page's title: tracking step picked, then balanced. The frame
+% titles keep \mcmTitleFormat below.
+\long\def\mcm@ttitlefmt#1{%
+  \mcm@pick\mcm@rtitle{#1}\mcmTitleFont\mcmTitleFontB\mcmTitleFontC
+  \mcm@balance\mcm@rtitle\mcm@fam{#1}\mcm@rtitle\mcm@fam{#1}}
+
 % Helper: apply title font + optional uppercase
 \newcommand{\mcmTitleFormat}[1]{%
   {\mcmTitleFont
@@ -182,15 +323,17 @@
 % FakeBold): Bold rivals the bold title on the band. 0 gives the plain
 % Regular back. A family of its own, like the title page's voices above.
 \newcommand{\mcmFrameSubtitleTracking}{10.0}
-\newcommand{\mcmFrameSubtitleBold}{1.0}
+\newcommand{\mcmFrameSubtitleBold}{0}
 \IfFontExistsTF{TeX Gyre Adventor}{%
   \newfontfamily\mcmFrameSubtitleFont{TeX Gyre Adventor}[%
-    LetterSpace=\mcmFrameSubtitleTracking, FakeBold=\mcmFrameSubtitleBold]%
+    LetterSpace=\mcmFrameSubtitleTracking]%
 }{%
   \let\mcmFrameSubtitleFont\mcmTitleMetaFont
 }
 \newcommand{\mcmFrameSubtitleFormat}[1]{%
-  \ifmcmTitleMetaCaps{\mcmFrameSubtitleFont\mdseries\mcm@upper{#1}}%
+  \ifmcmTitleMetaCaps{\mcmFrameSubtitleFont\mdseries
+    \ifdim\mcmFrameSubtitleBold pt>\z@\addfontfeature{FakeBold=\mcmFrameSubtitleBold}\fi
+    \mcm@upper{#1}}%
   \else{\sffamily#1}\fi}
 
 \mode<presentation>{
@@ -233,7 +376,7 @@
 \colorlet{mcmPrimary}{mcmDeepBlue}
 \colorlet{mcmPrimaryDark}{mcmDarkBlue}
 \colorlet{mcmPrimaryFg}{mcmLightGray}
-\colorlet{mcmPrimaryAccent}{mcmLightBlue}
+\colorlet{mcmPrimaryAccent}{mcmLightBlue!50!mcmLightGray}
 \colorlet{mcmPrimaryMuted}{mcmDeepBlue!10}
 \colorlet{mcmPip}{mcmDeepBlue}
 \colorlet{mcmBlockTitleFg}{mcmDeepBlue}
@@ -262,7 +405,7 @@
     \colorlet{mcmPrimary}{mcmDeepBlue}%
     \colorlet{mcmPrimaryDark}{mcmDarkBlue}%
     \colorlet{mcmPrimaryFg}{mcmLightGray}%
-    \colorlet{mcmPrimaryAccent}{mcmLightBlue}%
+    \colorlet{mcmPrimaryAccent}{mcmLightBlue!50!mcmLightGray}%
     \colorlet{mcmPrimaryMuted}{mcmDeepBlue!10}%
     \colorlet{mcmPip}{mcmDeepBlue}%
     \colorlet{mcmBlockTitleFg}{mcmDeepBlue}%
@@ -1070,6 +1213,9 @@
 % height from one deck to the next. It leaves that middle only as far as
 % needed to keep this much air above and below the mass. Larger values give
 % back equal air top and bottom sooner; 0pt holds the axis at any cost.
+% Off by default since 2026-10-23: the mass centred on the coloured area,
+% as in v2.1.0, read better. \mcmTitleAxistrue brings the axis back.
+\newif\ifmcmTitleAxis \mcmTitleAxisfalse
 \newlength{\mcmTitleAxisMinAir}
 \setlength{\mcmTitleAxisMinAir}{1.0cm}
 
@@ -1086,11 +1232,11 @@
 \newlength{\mcmTitleFloorH}
 
 % --- Type sizes and vertical rhythm on the title page ----------------------
-% Author 11pt over institute 8.7pt, both in tracked capitals (2026-10-23:
-% 12pt, the v2.1.0 size, came out too large once the fields under the rule
-% shrink only half as much as the title, see \mcmTitleMetaShrink). Long
-% author lists still break between a first name and its surname (see
-% \mcm@upper above): a tie fixes it.
+% Author 10pt, thickened (\mcmTitleAuthorBold), over institute 8.7pt, both in
+% tracked capitals (2026-10-23: 12pt, the v2.1.0 size, came out too large
+% once the fields under the rule shrink only half as much as the title, see
+% \mcmTitleMetaShrink). Long author lists still break between a first name
+% and its surname (see \mcm@upper above): a tie fixes it.
 %
 % The subtitle, at 11pt (8.5pt until 2026-09-07, "a bit too small" -- Jules;
 % 10pt for a day on 2026-10-22).
@@ -1103,13 +1249,13 @@
 % own measure and the group reads as two titles. Below the author's size, it
 % also keeps the name the larger of the two.
 %
-% The title, at 19pt (21pt until 2026-10-22). On a long
+% The title, at 20pt (21pt until 2026-10-22, 19pt for a day). On a long
 % title the auto-fit was already shrinking the block, so a smaller title is
 % shrunk less and part of the reduction comes back; the fields under the rule
 % then come out larger than before.
-\newlength{\mcmTitleFS}     \setlength{\mcmTitleFS}{19pt}
+\newlength{\mcmTitleFS}     \setlength{\mcmTitleFS}{20pt}
 \newlength{\mcmSubtitleFS}  \setlength{\mcmSubtitleFS}{11pt}
-\newlength{\mcmAuthorFS}    \setlength{\mcmAuthorFS}{11pt}
+\newlength{\mcmAuthorFS}    \setlength{\mcmAuthorFS}{10pt}
 \newlength{\mcmInstituteFS} \setlength{\mcmInstituteFS}{8.7pt}
 \newlength{\mcmDateFS}      \setlength{\mcmDateFS}{7.1pt}
 
@@ -1167,7 +1313,7 @@
      \advance\spaceskip by \mcm@tsc{\mcmTitleWordSpacing}%
      \usebeamerfont{title}\mcm@tfs{\mcmTitleFS}{1.10}%
      \global\mcm@ttitlebls=\baselineskip
-     \mcmTitleFormat{\inserttitle}\par}}%
+     \mcm@ttitlefmt{\inserttitle}\par}}%
   \ifdim\dimexpr\ht\mcm@ttitlebox+\dp\mcm@ttitlebox\relax
         >\dimexpr 1.5\mcm@ttitlebls\relax
     \global\mcm@tlines=2 \else \global\mcm@tlines=1 \fi
@@ -1294,7 +1440,7 @@
         {\spaceskip=\fontdimen2\font plus \fontdimen3\font minus \fontdimen4\font
          \advance\spaceskip by \mcm@tsc{\mcmTitleWordSpacing}%
          \usebeamerfont{title}\mcm@tfs{\mcmTitleFS}{1.10}%
-         \mcmTitleFormat{\inserttitle}\par}}%
+         \mcm@ttitlefmt{\inserttitle}\par}}%
       \mcm@tifny{\insertsubtitle}{%
         \vskip\mcm@tsc{\mcm@tsubsep}%
         {\usebeamerfont{subtitle}\mcm@tfs{\mcmSubtitleFS}{1.25}%
@@ -1500,7 +1646,7 @@
   % position above. The axis wins over equal air: on a page whose title group
   % outweighs its author group, the white above and below differ by the
   % difference.
-  \if@mcmhasrule
+  \ifmcmTitleAxis\if@mcmhasrule
     \begingroup
       \dimen0=\dimexpr0.5\paperheight+0.5\mcmFooterHeight+\mcm@trulepos\relax
       \dimen2=\dimexpr\paperheight-\mcmTitleAxisMinAir\relax
@@ -1511,7 +1657,7 @@
         \global\mcmTitleTop=\dimen0
       \fi
     \endgroup
-  \fi
+  \fi\fi
   \begin{tikzpicture}[remember picture, overlay]
     \node[anchor=north east, inner sep=0pt]
       at ([xshift=-\mcmTitleRightMargin, yshift=\mcmTitleTop]current page.south east)
