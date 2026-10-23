@@ -79,70 +79,56 @@
   \setmonofont{Latin Modern Mono}[Scale=MatchLowercase, Ligatures=TeXOff]%
 }
 
-% Secondary title-page text (subtitle and date) is set in letterspaced
-% capitals -- the mid-century way of ranking a title block by
-% tracking rather than by size or tint. Author and institute are the
-% exception, set as written (see \mcmTitleNameFont below). Disable all of it
-% with \mcmTitleMetaCapsfalse.
+% Secondary title-page text (subtitle, author, institute, date) is set in
+% letterspaced capitals in the title's face, Adventor -- the mid-century way
+% of ranking a title block by tracking rather than by size or tint, and what
+% gives the page its retro look. Disable all of it with \mcmTitleMetaCapsfalse.
 %
-% The date (and the frame subtitles) are set in the body face (Heros, a
-% Helvetica), tracked by
-% \mcmTitleMetaTracking (6): a 1950s grotesque under the geometric title, kept
-% tight so the lines read as words rather than strings of letters. A user who
-% changes the body face with \setsansfont gets the tracked variant of theirs.
-% Universalis ADF was meant to fill this role from 2026-09-07, but its check
-% never succeeded (see \IfFontExistsTF below: no brackets around a filename),
-% so Adventor tracked 14 was what showed until 2026-10-22; Universalis's
-% high-waisted E and F read 1920s, and it was dropped.
-\newcommand{\mcmTitleMetaTracking}{6.0}
+% Each voice is a font family of its own, loaded once. Built per use with
+% \addfontfeature on \mcmTitleFont instead, the subtitle came out in Adventor
+% BOLD with no warning (2026-10-23).
+%
+% History, so nobody retries it: Universalis ADF was meant to fill this role
+% from 2026-09-07, but its font check never succeeded (bracketed filename,
+% see the monospace font above), so Adventor tracked 14 is what always showed;
+% Universalis's high-waisted E and F read 1920s, and it was dropped. Heros
+% tracked 6 and author/institute as written in Adventor were tried on
+% 2026-10-22 and abandoned the next day: easier to read, less retro.
+\newcommand{\mcmTitleMetaTracking}{14.0}   % date, and the base of the frame subtitles
+\newcommand{\mcmTitleNameTracking}{11.0}   % author and institute
+\newcommand{\mcmTitleSubtitleTracking}{13.0}
 \newcommand{\mcm@metatrack}{\addfontfeature{LetterSpace=\mcmTitleMetaTracking}}
 \if@mcmfontspec\else\let\mcm@metatrack\relax\fi
-\newcommand{\mcmTitleMetaFont}{\sffamily\mcm@metatrack}
-% Author and institute, as written, in the logo's voice: Adventor tracked
-% -1, the lowercase of the demo logo's "midcentury / modern". The names are
-% user text, often long and mixed-case; in tracked capitals they read as a
-% third heading under the title and the subtitle. Falls back to the title face.
 \IfFontExistsTF{TeX Gyre Adventor}{%
-  \newfontfamily\mcmTitleNameFont{TeX Gyre Adventor}[LetterSpace=-1.0]%
+  \newfontfamily\mcmTitleMetaFont{TeX Gyre Adventor}[LetterSpace=\mcmTitleMetaTracking]%
+  \newfontfamily\mcmTitleNameFont{TeX Gyre Adventor}[LetterSpace=\mcmTitleNameTracking]%
+  \newfontfamily\mcmTitleSubtitleFont{TeX Gyre Adventor}[LetterSpace=\mcmTitleSubtitleTracking]%
 }{%
-  \let\mcmTitleNameFont\mcmTitleFont
+  \newcommand{\mcmTitleMetaFont}{\mcmTitleFont\mcm@metatrack}%
+  \let\mcmTitleNameFont\mcmTitleMetaFont
+  \let\mcmTitleSubtitleFont\mcmTitleMetaFont
 }
 \newif\ifmcmTitleMetaCaps
 \mcmTitleMetaCapstrue
+% The date.
 \newcommand{\mcmTitleMetaFormat}[1]{%
-  \ifmcmTitleMetaCaps{\mcmTitleMetaFont\mcm@upper{#1}}\else#1\fi}
-% The subtitle: in the title's face, Adventor, tracked wide
-% (\mcmTitleSubtitleTracking, 14). Heros tracked 6 was tried on 2026-10-22:
-% denser and easier to read, but plainer -- the round, widely set capitals
-% are what gives the line its character. \mcmTitleSubtitleBold (fontspec's
-% FakeBold, 0) can thicken the strokes; at this size even 1 barely shows, and
-% a bold weight stood out too much. The switches sit outside \mcm@upper, which
-% would uppercase them.
-\newcommand{\mcmTitleSubtitleTracking}{14.0}
+  \ifmcmTitleMetaCaps{\mcmTitleMetaFont\mdseries\mcm@upper{#1}}\else#1\fi}
+% The subtitle, tracked a touch tighter than the date (13 against 14), so a
+% long one stays denser. \mcmTitleSubtitleBold (fontspec's FakeBold, 0) can
+% thicken the strokes; at 11pt even 1 barely shows, and a bold weight stood
+% out too much. The switches sit outside \mcm@upper, which would uppercase
+% them.
 \newcommand{\mcmTitleSubtitleBold}{0}
-% A family of its own, loaded once: built per use with \addfontfeature on
-% \mcmTitleFont, the subtitle came out in Adventor BOLD (2026-10-23).
-\IfFontExistsTF{TeX Gyre Adventor}{%
-  \newfontfamily\mcmTitleSubtitleFont{TeX Gyre Adventor}[%
-    LetterSpace=\mcmTitleSubtitleTracking]%
-}{%
-  \let\mcmTitleSubtitleFont\mcmTitleFont
-}
 \newcommand{\mcm@tsubfont}{\mcmTitleSubtitleFont\mdseries
   \ifdim\mcmTitleSubtitleBold pt>\z@\addfontfeature{FakeBold=\mcmTitleSubtitleBold}\fi}
 \newcommand{\mcmTitleSubtitleFormat}[1]{%
   \ifmcmTitleMetaCaps{\mcm@tsubfont\mcm@upper{#1}}\else#1\fi}
-% Author and institute. The author is told from the institute by weight and
-% size: its strokes thickened by \mcmTitleAuthorBold (FakeBold; Adventor Bold
-% is too heavy on a list of names), the institute left regular and in the
-% same ink -- a dimmed institute read as washed out on the coloured page.
-\newcommand{\mcmTitleAuthorBold}{1.5}
-\newcommand{\mcm@tauthbold}{\addfontfeature{FakeBold=\mcmTitleAuthorBold}}
-\if@mcmfontspec\else\let\mcm@tauthbold\relax\fi
+% Author and institute, tracked tighter still (11): two lines of names at 14
+% read as loose letters, and a long author line breaks sooner.
 \newcommand{\mcmTitleAuthorFormat}[1]{%
-  \ifmcmTitleMetaCaps{\mcmTitleNameFont\mcm@tauthbold#1}\else#1\fi}
+  \ifmcmTitleMetaCaps{\mcmTitleNameFont\mdseries\mcm@upper{#1}}\else#1\fi}
 \newcommand{\mcmTitleInstituteFormat}[1]{%
-  \ifmcmTitleMetaCaps{\mcmTitleNameFont#1}\else#1\fi}
+  \ifmcmTitleMetaCaps{\mcmTitleNameFont\mdseries\mcm@upper{#1}}\else#1\fi}
 
 % \mcm@upper: \MakeUppercase for a beamer title field.  Beamer prefixes
 % \insertauthor and \insertinstitute with two \def's that give \inst and
@@ -187,22 +173,24 @@
 }
 
 % Helper: the frame subtitle, in the title page's second voice -- uppercase,
-% tracked, \mcmTitleMetaFont -- at 8.5pt (\setbeamerfont{framesubtitle}
-% below). Tracked less than the title page (\mcmFrameSubtitleTracking, 4.3
-% against 6, the ratio settled when both were in Adventor): at this size the
-% title page's tracking loosens the words, and a long subtitle takes one more
-% line. \mcmTitleMetaCapsfalse, which turns the title page's
+% tracked Adventor -- at 8.5pt (\setbeamerfont{framesubtitle} below).
+% Tracked less than the title page's date (\mcmFrameSubtitleTracking, 10
+% against 14): at this size 14 runs the words apart, and a long subtitle
+% takes one more line. \mcmTitleMetaCapsfalse, which turns the title page's
 % capitals off, gives the subtitle back in the body face and as written.
 % The strokes are thickened a touch (\mcmFrameSubtitleBold, fontspec's
-% FakeBold): Bold rivals the bold title on the band. 0 gives the plain Regular back.
-\newcommand{\mcmFrameSubtitleTracking}{4.3}
+% FakeBold): Bold rivals the bold title on the band. 0 gives the plain
+% Regular back. A family of its own, like the title page's voices above.
+\newcommand{\mcmFrameSubtitleTracking}{10.0}
 \newcommand{\mcmFrameSubtitleBold}{1.0}
-\newcommand{\mcm@subtrack}{%
-  \addfontfeature{LetterSpace=\mcmFrameSubtitleTracking,
-    FakeBold=\mcmFrameSubtitleBold}}
-\if@mcmfontspec\else\let\mcm@subtrack\relax\fi
+\IfFontExistsTF{TeX Gyre Adventor}{%
+  \newfontfamily\mcmFrameSubtitleFont{TeX Gyre Adventor}[%
+    LetterSpace=\mcmFrameSubtitleTracking, FakeBold=\mcmFrameSubtitleBold]%
+}{%
+  \let\mcmFrameSubtitleFont\mcmTitleMetaFont
+}
 \newcommand{\mcmFrameSubtitleFormat}[1]{%
-  \ifmcmTitleMetaCaps{\mcmTitleMetaFont\mcm@subtrack\mcm@upper{#1}}%
+  \ifmcmTitleMetaCaps{\mcmFrameSubtitleFont\mdseries\mcm@upper{#1}}%
   \else{\sffamily#1}\fi}
 
 \mode<presentation>{
@@ -1070,7 +1058,7 @@
 \setlength{\mcmTitleFooterGap}{0.5cm}
 % (set here, not \AtBeginDocument, so a preamble override wins)
 \setlength{\mcmTitleBlockWidth}{0.88\paperwidth}
-\setlength{\mcmTitleRightMargin}{0.05\paperwidth}
+\setlength{\mcmTitleRightMargin}{0.06\paperwidth}
 
 % Never let the mass rise closer than this to the top edge (it only bites when
 % the block is still too tall at \mcmTitleMinScale).
@@ -1098,14 +1086,14 @@
 \newlength{\mcmTitleFloorH}
 
 % --- Type sizes and vertical rhythm on the title page ----------------------
-% Author 11.5pt over institute 10.5pt (2026-10-22, when both left capitals
-% for Adventor as written): close in size, the author set apart by its
-% thickened strokes. Jules weighed every pair between 10.5 and 12pt; a wider
-% gap made the names shout over the institute. Long author lists still break
-% between a first name and its surname (see \mcm@upper above): a tie fixes it.
+% Author 11pt over institute 8.7pt, both in tracked capitals (2026-10-23:
+% 12pt, the v2.1.0 size, came out too large once the fields under the rule
+% shrink only half as much as the title, see \mcmTitleMetaShrink). Long
+% author lists still break between a first name and its surname (see
+% \mcm@upper above): a tie fixes it.
 %
 % The subtitle, at 11pt (8.5pt until 2026-09-07, "a bit too small" -- Jules;
-% 10pt for a day on 2026-10-22, back to 11 with the Adventor setting).
+% 10pt for a day on 2026-10-22).
 % Nothing mechanical bounds it: 8.5 to 11 all give the 25 cases of
 % test/titlepage.tex zero Overfull and zero errors, and on an uncrowded page
 % the auto-fit does not have to shrink the title to pay for the extra height.
@@ -1121,8 +1109,8 @@
 % then come out larger than before.
 \newlength{\mcmTitleFS}     \setlength{\mcmTitleFS}{19pt}
 \newlength{\mcmSubtitleFS}  \setlength{\mcmSubtitleFS}{11pt}
-\newlength{\mcmAuthorFS}    \setlength{\mcmAuthorFS}{11.5pt}
-\newlength{\mcmInstituteFS} \setlength{\mcmInstituteFS}{10.5pt}
+\newlength{\mcmAuthorFS}    \setlength{\mcmAuthorFS}{11pt}
+\newlength{\mcmInstituteFS} \setlength{\mcmInstituteFS}{8.7pt}
 \newlength{\mcmDateFS}      \setlength{\mcmDateFS}{7.1pt}
 
 % The rule sits under the title *and its subtitle*: the subtitle names the
