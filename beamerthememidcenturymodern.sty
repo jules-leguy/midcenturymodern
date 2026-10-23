@@ -120,9 +120,16 @@
 % would uppercase them.
 \newcommand{\mcmTitleSubtitleTracking}{14.0}
 \newcommand{\mcmTitleSubtitleBold}{0}
-\newcommand{\mcm@tsubfont}{\mcmTitleFont\addfontfeature{%
-  LetterSpace=\mcmTitleSubtitleTracking, FakeBold=\mcmTitleSubtitleBold}}
-\if@mcmfontspec\else\let\mcm@tsubfont\mcmTitleFont\fi
+% A family of its own, loaded once: built per use with \addfontfeature on
+% \mcmTitleFont, the subtitle came out in Adventor BOLD (2026-10-23).
+\IfFontExistsTF{TeX Gyre Adventor}{%
+  \newfontfamily\mcmTitleSubtitleFont{TeX Gyre Adventor}[%
+    LetterSpace=\mcmTitleSubtitleTracking]%
+}{%
+  \let\mcmTitleSubtitleFont\mcmTitleFont
+}
+\newcommand{\mcm@tsubfont}{\mcmTitleSubtitleFont\mdseries
+  \ifdim\mcmTitleSubtitleBold pt>\z@\addfontfeature{FakeBold=\mcmTitleSubtitleBold}\fi}
 \newcommand{\mcmTitleSubtitleFormat}[1]{%
   \ifmcmTitleMetaCaps{\mcm@tsubfont\mcm@upper{#1}}\else#1\fi}
 % Author and institute. The author is told from the institute by weight and
